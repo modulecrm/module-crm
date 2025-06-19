@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../components/Dashboard';
 import ModuleSettings from '../components/ModuleSettings';
 import LanguageSettings from '../components/LanguageSettings';
+import ProfileSettings from '../components/ProfileSettings';
 import CRMModule from '../components/CRMModule';
 import BookingModule from '../components/BookingModule';
 import SubscriptionModule from '../components/SubscriptionModule';
@@ -164,6 +164,16 @@ const Index = () => {
                   Modules
                 </button>
                 <button
+                  onClick={() => setActiveSettingsTab('profile')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeSettingsTab === 'profile'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Profile
+                </button>
+                <button
                   onClick={() => setActiveSettingsTab('language')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     activeSettingsTab === 'language'
@@ -180,6 +190,7 @@ const Index = () => {
             {activeSettingsTab === 'modules' && (
               <ModuleSettings enabledModules={enabledModules} onToggleModule={handleToggleModule} />
             )}
+            {activeSettingsTab === 'profile' && <ProfileSettings enabledModules={enabledModules} />}
             {activeSettingsTab === 'language' && <LanguageSettings />}
           </div>
         );
