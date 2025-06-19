@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Home, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Settings, Building2, Globe } from 'lucide-react';
+import { Home, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Settings, Building2, Globe } from '
+react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface SidebarProps {
@@ -23,6 +24,9 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
     { id: 'support', name: t('nav.support'), icon: LifeBuoy, color: 'text-teal-500' },
   ];
 
+  // Filter modules to only show enabled ones
+  const visibleModules = modules.filter(module => enabledModules.includes(module.id));
+
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen overflow-y-auto">
       <div className="p-6">
@@ -32,31 +36,22 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
       
       <nav className="px-4 pb-4">
         <div className="space-y-1">
-          {modules.map((module) => {
-            const isEnabled = enabledModules.includes(module.id);
+          {visibleModules.map((module) => {
             const isActive = activeModule === module.id;
             const Icon = module.icon;
             
             return (
               <button
                 key={module.id}
-                onClick={() => isEnabled && onModuleChange(module.id)}
-                disabled={!isEnabled && module.id !== 'dashboard'}
+                onClick={() => onModuleChange(module.id)}
                 className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive
                     ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-700'
-                    : isEnabled
-                    ? 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                    : 'text-gray-400 cursor-not-allowed opacity-50'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
                 <Icon className={`mr-3 h-5 w-5 ${isActive ? 'text-blue-700' : module.color}`} />
                 {module.name}
-                {!isEnabled && module.id !== 'dashboard' && (
-                  <span className="ml-auto text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">
-                    Disabled
-                  </span>
-                )}
               </button>
             );
           })}

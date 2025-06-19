@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -7,6 +6,7 @@ import ModuleSettings from '../components/ModuleSettings';
 import LanguageSettings from '../components/LanguageSettings';
 import CRMModule from '../components/CRMModule';
 import BookingModule from '../components/BookingModule';
+import SubscriptionModule from '../components/SubscriptionModule';
 
 const Index = () => {
   const [activeModule, setActiveModule] = useState('dashboard');
@@ -47,14 +47,7 @@ const Index = () => {
       case 'booking':
         return <BookingModule />;
       case 'subscription':
-        return (
-          <div className="p-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Subscription Management</h1>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <p className="text-blue-800">This module is under development. Soon you'll be able to manage subscriptions and payments from here.</p>
-            </div>
-          </div>
-        );
+        return <SubscriptionModule />;
       case 'tasks':
         return (
           <div className="p-8">
