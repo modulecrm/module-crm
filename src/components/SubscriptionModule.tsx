@@ -2,22 +2,18 @@
 import React, { useState } from 'react';
 import { CreditCard, Users, BarChart3, Bell, Shield, Zap } from 'lucide-react';
 import SubscriptionPlans from './subscription/SubscriptionPlans';
-import BillingManagement from './subscription/BillingManagement';
 import CustomerPortal from './subscription/CustomerPortal';
 import Analytics from './subscription/Analytics';
 import ChurnPrediction from './subscription/ChurnPrediction';
-import PaymentSettings from './subscription/PaymentSettings';
 
 const SubscriptionModule = () => {
   const [activeTab, setActiveTab] = useState('plans');
 
   const tabs = [
     { id: 'plans', name: 'Subscription Plans', icon: CreditCard, component: SubscriptionPlans },
-    { id: 'billing', name: 'Billing & Invoices', icon: BarChart3, component: BillingManagement },
     { id: 'customers', name: 'Customer Portal', icon: Users, component: CustomerPortal },
     { id: 'analytics', name: 'Analytics & Reports', icon: BarChart3, component: Analytics },
     { id: 'churn', name: 'Churn Prediction', icon: Zap, component: ChurnPrediction },
-    { id: 'payments', name: 'Payment Settings', icon: Shield, component: PaymentSettings },
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || SubscriptionPlans;
