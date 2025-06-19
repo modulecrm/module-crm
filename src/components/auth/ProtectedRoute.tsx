@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
 
-  // All hooks are called before any conditional returns
+  // Show loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -20,10 +20,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
+  // Redirect to auth if no user
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
+  // Render children if user is authenticated
   return <>{children}</>;
 };
 
