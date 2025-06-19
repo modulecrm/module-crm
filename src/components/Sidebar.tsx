@@ -1,7 +1,5 @@
-
 import React from 'react';
-import { Home, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Settings, Building2, Globe } from '
-react';
+import { Home, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Settings, Building2, Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface SidebarProps {
