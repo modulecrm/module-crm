@@ -213,7 +213,7 @@ const IntegrationsSettings = () => {
     }
   };
 
-  const handleIntegrationClick = (integration: Integration, category: any) => {
+  const handleIntegrationClick = (integration: any, category: any) => {
     setSelectedIntegration({
       ...integration,
       category: category.name,
