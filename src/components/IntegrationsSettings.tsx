@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -202,6 +201,28 @@ const IntegrationsSettings = () => {
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
+  // Get all connected integrations across all categories
+  const getConnectedIntegrations = () => {
+    const connected: Array<Integration & { categoryName: string; categoryIcon: any; categoryColor: string }> = [];
+    
+    integrationCategories.forEach(category => {
+      category.integrations.forEach(integration => {
+        if (integration.status === 'connected') {
+          connected.push({
+            ...integration,
+            categoryName: category.name,
+            categoryIcon: category.icon,
+            categoryColor: category.color
+          });
+        }
+      });
+    });
+    
+    return connected;
+  };
+
+  const connectedIntegrations = getConnectedIntegrations();
+
   const getStatusBadge = (status: Integration['status']) => {
     switch (status) {
       case 'connected':
@@ -256,6 +277,154 @@ const IntegrationsSettings = () => {
         <p className="text-gray-600">Connect your CRM with external services to streamline your workflow</p>
       </div>
 
+      {/* Active Integrations Section */}
+      {connectedIntegrations.length > 0 && (
+        <Card className="border-green-200 bg-green-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-green-800">
+              <CheckCircle className="h-5 w-5" />
+              Active Integrations ({connectedIntegrations.length})
+            </CardTitle>
+            <CardDescription className="text-green-700">
+              These integrations are currently connected and active
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {connectedIntegrations.map((integration) => {
+                const IconComponent = integration.categoryIcon;
+                const category = integrationCategories.find(cat => cat.name === integration.categoryName);
+                
+                return (
+                  <Sheet key={`active-${integration.id}`} open={sheetOpen && selectedIntegration?.id === integration.id} onOpenChange={(open) => {
+                    if (!open) {
+                      setSheetOpen(false);
+                      setSelectedIntegration(null);
+                    }
+                  }}>
+                    <SheetTrigger asChild>
+                      <Card 
+                        className="cursor-pointer hover:shadow-md transition-shadow border-2 border-green-200 hover:border-green-300 bg-white"
+                        onClick={() => handleIntegrationClick(integration, category)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className={`p-1 rounded bg-gradient-to-r ${integration.categoryColor}`}>
+                                <IconComponent className="h-3 w-3 text-white" />
+                              </div>
+                              <h4 className="font-semibold text-gray-900">{integration.name}</h4>
+                            </div>
+                            {getStatusBadge(integration.status)}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">{integration.description}</p>
+                          <p className="text-xs text-green-600">{integration.categoryName}</p>
+                          <div className="flex items-center text-green-600 text-sm mt-2">
+                            <span>Manage</span>
+                            <ExternalLink className="h-3 w-3 ml-1" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </SheetTrigger>
+                    
+                    <SheetContent className="w-1/2 max-w-none">
+                      <SheetHeader>
+                        <SheetTitle className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg bg-gradient-to-r ${category.color}`}>
+                            <IconComponent className="h-5 w-5 text-white" />
+                          </div>
+                          {selectedIntegration?.name} Integration
+                        </SheetTitle>
+                        <SheetDescription>
+                          Set up and configure your {selectedIntegration?.name} integration
+                        </SheetDescription>
+                      </SheetHeader>
+                      
+                      {selectedIntegration && (
+                        <div className="mt-6 space-y-6">
+                          <div>
+                            <h3 className="text-lg font-semibold mb-2">About this integration</h3>
+                            <p className="text-gray-600">{selectedIntegration.description}</p>
+                            <div className="mt-2 flex items-center gap-2">
+                              <span className="text-sm text-gray-500">Category:</span>
+                              <Badge variant="outline">{selectedIntegration.category}</Badge>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3 className="text-lg font-semibold mb-3">Status</h3>
+                            {getStatusBadge(selectedIntegration.status)}
+                          </div>
+
+                          {selectedIntegration.status !== 'coming-soon' && (
+                            <>
+                              <div>
+                                <h3 className="text-lg font-semibold mb-3">Requirements</h3>
+                                <ul className="space-y-2">
+                                  {selectedIntegration.requirements?.map((req, index) => (
+                                    <li key={index} className="flex items-center gap-2">
+                                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                                      <span className="text-sm text-gray-600">{req}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              <div>
+                                <h3 className="text-lg font-semibold mb-3">Setup Steps</h3>
+                                <ol className="space-y-3">
+                                  {selectedIntegration.setupSteps?.map((step, index) => (
+                                    <li key={index} className="flex items-start gap-3">
+                                      <div className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
+                                        {index + 1}
+                                      </div>
+                                      <span className="text-sm text-gray-600">{step}</span>
+                                    </li>
+                                  ))}
+                                </ol>
+                              </div>
+
+                              <div className="pt-4 border-t">
+                                {selectedIntegration.status === 'connected' ? (
+                                  <div className="space-y-3">
+                                    <Button variant="outline" className="w-full">
+                                      <Settings className="h-4 w-4 mr-2" />
+                                      Manage Connection
+                                    </Button>
+                                    <Button variant="destructive" className="w-full">
+                                      Disconnect
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button className="w-full">
+                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                    Connect {selectedIntegration.name}
+                                  </Button>
+                                )}
+                              </div>
+                            </>
+                          )}
+
+                          {selectedIntegration.status === 'coming-soon' && (
+                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                              <p className="text-yellow-800 text-sm">
+                                This integration is coming soon. We're working hard to bring you this functionality. 
+                                Stay tuned for updates!
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </SheetContent>
+                  </Sheet>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* All Integrations by Category */}
       <div className="space-y-8">
         {integrationCategories.map((category) => {
           const IconComponent = category.icon;
