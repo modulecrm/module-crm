@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -11,6 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { Plus, Mail, CheckSquare } from 'lucide-react';
 
 interface CustomerOverviewProps {
   customer: {
@@ -18,21 +20,42 @@ interface CustomerOverviewProps {
     name: string;
     email: string;
     phone: string;
-    address: string;
     company: string;
-    title: string;
-    status: 'Active' | 'Inactive' | 'Lead';
+    status: string;
+    lead_score: number;
+    tags: string[];
+    industry: string;
+    created_at: string;
+    custom_fields?: {
+      [key: string]: any;
+    };
+    address?: {
+      [key: string]: any;
+    };
   };
 }
 
 const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
+  // Format address from object to string
+  const formatAddress = (address?: { [key: string]: any }): string => {
+    if (!address) return 'No address provided';
+    const { city, country, ...rest } = address;
+    const parts = [city, country].filter(Boolean);
+    return parts.length > 0 ? parts.join(', ') : 'No address provided';
+  };
+
+  // Get title from custom fields or default
+  const getTitle = (): string => {
+    return customer.custom_fields?.title || customer.industry || 'Customer';
+  };
+
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">{customer.name}</CardTitle>
           <CardDescription>
-            {customer.title} at {customer.company}
+            {getTitle()} at {customer.company}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -54,12 +77,37 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
               <span className="font-semibold">Phone:</span> {customer.phone}
             </p>
             <p>
-              <span className="font-semibold">Address:</span> {customer.address}
+              <span className="font-semibold">Address:</span> {formatAddress(customer.address)}
             </p>
           </div>
+
+          {/* Action Buttons */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-1" />
+              Product
+            </Button>
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-1" />
+              Subscription
+            </Button>
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-1" />
+              Payment
+            </Button>
+            <Button variant="outline" size="sm">
+              <Mail className="h-4 w-4 mr-1" />
+              Email
+            </Button>
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-1" />
+              Task
+            </Button>
+          </div>
+
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button variant="outline" size="sm" className="text-xs mt-4">
                 Latest Invoice
               </Button>
             </SheetTrigger>
