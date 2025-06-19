@@ -23,7 +23,7 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen overflow-y-auto">
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">ModularCRM</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">ModuleCRM</h1>
         <p className="text-sm text-gray-500">Flexible CRM System</p>
       </div>
       
