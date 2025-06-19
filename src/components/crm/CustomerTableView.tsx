@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Mail, Phone, MapPin, Building2, User, Star, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -100,10 +99,7 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Checkbox
-              checked={allSelected}
-              ref={(el) => {
-                if (el) el.indeterminate = someSelected;
-              }}
+              checked={allSelected || someSelected}
               onCheckedChange={allSelected ? onClearSelection : onSelectAll}
             />
             <span className="text-sm text-gray-600">
@@ -165,10 +161,7 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
           <TableRow>
             <TableHead className="w-12">
               <Checkbox
-                checked={allSelected}
-                ref={(el) => {
-                  if (el) el.indeterminate = someSelected;
-                }}
+                checked={allSelected || someSelected}
                 onCheckedChange={allSelected ? onClearSelection : onSelectAll}
               />
             </TableHead>
