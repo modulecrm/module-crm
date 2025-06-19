@@ -7,29 +7,31 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { User, Mail, Building, CreditCard, Package, Edit2, Save, X, FileText, Download, AlertCircle, Clock, CheckCircle } from 'lucide-react';
 import { modules, branchModules } from './modules/moduleData';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 
 interface ProfileSettingsProps {
   enabledModules: string[];
 }
 
-// Mock invoice data
+// Mock invoice data with updated status definitions
 const mockInvoices = [
   {
     id: 'INV-2024-001',
     date: new Date('2024-01-15'),
-    dueDate: new Date('2024-02-15'),
+    dueDate: null, // No due date = pending
     amount: 299.99,
-    status: 'paid',
-    description: 'Premium Subscription - January 2024'
+    status: 'pending',
+    description: 'Premium Subscription - January 2024',
+    paidDate: null
   },
   {
     id: 'INV-2024-002',
     date: new Date('2024-02-15'),
-    dueDate: new Date('2024-03-15'),
+    dueDate: new Date('2024-02-20'),
     amount: 299.99,
-    status: 'pending',
-    description: 'Premium Subscription - February 2024'
+    status: 'paid',
+    description: 'Premium Subscription - February 2024',
+    paidDate: new Date('2024-02-18')
   },
   {
     id: 'INV-2024-003',
@@ -37,7 +39,8 @@ const mockInvoices = [
     dueDate: new Date('2024-01-31'),
     amount: 149.99,
     status: 'overdue',
-    description: 'Additional Services - January 2024'
+    description: 'Additional Services - January 2024',
+    paidDate: null
   },
   {
     id: 'INV-2023-012',
@@ -45,15 +48,17 @@ const mockInvoices = [
     dueDate: new Date('2024-01-15'),
     amount: 299.99,
     status: 'paid',
-    description: 'Premium Subscription - December 2023'
+    description: 'Premium Subscription - December 2023',
+    paidDate: new Date('2024-01-10')
   },
   {
     id: 'INV-2024-004',
     date: new Date('2024-03-01'),
-    dueDate: new Date('2024-03-31'),
+    dueDate: new Date('2024-03-15'),
     amount: 199.99,
     status: 'overdue',
-    description: 'Custom Development - March 2024'
+    description: 'Custom Development - March 2024',
+    paidDate: null
   }
 ];
 
@@ -101,28 +106,48 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
     return sum + price;
   }, 0);
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, dueDate: Date | null, paidDate: Date | null) => {
+    const today = new Date();
+    
     switch (status) {
       case 'paid':
         return (
-          <Badge className="bg-green-100 text-green-700 flex items-center gap-1">
-            <CheckCircle className="h-3 w-3" />
-            Paid
-          </Badge>
+          <div className="flex flex-col items-start">
+            <Badge className="bg-green-100 text-green-700 flex items-center gap-1 mb-1">
+              <CheckCircle className="h-3 w-3" />
+              Paid
+            </Badge>
+            {paidDate && (
+              <span className="text-xs text-gray-500">
+                Paid: {format(paidDate, 'MMM dd, yyyy')}
+              </span>
+            )}
+          </div>
         );
       case 'pending':
         return (
-          <Badge className="bg-yellow-100 text-yellow-700 flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            Pending
-          </Badge>
+          <div className="flex flex-col items-start">
+            <Badge className="bg-yellow-100 text-yellow-700 flex items-center gap-1 mb-1">
+              <Clock className="h-3 w-3" />
+              Pending
+            </Badge>
+            <span className="text-xs text-gray-500">
+              No due date set
+            </span>
+          </div>
         );
       case 'overdue':
+        const daysOverdue = dueDate ? differenceInDays(today, dueDate) : 0;
         return (
-          <Badge className="bg-red-100 text-red-700 flex items-center gap-1">
-            <AlertCircle className="h-3 w-3" />
-            Overdue
-          </Badge>
+          <div className="flex flex-col items-start">
+            <Badge className="bg-red-100 text-red-700 flex items-center gap-1 mb-1">
+              <AlertCircle className="h-3 w-3" />
+              Overdue
+            </Badge>
+            <span className="text-xs text-red-600 font-medium">
+              {daysOverdue} days overdue
+            </span>
+          </div>
         );
       default:
         return <Badge variant="secondary">{status}</Badge>;
@@ -410,7 +435,14 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
             <FileText className="h-5 w-5" />
             Your Invoices
           </CardTitle>
-          <CardDescription>View and manage your billing history</CardDescription>
+          <CardDescription>
+            View and manage your billing history
+            <div className="mt-2 text-sm space-y-1">
+              <div><strong>Pending:</strong> Invoice created, no due date set</div>
+              <div><strong>Overdue:</strong> Invoice not paid by due date</div>
+              <div><strong>Paid:</strong> Invoice payment confirmed</div>
+            </div>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -430,9 +462,13 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium">{invoice.id}</TableCell>
                   <TableCell>{format(invoice.date, 'MMM dd, yyyy')}</TableCell>
-                  <TableCell>{format(invoice.dueDate, 'MMM dd, yyyy')}</TableCell>
+                  <TableCell>
+                    {invoice.dueDate ? format(invoice.dueDate, 'MMM dd, yyyy') : '-'}
+                  </TableCell>
                   <TableCell className="font-semibold">${invoice.amount.toFixed(2)}</TableCell>
-                  <TableCell>{getStatusBadge(invoice.status)}</TableCell>
+                  <TableCell>
+                    {getStatusBadge(invoice.status, invoice.dueDate, invoice.paidDate)}
+                  </TableCell>
                   <TableCell className="max-w-xs truncate">{invoice.description}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
