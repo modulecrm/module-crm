@@ -27,11 +27,11 @@ const InvoiceModule = () => {
           </TabsTrigger>
           <TabsTrigger value="products" className="flex items-center gap-2">
             <Package className="h-4 w-4" />
-            Catalog
+            Products
           </TabsTrigger>
-          <TabsTrigger value="templates" className="flex items-center gap-2">
+          <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
-            Templates
+            Settings
           </TabsTrigger>
           <TabsTrigger value="categories" className="flex items-center gap-2">
             <Tags className="h-4 w-4" />
@@ -55,7 +55,7 @@ const InvoiceModule = () => {
           <ProductCatalog />
         </TabsContent>
 
-        <TabsContent value="templates" className="mt-6">
+        <TabsContent value="settings" className="mt-6">
           <InvoiceTemplates />
         </TabsContent>
 
