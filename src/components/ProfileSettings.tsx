@@ -1,16 +1,61 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Mail, Building, CreditCard, Package, Edit2, Save, X } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { User, Mail, Building, CreditCard, Package, Edit2, Save, X, FileText, Download, AlertCircle, Clock, CheckCircle } from 'lucide-react';
 import { modules, branchModules } from './modules/moduleData';
+import { format } from 'date-fns';
 
 interface ProfileSettingsProps {
   enabledModules: string[];
 }
+
+// Mock invoice data
+const mockInvoices = [
+  {
+    id: 'INV-2024-001',
+    date: new Date('2024-01-15'),
+    dueDate: new Date('2024-02-15'),
+    amount: 299.99,
+    status: 'paid',
+    description: 'Premium Subscription - January 2024'
+  },
+  {
+    id: 'INV-2024-002',
+    date: new Date('2024-02-15'),
+    dueDate: new Date('2024-03-15'),
+    amount: 299.99,
+    status: 'pending',
+    description: 'Premium Subscription - February 2024'
+  },
+  {
+    id: 'INV-2024-003',
+    date: new Date('2024-01-01'),
+    dueDate: new Date('2024-01-31'),
+    amount: 149.99,
+    status: 'overdue',
+    description: 'Additional Services - January 2024'
+  },
+  {
+    id: 'INV-2023-012',
+    date: new Date('2023-12-15'),
+    dueDate: new Date('2024-01-15'),
+    amount: 299.99,
+    status: 'paid',
+    description: 'Premium Subscription - December 2023'
+  },
+  {
+    id: 'INV-2024-004',
+    date: new Date('2024-03-01'),
+    dueDate: new Date('2024-03-31'),
+    amount: 199.99,
+    status: 'overdue',
+    description: 'Custom Development - March 2024'
+  }
+];
 
 const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
   // Mock user data - in a real app this would come from authentication/database
@@ -56,6 +101,52 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
     return sum + price;
   }, 0);
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return (
+          <Badge className="bg-green-100 text-green-700 flex items-center gap-1">
+            <CheckCircle className="h-3 w-3" />
+            Paid
+          </Badge>
+        );
+      case 'pending':
+        return (
+          <Badge className="bg-yellow-100 text-yellow-700 flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            Pending
+          </Badge>
+        );
+      case 'overdue':
+        return (
+          <Badge className="bg-red-100 text-red-700 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            Overdue
+          </Badge>
+        );
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  const handlePayNow = (invoiceId: string) => {
+    // Mock payment link - in real implementation, this would generate a Stripe payment link
+    console.log(`Redirecting to payment for invoice: ${invoiceId}`);
+    window.open(`https://checkout.stripe.com/pay/invoice/${invoiceId}`, '_blank');
+  };
+
+  const handleDownloadPDF = (invoiceId: string) => {
+    // Mock PDF download - in real implementation, this would generate and download the PDF
+    console.log(`Downloading PDF for invoice: ${invoiceId}`);
+    // Create a mock download
+    const link = document.createElement('a');
+    link.href = '#';
+    link.download = `${invoiceId}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleSaveCompany = () => {
     setUserProfile(prev => ({
       ...prev,
@@ -94,8 +185,8 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Profile Settings</h2>
-        <p className="text-gray-600">Manage your account information and view your subscription details</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Profile & Invoice Settings</h2>
+        <p className="text-gray-600">Manage your account information, subscription details, and invoices</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -311,6 +402,74 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Customer Invoices Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Your Invoices
+          </CardTitle>
+          <CardDescription>View and manage your billing history</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Invoice #</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Due Date</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {mockInvoices.map((invoice) => (
+                <TableRow key={invoice.id}>
+                  <TableCell className="font-medium">{invoice.id}</TableCell>
+                  <TableCell>{format(invoice.date, 'MMM dd, yyyy')}</TableCell>
+                  <TableCell>{format(invoice.dueDate, 'MMM dd, yyyy')}</TableCell>
+                  <TableCell className="font-semibold">${invoice.amount.toFixed(2)}</TableCell>
+                  <TableCell>{getStatusBadge(invoice.status)}</TableCell>
+                  <TableCell className="max-w-xs truncate">{invoice.description}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownloadPDF(invoice.id)}
+                        className="flex items-center gap-1"
+                      >
+                        <Download className="h-4 w-4" />
+                        PDF
+                      </Button>
+                      {invoice.status === 'overdue' && (
+                        <Button
+                          size="sm"
+                          onClick={() => handlePayNow(invoice.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white flex items-center gap-1"
+                        >
+                          <CreditCard className="h-4 w-4" />
+                          Pay Now
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          
+          {mockInvoices.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>No invoices found</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
