@@ -129,7 +129,7 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">{module.name}</p>
-                      {module.premium === true && (
+                      {module.premium && (
                         <Badge variant="secondary" className="text-xs">Premium</Badge>
                       )}
                     </div>
