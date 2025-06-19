@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -12,7 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { Plus, Mail, CheckSquare } from 'lucide-react';
+import { Plus, Mail, CheckSquare, BarChart3, Package } from 'lucide-react';
 
 interface CustomerOverviewProps {
   customer: {
