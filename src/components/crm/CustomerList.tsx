@@ -305,7 +305,7 @@ const CustomerList = () => {
           customer_type: 'business',
           language: 'en',
           currency: 'USD',
-          source: 'referral',
+8          source: 'referral',
           segment: 'Sustainable Retail',
           employees_count: 45,
           revenue: 3500000,
@@ -589,6 +589,29 @@ const CustomerList = () => {
     if (saved) {
       setCustomViews(JSON.parse(saved));
     }
+  };
+
+  const handleSaveCustomView = (view: {
+    id: string;
+    name: string;
+    conditions: Array<{
+      id: string;
+      field: string;
+      operator: string;
+      value: string;
+    }>;
+  }) => {
+    const updatedViews = [...customViews];
+    const existingIndex = updatedViews.findIndex(v => v.id === view.id);
+    
+    if (existingIndex >= 0) {
+      updatedViews[existingIndex] = view;
+    } else {
+      updatedViews.push(view);
+    }
+    
+    setCustomViews(updatedViews);
+    localStorage.setItem('customerCustomViews', JSON.stringify(updatedViews));
   };
 
   useEffect(() => {
