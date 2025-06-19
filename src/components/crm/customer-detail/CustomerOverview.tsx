@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -564,7 +565,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
               </CardContent>
             </Card>
           </SheetTrigger>
-          <SheetContent className="w-[400px] sm:w-[540px]">
+          <SheetContent className="w-[500px] sm:w-[700px] max-w-[90vw]">
             <SheetHeader>
               <SheetTitle>Invoice Management</SheetTitle>
               <SheetDescription>
@@ -630,9 +631,9 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
               <div className="space-y-4">
                 {invoices.map((invoice) => (
                   <div key={invoice.id} className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
+                    <div className="flex flex-col lg:flex-row justify-between items-start gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <h4 className="font-semibold">{invoice.id}</h4>
                           <Badge className={getPaymentStatusColor(invoice.status)}>
                             {invoice.status.toUpperCase()}
@@ -645,14 +646,16 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                         <p className="text-sm text-gray-600">Due Date: {invoice.dueDate}</p>
                         <p className="text-sm font-medium mt-1">Amount: {invoice.amount}</p>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <Button variant="ghost" size="sm">
-                          <Download className="h-4 w-4" />
+                      <div className="flex flex-col gap-2 w-full lg:w-auto min-w-[200px]">
+                        <Button variant="ghost" size="sm" className="w-full lg:w-auto">
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
                         </Button>
                         <Button 
                           variant="outline" 
                           size="sm"
                           onClick={() => handleSendInvoice(invoice.id)}
+                          className="w-full lg:w-auto"
                         >
                           <Send className="h-4 w-4 mr-2" />
                           Send Invoice
@@ -662,6 +665,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                             variant="outline" 
                             size="sm"
                             onClick={() => handleSendPaymentLink(invoice.id)}
+                            className="w-full lg:w-auto"
                           >
                             <Send className="h-4 w-4 mr-2" />
                             Payment Link
@@ -673,7 +677,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                               variant="outline" 
                               size="sm"
                               onClick={() => handleSendReminder(invoice.id)}
-                              className="text-orange-600 hover:text-orange-700"
+                              className="text-orange-600 hover:text-orange-700 w-full lg:w-auto"
                             >
                               <AlertTriangle className="h-4 w-4 mr-2" />
                               Send Reminder
@@ -682,7 +686,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                               variant="outline" 
                               size="sm"
                               onClick={() => handleSendReminderFee(invoice.id)}
-                              className="text-red-600 hover:text-red-700"
+                              className="text-red-600 hover:text-red-700 w-full lg:w-auto"
                             >
                               <AlertTriangle className="h-4 w-4 mr-2" />
                               Send Reminder Fee
