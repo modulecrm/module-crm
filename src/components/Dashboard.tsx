@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Users, Calendar, CheckSquare, TrendingUp, DollarSign, Mail } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import TodaysBookings from './dashboard/TodaysBookings';
 
 interface DashboardProps {
   enabledModules: string[];
@@ -53,7 +55,7 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Recent Activity */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
@@ -104,6 +106,13 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
           )}
         </div>
       </div>
+
+      {/* Today's Bookings - Only show if booking module is enabled */}
+      {enabledModules.includes('booking') && (
+        <div className="mb-8">
+          <TodaysBookings />
+        </div>
+      )}
     </div>
   );
 };
