@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Home, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Settings, Building2 } from 'lucide-react';
+import { Home, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Settings, Building2, Globe } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SidebarProps {
   activeModule: string;
@@ -8,18 +9,20 @@ interface SidebarProps {
   enabledModules: string[];
 }
 
-const modules = [
-  { id: 'dashboard', name: 'Dashboard', icon: Home, color: 'text-blue-500' },
-  { id: 'crm', name: 'CRM Core Module', icon: Users, color: 'text-green-500' },
-  { id: 'subscription', name: 'Subscription Management', icon: Building2, color: 'text-purple-500' },
-  { id: 'booking', name: 'Booking Management', icon: Calendar, color: 'text-orange-500' },
-  { id: 'tasks', name: 'Task Management', icon: CheckSquare, color: 'text-red-500' },
-  { id: 'projects', name: 'Project Management', icon: FolderOpen, color: 'text-indigo-500' },
-  { id: 'newsletters', name: 'Newsletters', icon: Mail, color: 'text-pink-500' },
-  { id: 'support', name: 'Support System', icon: LifeBuoy, color: 'text-teal-500' },
-];
-
 const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps) => {
+  const { currentLanguage, availableLanguages, setCurrentLanguage, t } = useLanguage();
+
+  const modules = [
+    { id: 'dashboard', name: t('nav.dashboard'), icon: Home, color: 'text-blue-500' },
+    { id: 'crm', name: t('nav.crm'), icon: Users, color: 'text-green-500' },
+    { id: 'subscription', name: t('nav.subscription'), icon: Building2, color: 'text-purple-500' },
+    { id: 'booking', name: t('nav.booking'), icon: Calendar, color: 'text-orange-500' },
+    { id: 'tasks', name: t('nav.tasks'), icon: CheckSquare, color: 'text-red-500' },
+    { id: 'projects', name: t('nav.projects'), icon: FolderOpen, color: 'text-indigo-500' },
+    { id: 'newsletters', name: t('nav.newsletters'), icon: Mail, color: 'text-pink-500' },
+    { id: 'support', name: t('nav.support'), icon: LifeBuoy, color: 'text-teal-500' },
+  ];
+
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen overflow-y-auto">
       <div className="p-6">
@@ -60,6 +63,22 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
         </div>
         
         <div className="mt-8 pt-4 border-t border-gray-200">
+          {/* Language Selector */}
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-gray-500 mb-2">{t('general.language')}</label>
+            <select
+              value={currentLanguage}
+              onChange={(e) => setCurrentLanguage(e.target.value)}
+              className="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {availableLanguages.map(language => (
+                <option key={language.code} value={language.code}>
+                  {language.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button
             onClick={() => onModuleChange('settings')}
             className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
@@ -69,7 +88,7 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
             }`}
           >
             <Settings className="mr-3 h-5 w-5 text-gray-500" />
-            Settings
+            {t('nav.settings')}
           </button>
         </div>
       </nav>

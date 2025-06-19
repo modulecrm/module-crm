@@ -1,13 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
+import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../components/Dashboard';
 import ModuleSettings from '../components/ModuleSettings';
+import LanguageSettings from '../components/LanguageSettings';
 import CRMModule from '../components/CRMModule';
 import BookingModule from '../components/BookingModule';
 
 const Index = () => {
   const [activeModule, setActiveModule] = useState('dashboard');
+  const [activeSettingsTab, setActiveSettingsTab] = useState('modules');
   const [enabledModules, setEnabledModules] = useState(['dashboard', 'crm', 'booking']);
 
   // Load saved settings from localStorage
@@ -109,23 +112,64 @@ const Index = () => {
           </div>
         );
       case 'settings':
-        return <ModuleSettings enabledModules={enabledModules} onToggleModule={handleToggleModule} />;
+        return (
+          <div className="p-8">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+              <p className="text-gray-600 mt-2">Manage your CRM system configuration</p>
+            </div>
+            
+            {/* Settings Tabs */}
+            <div className="border-b border-gray-200 mb-8">
+              <nav className="flex space-x-8">
+                <button
+                  onClick={() => setActiveSettingsTab('modules')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeSettingsTab === 'modules'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Modules
+                </button>
+                <button
+                  onClick={() => setActiveSettingsTab('language')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeSettingsTab === 'language'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Language
+                </button>
+              </nav>
+            </div>
+
+            {/* Settings Content */}
+            {activeSettingsTab === 'modules' && (
+              <ModuleSettings enabledModules={enabledModules} onToggleModule={handleToggleModule} />
+            )}
+            {activeSettingsTab === 'language' && <LanguageSettings />}
+          </div>
+        );
       default:
         return <Dashboard enabledModules={enabledModules} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar 
-        activeModule={activeModule} 
-        onModuleChange={setActiveModule}
-        enabledModules={enabledModules}
-      />
-      <div className="flex-1 overflow-auto">
-        {renderActiveModule()}
+    <LanguageProvider>
+      <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar 
+          activeModule={activeModule} 
+          onModuleChange={setActiveModule}
+          enabledModules={enabledModules}
+        />
+        <div className="flex-1 overflow-auto">
+          {renderActiveModule()}
+        </div>
       </div>
-    </div>
+    </LanguageProvider>
   );
 };
 

@@ -1,17 +1,19 @@
-
 import React from 'react';
 import { Users, Calendar, CheckSquare, TrendingUp, DollarSign, Mail } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface DashboardProps {
   enabledModules: string[];
 }
 
 const Dashboard = ({ enabledModules }: DashboardProps) => {
+  const { t } = useLanguage();
+  
   const stats = [
-    { name: 'Total Customers', value: '2,847', change: '+12%', icon: Users, color: 'bg-blue-500' },
-    { name: 'Active Subscriptions', value: '1,234', change: '+5%', icon: DollarSign, color: 'bg-green-500' },
-    { name: 'Bookings This Month', value: '456', change: '+18%', icon: Calendar, color: 'bg-orange-500' },
-    { name: 'Open Tasks', value: '89', change: '-3%', icon: CheckSquare, color: 'bg-red-500' },
+    { name: t('dashboard.totalCustomers'), value: '2,847', change: '+12%', icon: Users, color: 'bg-blue-500' },
+    { name: t('dashboard.activeSubscriptions'), value: '1,234', change: '+5%', icon: DollarSign, color: 'bg-green-500' },
+    { name: t('dashboard.bookingsThisMonth'), value: '456', change: '+18%', icon: Calendar, color: 'bg-orange-500' },
+    { name: t('dashboard.openTasks'), value: '89', change: '-3%', icon: CheckSquare, color: 'bg-red-500' },
   ];
 
   const recentActivity = [
@@ -24,8 +26,8 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome to your modular CRM system</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.title')}</h1>
+        <p className="text-gray-600 mt-2">{t('dashboard.welcome')}</p>
       </div>
 
       {/* Stats Grid */}
