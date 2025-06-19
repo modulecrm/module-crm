@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Plus, Mail, Phone, MapPin, Tag, Users, Star, Building2, User, Grid3X3, List, Edit } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Search, Plus, Filter, Grid, List, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import CreateCustomerForm from './CreateCustomerForm';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CustomerTableView from './CustomerTableView';
-import CustomViewEditor from './CustomViewEditor';
 import CustomerDetailPage from './CustomerDetailPage';
+import CreateCustomerForm from './CreateCustomerForm';
+import CustomViewEditor from './CustomViewEditor';
 
 interface Customer {
   id: string;
@@ -21,968 +20,372 @@ interface Customer {
   industry: string;
   created_at: string;
   custom_fields?: {
-    customer_type?: 'business' | 'private';
-    language?: string;
-    currency?: string;
-    source?: string;
-    segment?: string;
-    employees_count?: number;
-    revenue?: number;
     [key: string]: any;
   };
   address?: {
-    country?: string;
-    city?: string;
     [key: string]: any;
   };
 }
 
-const CustomerList = () => {
+const sampleCustomers: Customer[] = [
+  {
+    id: '1',
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    phone: '123-456-7890',
+    company: 'Acme Corp',
+    status: 'active',
+    lead_score: 75,
+    tags: ['premium', 'tech'],
+    industry: 'Technology',
+    created_at: '2024-01-20T12:00:00Z',
+    custom_fields: {
+      customer_type: 'business',
+      sales_rep: 'Alice Smith'
+    },
+    address: {
+      country: 'USA',
+      city: 'New York'
+    }
+  },
+  {
+    id: '2',
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    phone: '987-654-3210',
+    company: 'Beta Inc',
+    status: 'inactive',
+    lead_score: 90,
+    tags: ['vip', 'marketing'],
+    industry: 'Marketing',
+    created_at: '2024-02-15T14:30:00Z',
+    custom_fields: {
+      customer_type: 'business',
+      marketing_channel: 'email'
+    },
+    address: {
+      country: 'Canada',
+      city: 'Toronto'
+    }
+  },
+  {
+    id: '3',
+    name: 'Alice Johnson',
+    email: 'alice.johnson@example.com',
+    phone: '555-123-4567',
+    company: 'Gamma Co',
+    status: 'active',
+    lead_score: 60,
+    tags: ['new', 'sales'],
+    industry: 'Sales',
+    created_at: '2024-03-10T10:00:00Z',
+    custom_fields: {
+      customer_type: 'private',
+      last_contact: '2024-03-01'
+    },
+    address: {
+      country: 'UK',
+      city: 'London'
+    }
+  },
+  {
+    id: '4',
+    name: 'Bob Williams',
+    email: 'bob.williams@example.com',
+    phone: '111-222-3333',
+    company: 'Delta Ltd',
+    status: 'pending',
+    lead_score: 45,
+    tags: ['trial', 'support'],
+    industry: 'Support',
+    created_at: '2024-04-05T08:00:00Z',
+    custom_fields: {
+      customer_type: 'business',
+      support_level: 'basic'
+    },
+    address: {
+      country: 'Australia',
+      city: 'Sydney'
+    }
+  },
+  {
+    id: '5',
+    name: 'Eva Brown',
+    email: 'eva.brown@example.com',
+    phone: '444-555-6666',
+    company: 'Epsilon Group',
+    status: 'active',
+    lead_score: 80,
+    tags: ['premium', 'tech'],
+    industry: 'Technology',
+    created_at: '2024-05-01T16:00:00Z',
+    custom_fields: {
+      customer_type: 'private',
+      preferred_language: 'English'
+    },
+    address: {
+      country: 'Germany',
+      city: 'Berlin'
+    }
+  }
+];
+
+const CustomerList: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [customViews, setCustomViews] = useState<Array<{
-    id: string;
-    name: string;
-    conditions: Array<{
-      id: string;
-      field: string;
-      operator: string;
-      value: string;
-    }>;
-  }>>([]);
-  const [activeCustomView, setActiveCustomView] = useState<string | null>(null);
-  const [showCustomViewEditor, setShowCustomViewEditor] = useState(false);
-  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [currentView, setCurrentView] = useState<'list' | 'detail' | 'create'>('list');
+  const [isCustomViewEditorOpen, setIsCustomViewEditorOpen] = useState(false);
+  const [customViews, setCustomViews] = useState<any[]>([]);
+  const [activeView, setActiveView] = useState('all');
 
   useEffect(() => {
-    fetchCustomers();
+    // Load customers from local storage or an API here
   }, []);
 
-  const createSampleCustomers = async () => {
-    const sampleCustomers = [
-      {
-        name: 'John Smith',
-        email: 'john.smith@techcorp.com',
-        phone: '+1-555-0101',
-        company: 'TechCorp Solutions',
-        status: 'active',
-        lead_score: 85,
-        tags: ['enterprise', 'high-value'],
-        industry: 'Technology',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'referral',
-          segment: 'enterprise',
-          employees_count: 250,
-          revenue: 1250000
-        },
-        address: {
-          country: 'United States',
-          city: 'San Francisco'
-        }
-      },
-      {
-        name: 'Sarah Johnson',
-        email: 'sarah.johnson@gmail.com',
-        phone: '+1-555-0102',
-        company: '',
-        status: 'potential',
-        lead_score: 72,
-        tags: ['individual', 'consultant'],
-        industry: 'Consulting',
-        custom_fields: {
-          customer_type: 'private',
-          language: 'English',
-          currency: 'USD',
-          source: 'website',
-          segment: 'individual'
-        },
-        address: {
-          country: 'United States',
-          city: 'New York'
-        }
-      },
-      {
-        name: 'Michael Chen',
-        email: 'michael.chen@innovate.com',
-        phone: '+1-555-0103',
-        company: 'Innovate Industries',
-        status: 'active',
-        lead_score: 91,
-        tags: ['startup', 'tech'],
-        industry: 'Software',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'cold_call',
-          segment: 'startup',
-          employees_count: 45,
-          revenue: 850000
-        },
-        address: {
-          country: 'United States',
-          city: 'Austin'
-        }
-      },
-      {
-        name: 'Emma Williams',
-        email: 'emma.williams@healthcare.org',
-        phone: '+1-555-0104',
-        company: 'Healthcare Plus',
-        status: 'active',
-        lead_score: 78,
-        tags: ['healthcare', 'non-profit'],
-        industry: 'Healthcare',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'trade_show',
-          segment: 'mid-market',
-          employees_count: 120,
-          revenue: 650000
-        },
-        address: {
-          country: 'United States',
-          city: 'Chicago'
-        }
-      },
-      {
-        name: 'David Rodriguez',
-        email: 'david.rodriguez@manufacturing.com',
-        phone: '+1-555-0105',
-        company: 'Rodriguez Manufacturing',
-        status: 'inactive',
-        lead_score: 45,
-        tags: ['manufacturing', 'legacy'],
-        industry: 'Manufacturing',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'Spanish',
-          currency: 'USD',
-          source: 'referral',
-          segment: 'small-business',
-          employees_count: 85,
-          revenue: 450000
-        },
-        address: {
-          country: 'United States',
-          city: 'Phoenix'
-        }
-      },
-      {
-        name: 'Lisa Anderson',
-        email: 'lisa.anderson@retail.com',
-        phone: '+1-555-0106',
-        company: 'Anderson Retail Group',
-        status: 'active',
-        lead_score: 83,
-        tags: ['retail', 'growing'],
-        industry: 'Retail',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'website',
-          segment: 'mid-market',
-          employees_count: 200,
-          revenue: 980000
-        },
-        address: {
-          country: 'United States',
-          city: 'Seattle'
-        }
-      },
-      {
-        name: 'James Wilson',
-        email: 'james.wilson@finance.com',
-        phone: '+1-555-0107',
-        company: 'Wilson Financial Services',
-        status: 'potential',
-        lead_score: 68,
-        tags: ['finance', 'established'],
-        industry: 'Financial Services',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'linkedin',
-          segment: 'enterprise',
-          employees_count: 350,
-          revenue: 2100000
-        },
-        address: {
-          country: 'United States',
-          city: 'Boston'
-        }
-      },
-      {
-        name: 'Maria Garcia',
-        email: 'maria.garcia@education.edu',
-        phone: '+1-555-0108',
-        company: 'Garcia Educational Institute',
-        status: 'active',
-        lead_score: 76,
-        tags: ['education', 'non-profit'],
-        industry: 'Education',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'Spanish',
-          currency: 'USD',
-          source: 'conference',
-          segment: 'education',
-          employees_count: 150,
-          revenue: 320000
-        },
-        address: {
-          country: 'United States',
-          city: 'Miami'
-        }
-      },
-      {
-        name: 'Robert Taylor',
-        email: 'robert.taylor@construction.com',
-        phone: '+1-555-0109',
-        company: 'Taylor Construction Co.',
-        status: 'churned',
-        lead_score: 32,
-        tags: ['construction', 'seasonal'],
-        industry: 'Construction',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'referral',
-          segment: 'small-business',
-          employees_count: 65,
-          revenue: 750000
-        },
-        address: {
-          country: 'United States',
-          city: 'Denver'
-        }
-      },
-      {
-        name: 'Jennifer Brown',
-        email: 'jennifer.brown@consulting.com',
-        phone: '+1-555-0110',
-        company: 'Brown Strategic Consulting',
-        status: 'active',
-        lead_score: 89,
-        tags: ['consulting', 'strategic'],
-        industry: 'Consulting',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'website',
-          segment: 'boutique',
-          employees_count: 25,
-          revenue: 1800000
-        },
-        address: {
-          country: 'United States',
-          city: 'Washington DC'
-        }
-      },
-      {
-        name: 'Thomas Miller',
-        email: 'thomas.miller@logistics.com',
-        phone: '+1-555-0111',
-        company: 'Miller Logistics Solutions',
-        status: 'potential',
-        lead_score: 64,
-        tags: ['logistics', 'international'],
-        industry: 'Logistics',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'cold_email',
-          segment: 'mid-market',
-          employees_count: 180,
-          revenue: 1100000
-        },
-        address: {
-          country: 'United States',
-          city: 'Atlanta'
-        }
-      },
-      {
-        name: 'Susan Davis',
-        email: 'susan.davis@marketing.com',
-        phone: '+1-555-0112',
-        company: 'Davis Marketing Agency',
-        status: 'active',
-        lead_score: 81,
-        tags: ['marketing', 'creative'],
-        industry: 'Marketing',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'networking',
-          segment: 'agency',
-          employees_count: 35,
-          revenue: 950000
-        },
-        address: {
-          country: 'United States',
-          city: 'Los Angeles'
-        }
-      },
-      {
-        name: 'Christopher Lee',
-        email: 'christopher.lee@realestate.com',
-        phone: '+1-555-0113',
-        company: 'Lee Real Estate Group',
-        status: 'active',
-        lead_score: 77,
-        tags: ['real-estate', 'luxury'],
-        industry: 'Real Estate',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'referral',
-          segment: 'luxury',
-          employees_count: 45,
-          revenue: 1350000
-        },
-        address: {
-          country: 'United States',
-          city: 'Las Vegas'
-        }
-      },
-      {
-        name: 'Amanda White',
-        email: 'amanda.white@photography.com',
-        phone: '+1-555-0114',
-        company: 'White Photography Studio',
-        status: 'potential',
-        lead_score: 58,
-        tags: ['creative', 'small-business'],
-        industry: 'Creative Services',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'instagram',
-          segment: 'creative',
-          employees_count: 8,
-          revenue: 180000
-        },
-        address: {
-          country: 'United States',
-          city: 'Portland'
-        }
-      },
-      {
-        name: 'Daniel Martinez',
-        email: 'daniel.martinez@auto.com',
-        phone: '+1-555-0115',
-        company: 'Martinez Auto Group',
-        status: 'active',
-        lead_score: 73,
-        tags: ['automotive', 'family-business'],
-        industry: 'Automotive',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'Spanish',
-          currency: 'USD',
-          source: 'radio',
-          segment: 'automotive',
-          employees_count: 95,
-          revenue: 2800000
-        },
-        address: {
-          country: 'United States',
-          city: 'San Antonio'
-        }
-      },
-      {
-        name: 'Michelle Thompson',
-        email: 'michelle.thompson@wellness.com',
-        phone: '+1-555-0116',
-        company: 'Thompson Wellness Center',
-        status: 'active',
-        lead_score: 69,
-        tags: ['wellness', 'health'],
-        industry: 'Healthcare',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'google_ads',
-          segment: 'wellness',
-          employees_count: 22,
-          revenue: 420000
-        },
-        address: {
-          country: 'United States',
-          city: 'Nashville'
-        }
-      },
-      {
-        name: 'Kevin Jackson',
-        email: 'kevin.jackson@tech.com',
-        phone: '+1-555-0117',
-        company: 'Jackson Tech Innovations',
-        status: 'potential',
-        lead_score: 86,
-        tags: ['tech', 'innovation'],
-        industry: 'Technology',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'accelerator',
-          segment: 'startup',
-          employees_count: 28,
-          revenue: 680000
-        },
-        address: {
-          country: 'United States',
-          city: 'San Diego'
-        }
-      },
-      {
-        name: 'Laura Harris',
-        email: 'laura.harris@legal.com',
-        phone: '+1-555-0118',
-        company: 'Harris Legal Associates',
-        status: 'active',
-        lead_score: 92,
-        tags: ['legal', 'corporate'],
-        industry: 'Legal Services',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'bar_association',
-          segment: 'professional',
-          employees_count: 15,
-          revenue: 1650000
-        },
-        address: {
-          country: 'United States',
-          city: 'Dallas'
-        }
-      },
-      {
-        name: 'Ryan Clark',
-        email: 'ryan.clark@sports.com',
-        phone: '+1-555-0119',
-        company: 'Clark Sports Management',
-        status: 'active',
-        lead_score: 75,
-        tags: ['sports', 'entertainment'],
-        industry: 'Sports & Entertainment',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'sports_network',
-          segment: 'entertainment',
-          employees_count: 18,
-          revenue: 890000
-        },
-        address: {
-          country: 'United States',
-          city: 'Minneapolis'
-        }
-      },
-      {
-        name: 'Nicole Lewis',
-        email: 'nicole.lewis@fashion.com',
-        phone: '+1-555-0120',
-        company: 'Lewis Fashion Boutique',
-        status: 'potential',
-        lead_score: 61,
-        tags: ['fashion', 'boutique'],
-        industry: 'Fashion & Retail',
-        custom_fields: {
-          customer_type: 'business',
-          language: 'English',
-          currency: 'USD',
-          source: 'fashion_show',
-          segment: 'boutique',
-          employees_count: 12,
-          revenue: 340000
-        },
-        address: {
-          country: 'United States',
-          city: 'New Orleans'
-        }
-      }
-    ];
-
-    try {
-      const { data, error } = await supabase
-        .from('customers')
-        .insert(sampleCustomers)
-        .select();
-
-      if (error) {
-        console.error('Error creating sample customers:', error);
-        throw error;
-      }
-
-      console.log('Sample customers created successfully:', data);
-      await fetchCustomers(); // Refresh the list
-    } catch (error) {
-      console.error('Failed to create sample customers:', error);
-    }
+  const handleViewCustomer = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setCurrentView('detail');
   };
 
-  const fetchCustomers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('customers')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      
-      // Type cast the data to match our Customer interface
-      const typedCustomers: Customer[] = (data || []).map(customer => ({
-        ...customer,
-        custom_fields: customer.custom_fields as Customer['custom_fields'],
-        address: customer.address as Customer['address']
-      }));
-      
-      setCustomers(typedCustomers);
-    } catch (error) {
-      console.error('Error fetching customers:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleBackToList = () => {
+    setSelectedCustomer(null);
+    setCurrentView('list');
   };
 
-  const applyCustomViewFilter = (customer: Customer, conditions: any[]) => {
-    return conditions.every(condition => {
-      const { field, operator, value } = condition;
-      let customerValue: any;
+  const handleCreateCustomer = () => {
+    setCurrentView('create');
+  };
 
-      // Get the customer field value
-      if (field.includes('.')) {
-        const [parent, child] = field.split('.');
-        customerValue = customer[parent as keyof Customer]?.[child];
-      } else {
-        customerValue = customer[field as keyof Customer];
+  const handleSaveCustomer = (customerData: any) => {
+    const newCustomer: Customer = {
+      id: Date.now().toString(),
+      name: customerData.name,
+      email: customerData.email,
+      phone: customerData.phone || '',
+      company: customerData.company || '',
+      status: customerData.status || 'active',
+      lead_score: customerData.lead_score || 0,
+      tags: customerData.tags || [],
+      industry: customerData.industry || '',
+      created_at: new Date().toISOString(),
+      custom_fields: customerData.custom_fields || {},
+      address: customerData.address || {}
+    };
+
+    setCustomers(prev => [newCustomer, ...prev]);
+    setCurrentView('list');
+  };
+
+  const handleSaveCustomView = (view: any) => {
+    setCustomViews(prev => {
+      const existingIndex = prev.findIndex(v => v.id === view.id);
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex] = view;
+        return updated;
       }
-
-      // Convert to string for comparison
-      const customerStr = String(customerValue || '').toLowerCase();
-      const valueStr = String(value).toLowerCase();
-
-      switch (operator) {
-        case 'equals':
-          return customerStr === valueStr;
-        case 'not_equals':
-          return customerStr !== valueStr;
-        case 'contains':
-          return customerStr.includes(valueStr);
-        case 'greater_than':
-          return Number(customerValue) > Number(value);
-        case 'less_than':
-          return Number(customerValue) < Number(value);
-        case 'in_last_days':
-          const daysDiff = Math.floor((Date.now() - new Date(customerValue).getTime()) / (1000 * 60 * 60 * 24));
-          return daysDiff <= Number(value);
-        default:
-          return true;
-      }
+      return [...prev, view];
     });
+  };
+
+  const createSampleCustomers = () => {
+    setCustomers(sampleCustomers);
   };
 
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          customer.company.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || customer.status === statusFilter;
-    const matchesType = customerTypeFilter === 'all' || 
-                       customer.custom_fields?.customer_type === customerTypeFilter;
-
-    // Apply custom view filter if active
-    const matchesCustomView = activeCustomView 
-      ? (() => {
-          const customView = customViews.find(v => v.id === activeCustomView);
-          return customView ? applyCustomViewFilter(customer, customView.conditions) : true;
-        })()
-      : true;
-
-    return matchesSearch && matchesStatus && matchesType && matchesCustomView;
+    
+    if (activeView === 'all') return matchesSearch;
+    
+    const view = customViews.find(v => v.id === activeView);
+    if (!view) return matchesSearch;
+    
+    const matchesConditions = view.conditions.every(condition => {
+      const fieldValue = getFieldValue(customer, condition.field);
+      return evaluateCondition(fieldValue, condition.operator, condition.value);
+    });
+    
+    return matchesSearch && matchesConditions;
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'potential': return 'bg-blue-100 text-blue-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      case 'churned': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const getFieldValue = (customer: Customer, field: string): any => {
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      return customer[parent as keyof Customer]?.[child as any];
+    }
+    return customer[field as keyof Customer];
+  };
+
+  const evaluateCondition = (fieldValue: any, operator: string, value: string): boolean => {
+    switch (operator) {
+      case 'equals':
+        return fieldValue === value;
+      case 'not_equals':
+        return fieldValue !== value;
+      case 'contains':
+        return String(fieldValue).toLowerCase().includes(value.toLowerCase());
+      case 'greater_than':
+        return Number(fieldValue) > Number(value);
+      case 'less_than':
+        return Number(fieldValue) < Number(value);
+      case 'in_last_days':
+        const days = Number(value);
+        const dateValue = new Date(fieldValue);
+        const diff = Date.now() - dateValue.getTime();
+        const daysDiff = diff / (1000 * 3600 * 24);
+        return daysDiff <= days;
+      default:
+        return false;
     }
   };
 
-  const getLeadScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    if (score >= 40) return 'text-orange-600';
-    return 'text-red-600';
-  };
+  if (currentView === 'detail' && selectedCustomer) {
+    return <CustomerDetailPage customer={selectedCustomer} onBack={handleBackToList} />;
+  }
 
-  const handleCustomerSelect = (customerId: string) => {
-    setSelectedCustomers(prev => 
-      prev.includes(customerId)
-        ? prev.filter(id => id !== customerId)
-        : [...prev, customerId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    setSelectedCustomers(filteredCustomers.map(customer => customer.id));
-  };
-
-  const handleClearSelection = () => {
-    setSelectedCustomers([]);
-  };
-
-  const handleCustomerClick = (customer: Customer) => {
-    setSelectedCustomer(customer);
-  };
-
-  const handleBackToList = () => {
-    setSelectedCustomer(null);
-  };
-
-  const loadCustomViews = () => {
-    const saved = localStorage.getItem('customerCustomViews');
-    if (saved) {
-      setCustomViews(JSON.parse(saved));
-    }
-  };
-
-  const handleSaveCustomView = (view: {
-    id: string;
-    name: string;
-    conditions: Array<{
-      id: string;
-      field: string;
-      operator: string;
-      value: string;
-    }>;
-  }) => {
-    const updatedViews = [...customViews];
-    const existingIndex = updatedViews.findIndex(v => v.id === view.id);
-    
-    if (existingIndex >= 0) {
-      updatedViews[existingIndex] = view;
-    } else {
-      updatedViews.push(view);
-    }
-    
-    setCustomViews(updatedViews);
-    localStorage.setItem('customerCustomViews', JSON.stringify(updatedViews));
-  };
-
-  useEffect(() => {
-    loadCustomViews();
-  }, []);
-
-  // If a customer is selected, show the detail page
-  if (selectedCustomer) {
+  if (currentView === 'create') {
     return (
-      <CustomerDetailPage 
-        customer={selectedCustomer} 
-        onBack={handleBackToList}
+      <CreateCustomerForm 
+        onSave={handleSaveCustomer}
+        onCancel={() => setCurrentView('list')}
       />
     );
   }
 
-  if (loading) {
-    return <div className="p-4 md:p-8">Loading customers...</div>;
-  }
-
   return (
-    <div className="w-full max-w-none space-y-4 md:space-y-6 p-4 md:p-0">
-      {/* Header with Create Sample Data Button */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Customer Management</h2>
-          <p className="text-sm md:text-base text-gray-600">Manage your customer relationships</p>
+    <div className="w-full h-full bg-gray-50">
+      {/* Header Section */}
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Customer Management</h1>
+            <p className="text-sm text-gray-600 mt-1">Manage your customer relationships and data</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            {customers.length === 0 && (
+              <Button 
+                onClick={createSampleCustomers}
+                variant="outline"
+                className="w-full sm:w-auto"
+              >
+                Create Sample Customers
+              </Button>
+            )}
+            <Button 
+              onClick={handleCreateCustomer}
+              className="w-full sm:w-auto"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Customer
+            </Button>
+          </div>
         </div>
-        {customers.length === 0 && (
-          <Button 
-            onClick={createSampleCustomers}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
-          >
-            <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Create Sample Customers</span>
-            <span className="sm:hidden">Create Samples</span>
-          </Button>
-        )}
       </div>
 
-      {/* Search and Filter Bar */}
-      <div className="flex flex-col gap-3 md:gap-4">
-        {/* First Row - Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <Input
-            placeholder="Search customers..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        {/* Second Row - Filters and Actions */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-3 flex-1">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="potential">Potential</option>
-              <option value="inactive">Inactive</option>
-              <option value="churned">Churned</option>
-            </select>
-
-            <select
-              value={customerTypeFilter}
-              onChange={(e) => setCustomerTypeFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-            >
-              <option value="all">All Types</option>
-              <option value="business">B2B</option>
-              <option value="private">B2C</option>
-            </select>
-
-            {/* Custom Views Dropdown */}
-            <select
-              value={activeCustomView || ''}
-              onChange={(e) => setActiveCustomView(e.target.value || null)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-            >
-              <option value="">All Customers</option>
-              {customViews.map(view => (
-                <option key={view.id} value={view.id}>{view.name}</option>
-              ))}
-            </select>
+      {/* Search and Filters */}
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search customers..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
-            {/* View Mode Toggle */}
-            <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+          
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsCustomViewEditorOpen(true)}
+              className="w-full sm:w-auto"
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              <span className="sm:hidden">Filter</span>
+              <span className="hidden sm:inline">Custom View</span>
+            </Button>
+            
+            <div className="flex rounded-md border border-gray-300 bg-white">
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className="rounded-r-none border-0"
+              >
+                <List className="h-4 w-4" />
+              </Button>
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
-                className="rounded-none flex-1 sm:flex-none"
+                className="rounded-l-none border-0"
               >
-                <Grid3X3 className="h-4 w-4" />
-                <span className="ml-2 sm:hidden">Grid</span>
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-none flex-1 sm:flex-none"
-              >
-                <List className="h-4 w-4" />
-                <span className="ml-2 sm:hidden">List</span>
+                <Grid className="h-4 w-4" />
               </Button>
             </div>
-
-            {/* Edit Custom View Button */}
-            <Button
-              onClick={() => setShowCustomViewEditor(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 w-full sm:w-auto"
-            >
-              <Edit className="h-4 w-4" />
-              <span className="hidden sm:inline">Custom View</span>
-              <span className="sm:hidden">Custom</span>
-            </Button>
-
-            <Button 
-              onClick={() => setShowCreateForm(true)} 
-              size="sm"
-              className="flex items-center gap-2 w-full sm:w-auto"
-            >
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Add Customer</span>
-              <span className="sm:hidden">Add</span>
-            </Button>
           </div>
+        </div>
+
+        {/* Custom Views Tabs */}
+        <div className="mt-4">
+          <Tabs value={activeView} onValueChange={setActiveView}>
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger value="all" className="flex-1 sm:flex-none">All Customers</TabsTrigger>
+              {customViews.map(view => (
+                <TabsTrigger key={view.id} value={view.id} className="flex-1 sm:flex-none">
+                  {view.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
       </div>
 
-      {/* Active Custom View Indicator */}
-      {activeCustomView && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
-            <span>Active view: {customViews.find(v => v.id === activeCustomView)?.name}</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setActiveCustomView(null)}
-            className="text-blue-600 hover:text-blue-800 p-1 h-auto"
-          >
-            Clear
-          </Button>
-        </div>
-      )}
+      {/* Customer Count */}
+      <div className="bg-gray-50 px-4 sm:px-6 lg:px-8 py-2">
+        <p className="text-sm text-gray-600">
+          {filteredCustomers.length} customer{filteredCustomers.length !== 1 ? 's' : ''} found
+        </p>
+      </div>
 
-      {/* Customer Content */}
-      {viewMode === 'list' ? (
-        <CustomerTableView
-          customers={filteredCustomers}
-          getStatusColor={getStatusColor}
-          getLeadScoreColor={getLeadScoreColor}
-          selectedCustomers={selectedCustomers}
-          onCustomerSelect={handleCustomerSelect}
-          onSelectAll={handleSelectAll}
-          onClearSelection={handleClearSelection}
-          onCustomerClick={handleCustomerClick}
-        />
-      ) : (
-        <>
-          {/* Customer Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6">
-            {filteredCustomers.map((customer) => (
-              <div 
-                key={customer.id} 
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => handleCustomerClick(customer)}
-              >
-                <div className="flex justify-between items-start mb-3 md:mb-4">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    {customer.custom_fields?.customer_type === 'business' ? (
-                      <Building2 className="h-4 w-4 md:h-5 md:w-5 text-blue-500 flex-shrink-0" />
-                    ) : (
-                      <User className="h-4 w-4 md:h-5 md:w-5 text-green-500 flex-shrink-0" />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-gray-900 text-sm md:text-base truncate">{customer.name}</h3>
-                      {customer.company && (
-                        <p className="text-xs md:text-sm text-gray-500 truncate">{customer.company}</p>
-                      )}
-                      <Badge className="text-xs mt-1" variant="outline">
-                        {customer.custom_fields?.customer_type === 'business' ? 'B2B' : 'B2C'}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
-                    <Star className={`h-3 w-3 md:h-4 md:w-4 ${getLeadScoreColor(customer.lead_score)}`} />
-                    <span className={`text-xs md:text-sm font-medium ${getLeadScoreColor(customer.lead_score)}`}>
-                      {customer.lead_score}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-1 md:space-y-2 mb-3 md:mb-4">
-                  {customer.email && (
-                    <div className="flex items-center text-xs md:text-sm text-gray-600">
-                      <Mail className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">{customer.email}</span>
-                    </div>
-                  )}
-                  {customer.phone && (
-                    <div className="flex items-center text-xs md:text-sm text-gray-600">
-                      <Phone className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">{customer.phone}</span>
-                    </div>
-                  )}
-                  {customer.address?.country && (
-                    <div className="flex items-center text-xs md:text-sm text-gray-600">
-                      <MapPin className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">{customer.address.city}, {customer.address.country}</span>
-                    </div>
-                  )}
-                  {customer.industry && (
-                    <div className="flex items-center text-xs md:text-sm text-gray-600">
-                      <Users className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">{customer.industry}</span>
-                    </div>
-                  )}
-                  {customer.custom_fields?.source && (
-                    <div className="text-xs text-gray-500 truncate">
-                      Source: {customer.custom_fields.source}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <Badge className={getStatusColor(customer.status)}>
-                    {customer.status}
-                  </Badge>
-                  
-                  {customer.tags && customer.tags.length > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Tag className="h-3 w-3 text-gray-400" />
-                      <span className="text-xs text-gray-500">
-                        {customer.tags.length} tag{customer.tags.length !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {filteredCustomers.length === 0 && (
-            <div className="text-center py-8 md:py-12">
-              <Users className="h-8 w-8 md:h-12 md:w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-base md:text-lg font-medium text-gray-900 mb-2">No customers found</h3>
-              <p className="text-sm md:text-base text-gray-600 mb-4">Try adjusting your search or filters, or create your first customer</p>
-              {customers.length === 0 && (
-                <Button 
-                  onClick={createSampleCustomers}
-                  className="flex items-center gap-2 mx-auto bg-blue-600 hover:bg-blue-700"
-                >
-                  <Users className="h-4 w-4" />
-                  Create Sample Customers
-                </Button>
-              )}
+      {/* Main Content */}
+      <div className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        {customers.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="mx-auto h-12 w-12 text-gray-400">
+              <Eye className="h-12 w-12" />
             </div>
-          )}
-        </>
-      )}
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No customers</h3>
+            <p className="mt-1 text-sm text-gray-500">Get started by creating sample customers or adding a new customer.</p>
+            <div className="mt-6 space-y-2 sm:space-y-0 sm:space-x-3 sm:flex sm:justify-center">
+              <Button onClick={createSampleCustomers} variant="outline" className="w-full sm:w-auto">
+                Create Sample Customers
+              </Button>
+              <Button onClick={handleCreateCustomer} className="w-full sm:w-auto">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Customer
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <CustomerTableView 
+            customers={filteredCustomers}
+            onViewCustomer={handleViewCustomer}
+            viewMode={viewMode}
+          />
+        )}
+      </div>
 
-      {/* Create Customer Form Modal */}
-      {showCreateForm && (
-        <CreateCustomerForm
-          onClose={() => setShowCreateForm(false)}
-          onSuccess={() => {
-            fetchCustomers();
-            setShowCreateForm(false);
-          }}
-        />
-      )}
-
-      {/* Custom View Editor Modal */}
       <CustomViewEditor
-        isOpen={showCustomViewEditor}
-        onClose={() => setShowCustomViewEditor(false)}
+        isOpen={isCustomViewEditorOpen}
+        onClose={() => setIsCustomViewEditorOpen(false)}
         onSave={handleSaveCustomView}
       />
     </div>
