@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -85,7 +84,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
           <div className="mt-6 flex flex-wrap gap-2">
             <Button variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-1" />
-              Product
+              Sales
             </Button>
             <Button variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-1" />
