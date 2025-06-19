@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -49,8 +50,9 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <Card>
+    <div className="w-full space-y-4">
+      {/* Main Customer Card */}
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">{customer.name}</CardTitle>
           <CardDescription>
@@ -170,6 +172,57 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
           </Sheet>
         </CardContent>
       </Card>
+
+      {/* Additional Quick Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Lead Score</p>
+                <p className="text-2xl font-bold">{customer.lead_score}/100</p>
+              </div>
+              <BarChart3 className="h-8 w-8 text-blue-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Purchases</p>
+                <p className="text-2xl font-bold">$12,450</p>
+              </div>
+              <Package className="h-8 w-8 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Open Tasks</p>
+                <p className="text-2xl font-bold">3</p>
+              </div>
+              <CheckSquare className="h-8 w-8 text-orange-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Last Contact</p>
+                <p className="text-2xl font-bold">2 days</p>
+              </div>
+              <Mail className="h-8 w-8 text-purple-500" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
