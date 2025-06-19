@@ -56,6 +56,7 @@ const CustomerList = () => {
   }>>([]);
   const [activeCustomView, setActiveCustomView] = useState<string | null>(null);
   const [showCustomViewEditor, setShowCustomViewEditor] = useState(false);
+  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
 
   useEffect(() => {
     fetchCustomers();
@@ -584,6 +585,22 @@ const CustomerList = () => {
     return 'text-red-600';
   };
 
+  const handleCustomerSelect = (customerId: string) => {
+    setSelectedCustomers(prev => 
+      prev.includes(customerId)
+        ? prev.filter(id => id !== customerId)
+        : [...prev, customerId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedCustomers(filteredCustomers.map(customer => customer.id));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedCustomers([]);
+  };
+
   const loadCustomViews = () => {
     const saved = localStorage.getItem('customerCustomViews');
     if (saved) {
@@ -730,6 +747,10 @@ const CustomerList = () => {
           customers={filteredCustomers}
           getStatusColor={getStatusColor}
           getLeadScoreColor={getLeadScoreColor}
+          selectedCustomers={selectedCustomers}
+          onCustomerSelect={handleCustomerSelect}
+          onSelectAll={handleSelectAll}
+          onClearSelection={handleClearSelection}
         />
       ) : (
         <>

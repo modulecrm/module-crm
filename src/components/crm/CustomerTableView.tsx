@@ -1,8 +1,11 @@
 
 import React from 'react';
-import { Mail, Phone, MapPin, Building2, User, Star } from 'lucide-react';
+import { Mail, Phone, MapPin, Building2, User, Star, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 interface Customer {
   id: string;
@@ -36,22 +39,139 @@ interface CustomerTableViewProps {
   customers: Customer[];
   getStatusColor: (status: string) => string;
   getLeadScoreColor: (score: number) => string;
+  selectedCustomers: string[];
+  onCustomerSelect: (customerId: string) => void;
+  onSelectAll: () => void;
+  onClearSelection: () => void;
 }
 
 const CustomerTableView: React.FC<CustomerTableViewProps> = ({
   customers,
   getStatusColor,
-  getLeadScoreColor
+  getLeadScoreColor,
+  selectedCustomers,
+  onCustomerSelect,
+  onSelectAll,
+  onClearSelection
 }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const allSelected = customers.length > 0 && selectedCustomers.length === customers.length;
+  const someSelected = selectedCustomers.length > 0 && selectedCustomers.length < customers.length;
+
+  const handleAction = (action: string) => {
+    if (selectedCustomers.length === 0) {
+      alert('Please select at least one customer first.');
+      return;
+    }
+
+    switch (action) {
+      case 'send_email':
+        console.log('Send email to customers:', selectedCustomers);
+        alert(`Send email action for ${selectedCustomers.length} customer(s)`);
+        break;
+      case 'create_task':
+        console.log('Create task for customers:', selectedCustomers);
+        alert(`Create task action for ${selectedCustomers.length} customer(s)`);
+        break;
+      case 'mass_update':
+        console.log('Mass update customers:', selectedCustomers);
+        alert(`Mass update action for ${selectedCustomers.length} customer(s)`);
+        break;
+      case 'create_document':
+        console.log('Create document for customers:', selectedCustomers);
+        alert(`Create document action for ${selectedCustomers.length} customer(s)`);
+        break;
+      case 'delete':
+        if (confirm(`Are you sure you want to delete ${selectedCustomers.length} customer(s)?`)) {
+          console.log('Delete customers:', selectedCustomers);
+          alert(`Delete action for ${selectedCustomers.length} customer(s)`);
+        }
+        break;
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border">
+      {/* Actions Bar */}
+      <div className="p-4 border-b flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={allSelected}
+              ref={(el) => {
+                if (el) el.indeterminate = someSelected;
+              }}
+              onCheckedChange={allSelected ? onClearSelection : onSelectAll}
+            />
+            <span className="text-sm text-gray-600">
+              {selectedCustomers.length > 0 
+                ? `${selectedCustomers.length} selected` 
+                : 'Select all'
+              }
+            </span>
+          </div>
+          
+          {selectedCustomers.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onClearSelection}
+            >
+              Clear selection
+            </Button>
+          )}
+        </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              disabled={selectedCustomers.length === 0}
+            >
+              Actions
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 bg-white">
+            <DropdownMenuItem onClick={() => handleAction('send_email')}>
+              <Mail className="h-4 w-4 mr-2" />
+              Send Email
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAction('create_task')}>
+              Create Task
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAction('mass_update')}>
+              Mass Update
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleAction('create_document')}>
+              Create Document
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => handleAction('delete')}
+              className="text-red-600 hover:text-red-700"
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-12">
+              <Checkbox
+                checked={allSelected}
+                ref={(el) => {
+                  if (el) el.indeterminate = someSelected;
+                }}
+                onCheckedChange={allSelected ? onClearSelection : onSelectAll}
+              />
+            </TableHead>
             <TableHead>Customer</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Contact</TableHead>
@@ -65,7 +185,19 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
         </TableHeader>
         <TableBody>
           {customers.map((customer) => (
-            <TableRow key={customer.id} className="hover:bg-gray-50">
+            <TableRow 
+              key={customer.id} 
+              className={`hover:bg-gray-50 ${
+                selectedCustomers.includes(customer.id) ? 'bg-blue-50' : ''
+              }`}
+            >
+              <TableCell>
+                <Checkbox
+                  checked={selectedCustomers.includes(customer.id)}
+                  onCheckedChange={() => onCustomerSelect(customer.id)}
+                />
+              </TableCell>
+
               <TableCell>
                 <div className="flex items-center gap-3">
                   {customer.custom_fields?.customer_type === 'business' ? (
