@@ -32,21 +32,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     console.log('AuthProvider: Setting up auth state management');
     
-    // Single source of truth - only use the auth state listener
+    let initialCheck = false;
+    
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
-        setLoading(false);
+        
+        // Only set loading to false after the initial check
+        if (!initialCheck) {
+          setLoading(false);
+          initialCheck = true;
+        }
       }
     );
 
-    // Trigger initial auth state check
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.email);
-      // The onAuthStateChange will handle the state update
-    });
+    // Get initial session
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting initial session:', error);
+        } else {
+          console.log('Initial session check:', session?.user?.email);
+        }
+        
+        // If onAuthStateChange hasn't fired yet, update state directly
+        if (!initialCheck) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+          initialCheck = true;
+        }
+      } catch (error) {
+        console.error('Error in getSession:', error);
+        if (!initialCheck) {
+          setLoading(false);
+          initialCheck = true;
+        }
+      }
+    };
+
+    getInitialSession();
 
     return () => {
       console.log('AuthProvider: Cleaning up auth subscription');
