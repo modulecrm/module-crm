@@ -11,6 +11,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
 
+  // All hooks are called before any conditional returns
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
