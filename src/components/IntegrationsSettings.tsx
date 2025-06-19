@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,7 @@ import {
   ExternalLink,
   CheckCircle,
   Clock,
-  workflow
+  Workflow
 } from 'lucide-react';
 
 interface Integration {
@@ -111,7 +112,7 @@ const integrationCategories = [
     id: 'automation-workflow',
     name: 'Automation & Workflow',
     description: 'Automate repetitive tasks and create custom workflows between different applications',
-    icon: workflow,
+    icon: Workflow,
     color: 'from-amber-500 to-amber-600',
     integrations: [
       { id: 'zapier', name: 'Zapier', description: 'Connect your apps and automate workflows', status: 'available' as const },
