@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +17,8 @@ import {
   Settings,
   ExternalLink,
   CheckCircle,
-  Clock
+  Clock,
+  workflow
 } from 'lucide-react';
 
 interface Integration {
@@ -105,6 +105,20 @@ const integrationCategories = [
       { id: 'asana', name: 'Asana', description: 'Team project management', status: 'available' as const },
       { id: 'trello', name: 'Trello', description: 'Kanban project boards', status: 'available' as const },
       { id: 'clickup', name: 'ClickUp', description: 'All-in-one productivity app', status: 'coming-soon' as const }
+    ]
+  },
+  {
+    id: 'automation-workflow',
+    name: 'Automation & Workflow',
+    description: 'Automate repetitive tasks and create custom workflows between different applications',
+    icon: workflow,
+    color: 'from-amber-500 to-amber-600',
+    integrations: [
+      { id: 'zapier', name: 'Zapier', description: 'Connect your apps and automate workflows', status: 'available' as const },
+      { id: 'make', name: 'Make (Integromat)', description: 'Visual platform for creating, building and automating workflows', status: 'available' as const },
+      { id: 'tray', name: 'Tray.io', description: 'Enterprise integration platform for complex workflows', status: 'coming-soon' as const },
+      { id: 'n8n', name: 'n8n', description: 'Open source workflow automation tool', status: 'available' as const },
+      { id: 'pabbly', name: 'Pabbly Connect', description: 'Affordable automation platform for small businesses', status: 'available' as const }
     ]
   },
   {
