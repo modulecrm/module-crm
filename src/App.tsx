@@ -7,7 +7,6 @@ import InvoiceModule from '@/components/InvoiceModule';
 import BookingModule from '@/components/BookingModule';
 import SubscriptionModule from '@/components/SubscriptionModule';
 import { useToast } from "@/hooks/use-toast"
-import { Toast } from "@/components/ui/toast"
 import SettingsModule from './components/SettingsModule';
 
 function App() {
@@ -64,7 +63,6 @@ function App() {
       <main className="flex-1 p-4">
         {renderActiveModule()}
       </main>
-      <Toast />
     </div>
   );
 }
