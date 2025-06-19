@@ -7,7 +7,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp, X } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp, X, ChevronDown, ChevronRight } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -44,6 +45,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   const [isAccountStatementOpen, setIsAccountStatementOpen] = useState(false);
   const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] = useState(false);
   const [showPurchaseDetails, setShowPurchaseDetails] = useState(false);
+  const [isSubscriptionHistoryOpen, setIsSubscriptionHistoryOpen] = useState(false);
   const [statementFromDate, setStatementFromDate] = useState('');
   const [statementToDate, setStatementToDate] = useState('');
   const [cancellationDate, setCancellationDate] = useState('2024-03-15'); // Default to current period end
@@ -239,25 +241,38 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                   </div>
                 </div>
 
-                <div className="mt-6">
-                  <h3 className="text-lg font-medium mb-4">Subscription History</h3>
-                  <div className="space-y-3">
-                    {subscriptionHistory.map((sub, index) => (
-                      <div key={index} className="p-4 border rounded-lg">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-semibold">{sub.plan}</h4>
-                            <p className="text-sm text-gray-600">Start: {sub.startDate}</p>
-                            <p className="text-sm text-gray-600">End: {sub.endDate}</p>
+                <Collapsible open={isSubscriptionHistoryOpen} onOpenChange={setIsSubscriptionHistoryOpen}>
+                  <div className="mt-6">
+                    <CollapsibleTrigger asChild>
+                      <Button variant="outline" className="flex items-center justify-between w-full">
+                        <span className="text-lg font-medium">Subscription History</span>
+                        {isSubscriptionHistoryOpen ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-4">
+                      <div className="space-y-3">
+                        {subscriptionHistory.map((sub, index) => (
+                          <div key={index} className="p-4 border rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="font-semibold">{sub.plan}</h4>
+                                <p className="text-sm text-gray-600">Start: {sub.startDate}</p>
+                                <p className="text-sm text-gray-600">End: {sub.endDate}</p>
+                              </div>
+                              <Badge className={sub.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                                {sub.status}
+                              </Badge>
+                            </div>
                           </div>
-                          <Badge className={sub.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                            {sub.status}
-                          </Badge>
-                        </div>
+                        ))}
                       </div>
-                    ))}
+                    </CollapsibleContent>
                   </div>
-                </div>
+                </Collapsible>
               </div>
             </div>
           </SheetContent>
