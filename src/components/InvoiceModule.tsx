@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, Package, Settings, BarChart3, Calendar, CreditCard, Tags } from 'lucide-react';
 import InvoiceList from './invoice/InvoiceList';
 import ProductCatalog from './invoice/ProductCatalog';
-import InvoiceTemplates from './invoice/InvoiceTemplates';
 import ProductCategory from './invoice/ProductCategory';
 import InvoiceReports from './invoice/InvoiceReports';
 import PaymentTracking from './invoice/PaymentTracking';
@@ -20,7 +19,7 @@ const InvoiceModule = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="invoices" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Invoices
@@ -28,10 +27,6 @@ const InvoiceModule = () => {
           <TabsTrigger value="products" className="flex items-center gap-2">
             <Package className="h-4 w-4" />
             Products
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            Settings
           </TabsTrigger>
           <TabsTrigger value="categories" className="flex items-center gap-2">
             <Tags className="h-4 w-4" />
@@ -53,10 +48,6 @@ const InvoiceModule = () => {
 
         <TabsContent value="products" className="mt-6">
           <ProductCatalog />
-        </TabsContent>
-
-        <TabsContent value="settings" className="mt-6">
-          <InvoiceTemplates />
         </TabsContent>
 
         <TabsContent value="categories" className="mt-6">
