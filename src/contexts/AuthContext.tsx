@@ -30,25 +30,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    const getInitialSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Error getting session:', error);
-        } else {
-          console.log('Initial session:', session?.user?.email);
-          setSession(session);
-          setUser(session?.user ?? null);
-        }
-      } catch (error) {
-        console.error('Unexpected error getting session:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Set up auth state listener - NOT async to prevent hook issues
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
@@ -59,7 +41,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     );
 
     // Get initial session
-    getInitialSession();
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting session:', error);
+      } else {
+        console.log('Initial session:', session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+      setLoading(false);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
