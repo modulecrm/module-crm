@@ -10,79 +10,79 @@ interface ModuleSettingsProps {
 const modules = [
   {
     id: 'crm',
-    name: 'CRM Grundmodul',
-    description: 'Kundestyring, kontakter og salg',
+    name: 'CRM Core Module',
+    description: 'Customer management, contacts and sales',
     icon: Users,
     color: 'from-green-400 to-green-600',
-    features: ['Kontaktstyring', 'Salgspipeline', 'Kundehistorik']
+    features: ['Contact Management', 'Sales Pipeline', 'Customer History']
   },
   {
     id: 'subscription',
     name: 'Subscription Management',
-    description: 'Håndter abonnementer og betalinger',
+    description: 'Manage subscriptions and payments',
     icon: Building2,
     color: 'from-purple-400 to-purple-600',
-    features: ['Abonnementsstyring', 'Fakturering', 'Betalingssporing']
+    features: ['Subscription Management', 'Billing', 'Payment Tracking']
   },
   {
     id: 'booking',
     name: 'Booking Management',
-    description: 'Kalender og booking system',
+    description: 'Calendar and booking system',
     icon: Calendar,
     color: 'from-orange-400 to-orange-600',
-    features: ['Kalenderstyring', 'Ressourcebooking', 'Automatiske påmindelser']
+    features: ['Calendar Management', 'Resource Booking', 'Automatic Reminders']
   },
   {
     id: 'tasks',
     name: 'Task Management',
-    description: 'Opgave- og projektstyring',
+    description: 'Task and project management',
     icon: CheckSquare,
     color: 'from-red-400 to-red-600',
-    features: ['Opgavelister', 'Deadlines', 'Statussporing']
+    features: ['Task Lists', 'Deadlines', 'Status Tracking']
   },
   {
     id: 'projects',
     name: 'Project Management',
-    description: 'Komplet projektstyring',
+    description: 'Complete project management',
     icon: FolderOpen,
     color: 'from-indigo-400 to-indigo-600',
-    features: ['Projektplanlægning', 'Teamsamarbejde', 'Tidsregistrering']
+    features: ['Project Planning', 'Team Collaboration', 'Time Tracking']
   },
   {
     id: 'newsletters',
     name: 'Newsletters',
-    description: 'Email marketing og nyhedsbreve',
+    description: 'Email marketing and newsletters',
     icon: Mail,
     color: 'from-pink-400 to-pink-600',
-    features: ['Email kampagner', 'Segmentering', 'Analytics']
+    features: ['Email Campaigns', 'Segmentation', 'Analytics']
   },
   {
     id: 'support',
     name: 'Support System',
-    description: 'Kundesupport og ticket system',
+    description: 'Customer support and ticket system',
     icon: LifeBuoy,
     color: 'from-teal-400 to-teal-600',
-    features: ['Ticket system', 'Vidensbase', 'Live chat']
+    features: ['Ticket System', 'Knowledge Base', 'Live Chat']
   }
 ];
 
 const branchModules = [
   {
     id: 'coworking',
-    name: 'Coworking Specialmodul',
-    description: 'Optimeret til coworking spaces',
+    name: 'Coworking Space Module',
+    description: 'Optimized for coworking spaces',
     icon: Building2,
     color: 'from-blue-400 to-blue-600',
-    features: ['Deskbooking', 'Medlemsstyring', 'Adgangskontrol'],
+    features: ['Desk Booking', 'Member Management', 'Access Control'],
     premium: true
   },
   {
     id: 'gym',
-    name: 'Fitness & Gym Modul',
-    description: 'Specialmodul til fitnesscentre',
+    name: 'Fitness & Gym Module',
+    description: 'Specialized module for fitness centers',
     icon: Zap,
     color: 'from-yellow-400 to-yellow-600',
-    features: ['Medlemskaber', 'Klassetilmeldinger', 'PT booking'],
+    features: ['Memberships', 'Class Registration', 'PT Booking'],
     premium: true
   }
 ];
@@ -91,13 +91,13 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Modulindstillinger</h1>
-        <p className="text-gray-600 mt-2">Aktivér eller deaktivér moduler efter dit behov</p>
+        <h1 className="text-3xl font-bold text-gray-900">Module Settings</h1>
+        <p className="text-gray-600 mt-2">Enable or disable modules according to your needs</p>
       </div>
 
       {/* Core Modules */}
       <div className="mb-12">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Grundmoduler</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Core Modules</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {modules.map((module) => {
             const isEnabled = enabledModules.includes(module.id);
@@ -145,8 +145,8 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
 
       {/* Branch-specific Modules */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Branchespecifikke Moduler</h2>
-        <p className="text-gray-600 mb-6">Specialmoduler optimeret til specifikke brancher</p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Industry-Specific Modules</h2>
+        <p className="text-gray-600 mb-6">Specialized modules optimized for specific industries</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {branchModules.map((module) => {
@@ -156,7 +156,7 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
             return (
               <div key={module.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200 relative">
                 {module.premium && (
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-gold-400 to-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                     PREMIUM
                   </div>
                 )}

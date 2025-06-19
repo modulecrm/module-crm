@@ -10,7 +10,7 @@ interface SidebarProps {
 
 const modules = [
   { id: 'dashboard', name: 'Dashboard', icon: Home, color: 'text-blue-500' },
-  { id: 'crm', name: 'CRM Grundmodul', icon: Users, color: 'text-green-500' },
+  { id: 'crm', name: 'CRM Core Module', icon: Users, color: 'text-green-500' },
   { id: 'subscription', name: 'Subscription Management', icon: Building2, color: 'text-purple-500' },
   { id: 'booking', name: 'Booking Management', icon: Calendar, color: 'text-orange-500' },
   { id: 'tasks', name: 'Task Management', icon: CheckSquare, color: 'text-red-500' },
@@ -24,7 +24,7 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
     <div className="w-64 bg-white border-r border-gray-200 h-screen overflow-y-auto">
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">ModularCRM</h1>
-        <p className="text-sm text-gray-500">Fleksibelt CRM System</p>
+        <p className="text-sm text-gray-500">Flexible CRM System</p>
       </div>
       
       <nav className="px-4 pb-4">
@@ -51,7 +51,7 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
                 {module.name}
                 {!isEnabled && module.id !== 'dashboard' && (
                   <span className="ml-auto text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">
-                    Deaktiveret
+                    Disabled
                   </span>
                 )}
               </button>
@@ -69,7 +69,7 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
             }`}
           >
             <Settings className="mr-3 h-5 w-5 text-gray-500" />
-            Indstillinger
+            Settings
           </button>
         </div>
       </nav>

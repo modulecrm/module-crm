@@ -8,50 +8,50 @@ const BookingModule = () => {
   const bookings = [
     {
       id: 1,
-      title: 'Møderum A - Kundemøde',
-      customer: 'Lars Hansen',
+      title: 'Meeting Room A - Client Meeting',
+      customer: 'John Smith',
       time: '09:00 - 10:30',
-      duration: '1.5 timer',
-      room: 'Møderum A',
-      status: 'Bekræftet',
+      duration: '1.5 hours',
+      room: 'Meeting Room A',
+      status: 'Confirmed',
       attendees: 4
     },
     {
       id: 2,
-      title: 'Konferencesal - Præsentation',
-      customer: 'Maria Andersen', 
+      title: 'Conference Hall - Presentation',
+      customer: 'Sarah Wilson', 
       time: '14:00 - 16:00',
-      duration: '2 timer',
-      room: 'Konferencesal',
-      status: 'Afventer',
+      duration: '2 hours',
+      room: 'Conference Hall',
+      status: 'Pending',
       attendees: 12
     },
     {
       id: 3,
-      title: 'Arbejdsplads 15 - Dagsleje',
-      customer: 'Peter Nielsen',
+      title: 'Workspace 15 - Day Rental',
+      customer: 'Mike Johnson',
       time: '08:00 - 17:00',
-      duration: '9 timer',
-      room: 'Fleksibel arbejdsplads',
-      status: 'Bekræftet',
+      duration: '9 hours',
+      room: 'Flexible Workspace',
+      status: 'Confirmed',
       attendees: 1
     }
   ];
 
   const resources = [
-    { name: 'Møderum A', capacity: 6, available: true },
-    { name: 'Møderum B', capacity: 8, available: false },
-    { name: 'Konferencesal', capacity: 20, available: true },
-    { name: 'Arbejdspladser', capacity: 50, available: true }
+    { name: 'Meeting Room A', capacity: 6, available: true },
+    { name: 'Meeting Room B', capacity: 8, available: false },
+    { name: 'Conference Hall', capacity: 20, available: true },
+    { name: 'Workspaces', capacity: 50, available: true }
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Bekræftet':
+      case 'Confirmed':
         return 'bg-green-100 text-green-800';
-      case 'Afventer':
+      case 'Pending':
         return 'bg-yellow-100 text-yellow-800';
-      case 'Aflyst':
+      case 'Cancelled':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -63,11 +63,11 @@ const BookingModule = () => {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Booking Management</h1>
-          <p className="text-gray-600 mt-2">Administrer bookinger og ressourcer</p>
+          <p className="text-gray-600 mt-2">Manage bookings and resources</p>
         </div>
         <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center transition-colors">
           <Plus className="h-5 w-5 mr-2" />
-          Ny Booking
+          New Booking
         </button>
       </div>
 
@@ -77,7 +77,7 @@ const BookingModule = () => {
           <div className="flex items-center">
             <Calendar className="h-8 w-8 text-blue-500 mr-3" />
             <div>
-              <p className="text-sm font-medium text-gray-600">I dag</p>
+              <p className="text-sm font-medium text-gray-600">Today</p>
               <p className="text-2xl font-bold text-gray-900">12</p>
             </div>
           </div>
@@ -86,7 +86,7 @@ const BookingModule = () => {
           <div className="flex items-center">
             <Clock className="h-8 w-8 text-green-500 mr-3" />
             <div>
-              <p className="text-sm font-medium text-gray-600">Denne uge</p>
+              <p className="text-sm font-medium text-gray-600">This Week</p>
               <p className="text-2xl font-bold text-gray-900">87</p>
             </div>
           </div>
@@ -95,7 +95,7 @@ const BookingModule = () => {
           <div className="flex items-center">
             <Users className="h-8 w-8 text-purple-500 mr-3" />
             <div>
-              <p className="text-sm font-medium text-gray-600">Ledige pladser</p>
+              <p className="text-sm font-medium text-gray-600">Available Spots</p>
               <p className="text-2xl font-bold text-gray-900">23</p>
             </div>
           </div>
@@ -104,7 +104,7 @@ const BookingModule = () => {
           <div className="flex items-center">
             <MapPin className="h-8 w-8 text-orange-500 mr-3" />
             <div>
-              <p className="text-sm font-medium text-gray-600">Ressourcer</p>
+              <p className="text-sm font-medium text-gray-600">Resources</p>
               <p className="text-2xl font-bold text-gray-900">4</p>
             </div>
           </div>
@@ -116,7 +116,7 @@ const BookingModule = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-900">Dagens Bookinger</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Today's Bookings</h2>
               <div className="flex items-center space-x-3">
                 <input
                   type="date"
@@ -137,7 +137,7 @@ const BookingModule = () => {
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">{booking.title}</h3>
-                      <p className="text-gray-600 text-sm">Kunde: {booking.customer}</p>
+                      <p className="text-gray-600 text-sm">Customer: {booking.customer}</p>
                     </div>
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(booking.status)}`}>
                       {booking.status}
@@ -155,7 +155,7 @@ const BookingModule = () => {
                     </div>
                     <div className="flex items-center">
                       <Users className="h-4 w-4 mr-2" />
-                      {booking.attendees} personer
+                      {booking.attendees} people
                     </div>
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-2" />
@@ -171,7 +171,7 @@ const BookingModule = () => {
         {/* Resources Panel */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Ressourceoversigt</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Resource Overview</h2>
           </div>
           
           <div className="p-6 space-y-4">
@@ -182,9 +182,9 @@ const BookingModule = () => {
                   <div className={`w-3 h-3 rounded-full ${resource.available ? 'bg-green-500' : 'bg-red-500'}`}></div>
                 </div>
                 <div className="text-sm text-gray-600 space-y-1">
-                  <p>Kapacitet: {resource.capacity} personer</p>
+                  <p>Capacity: {resource.capacity} people</p>
                   <p className={resource.available ? 'text-green-600' : 'text-red-600'}>
-                    {resource.available ? 'Tilgængelig' : 'Optaget'}
+                    {resource.available ? 'Available' : 'Occupied'}
                   </p>
                 </div>
               </div>
@@ -193,7 +193,7 @@ const BookingModule = () => {
           
           <div className="px-6 py-4 border-t border-gray-200">
             <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg transition-colors">
-              Se alle ressourcer
+              View all resources
             </button>
           </div>
         </div>

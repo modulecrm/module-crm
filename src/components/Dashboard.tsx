@@ -8,24 +8,24 @@ interface DashboardProps {
 
 const Dashboard = ({ enabledModules }: DashboardProps) => {
   const stats = [
-    { name: 'Total Kunder', value: '2,847', change: '+12%', icon: Users, color: 'bg-blue-500' },
-    { name: 'Aktive Abonnementer', value: '1,234', change: '+5%', icon: DollarSign, color: 'bg-green-500' },
-    { name: 'Bookinger Denne Måned', value: '456', change: '+18%', icon: Calendar, color: 'bg-orange-500' },
-    { name: 'Åbne Opgaver', value: '89', change: '-3%', icon: CheckSquare, color: 'bg-red-500' },
+    { name: 'Total Customers', value: '2,847', change: '+12%', icon: Users, color: 'bg-blue-500' },
+    { name: 'Active Subscriptions', value: '1,234', change: '+5%', icon: DollarSign, color: 'bg-green-500' },
+    { name: 'Bookings This Month', value: '456', change: '+18%', icon: Calendar, color: 'bg-orange-500' },
+    { name: 'Open Tasks', value: '89', change: '-3%', icon: CheckSquare, color: 'bg-red-500' },
   ];
 
   const recentActivity = [
-    { action: 'Ny kunde registreret', user: 'Lars Hansen', time: '2 min siden' },
-    { action: 'Booking bekræftet', user: 'Maria Andersen', time: '15 min siden' },
-    { action: 'Opgave fuldført', user: 'Peter Nielsen', time: '1 time siden' },
-    { action: 'Newsletter sendt', user: 'System', time: '2 timer siden' },
+    { action: 'New customer registered', user: 'John Smith', time: '2 min ago' },
+    { action: 'Booking confirmed', user: 'Sarah Wilson', time: '15 min ago' },
+    { action: 'Task completed', user: 'Mike Johnson', time: '1 hour ago' },
+    { action: 'Newsletter sent', user: 'System', time: '2 hours ago' },
   ];
 
   return (
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-2">Velkommen til dit modulære CRM system</p>
+        <p className="text-gray-600 mt-2">Welcome to your modular CRM system</p>
       </div>
 
       {/* Stats Grid */}
@@ -39,7 +39,7 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
                   <p className="text-sm font-medium text-gray-600">{stat.name}</p>
                   <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
                   <p className={`text-sm mt-2 ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                    {stat.change} fra sidste måned
+                    {stat.change} from last month
                   </p>
                 </div>
                 <div className={`${stat.color} p-3 rounded-lg`}>
@@ -54,7 +54,7 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Activity */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Seneste Aktivitet</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
           <div className="space-y-4">
             {recentActivity.map((activity, index) => (
               <div key={index} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
@@ -70,16 +70,16 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
 
         {/* Enabled Modules */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Aktive Moduler</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Active Modules</h2>
           <div className="grid grid-cols-2 gap-3">
             {enabledModules.filter(module => module !== 'dashboard').map((moduleId) => {
               const moduleNames: { [key: string]: string } = {
-                crm: 'CRM Grundmodul',
-                subscription: 'Abonnementer',
+                crm: 'CRM Core',
+                subscription: 'Subscriptions',
                 booking: 'Booking',
-                tasks: 'Opgaver',
-                projects: 'Projekter',
-                newsletters: 'Nyhedsbreve',
+                tasks: 'Tasks',
+                projects: 'Projects',
+                newsletters: 'Newsletters',
                 support: 'Support'
               };
               
@@ -96,7 +96,7 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
           {enabledModules.length === 1 && (
             <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
               <p className="text-sm text-yellow-800">
-                Gå til Indstillinger for at aktivere flere moduler
+                Go to Settings to enable more modules
               </p>
             </div>
           )}
