@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +22,11 @@ interface LineItem {
   line_total: number;
 }
 
-const CreateInvoice = () => {
+interface CreateInvoiceProps {
+  onClose?: () => void;
+}
+
+const CreateInvoice = ({ onClose }: CreateInvoiceProps) => {
   const [invoiceData, setInvoiceData] = useState({
     customer_id: '',
     deal_id: '',
@@ -188,6 +191,10 @@ const CreateInvoice = () => {
       setLineItems([
         { id: '1', description: '', quantity: 1, unit_price: 0, discount_percentage: 0, tax_rate: 25, line_total: 0 }
       ]);
+      // Close dialog if onClose is provided
+      if (onClose) {
+        onClose();
+      }
     },
     onError: (error) => {
       toast({
@@ -202,7 +209,6 @@ const CreateInvoice = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Create New Invoice</h2>
         <div className="flex gap-2">
           <Button 
             variant="outline" 
