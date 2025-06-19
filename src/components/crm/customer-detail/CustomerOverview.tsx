@@ -1,9 +1,11 @@
-
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send } from 'lucide-react';
 
 interface Customer {
@@ -37,6 +39,9 @@ interface CustomerOverviewProps {
 const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [isInvoicesOpen, setIsInvoicesOpen] = useState(false);
+  const [isAccountStatementOpen, setIsAccountStatementOpen] = useState(false);
+  const [statementFromDate, setStatementFromDate] = useState('');
+  const [statementToDate, setStatementToDate] = useState('');
 
   // Mock data for demonstration
   const subscriptionType = "Premium - Monthly";
@@ -76,6 +81,23 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   const handleSendPaymentLink = (invoiceId: string) => {
     console.log(`Sending payment link for invoice ${invoiceId}`);
     // Implementation for sending payment link
+  };
+
+  const handleSendInvoice = (invoiceId: string) => {
+    console.log(`Sending invoice ${invoiceId}`);
+    // Implementation for sending invoice
+  };
+
+  const handleDownloadStatement = () => {
+    console.log(`Downloading account statement from ${statementFromDate} to ${statementToDate}`);
+    setIsAccountStatementOpen(false);
+    // Implementation for downloading account statement
+  };
+
+  const handleSendStatement = () => {
+    console.log(`Sending account statement from ${statementFromDate} to ${statementToDate} to ${customer.email}`);
+    setIsAccountStatementOpen(false);
+    // Implementation for sending account statement
   };
 
   return (
@@ -189,6 +211,61 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
               </SheetDescription>
             </SheetHeader>
             <div className="mt-6">
+              <div className="mb-4">
+                <Dialog open={isAccountStatementOpen} onOpenChange={setIsAccountStatementOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="w-full">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Create Account Statement
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Create Account Statement</DialogTitle>
+                      <DialogDescription>
+                        Select the date range for the account statement
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="from-date" className="text-right">
+                          From
+                        </Label>
+                        <Input
+                          id="from-date"
+                          type="date"
+                          value={statementFromDate}
+                          onChange={(e) => setStatementFromDate(e.target.value)}
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="to-date" className="text-right">
+                          To
+                        </Label>
+                        <Input
+                          id="to-date"
+                          type="date"
+                          value={statementToDate}
+                          onChange={(e) => setStatementToDate(e.target.value)}
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={handleDownloadStatement}>
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                      <Button onClick={handleSendStatement}>
+                        <Send className="h-4 w-4 mr-2" />
+                        Send to Customer
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              
               <div className="space-y-4">
                 {invoices.map((invoice) => (
                   <div key={invoice.id} className="p-4 border rounded-lg">
@@ -208,6 +285,14 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                         <Button variant="ghost" size="sm">
                           <Download className="h-4 w-4" />
                         </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleSendInvoice(invoice.id)}
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          Send Invoice
+                        </Button>
                         {!invoice.paid && (
                           <Button 
                             variant="outline" 
@@ -215,7 +300,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                             onClick={() => handleSendPaymentLink(invoice.id)}
                           >
                             <Send className="h-4 w-4 mr-2" />
-                            Send Link
+                            Payment Link
                           </Button>
                         )}
                       </div>
