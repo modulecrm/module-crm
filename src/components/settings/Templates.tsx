@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Mail, File, Plus, Edit, Eye, Copy } from 'lucide-react';
+import { Mail, File, Plus, Edit, Eye, Copy } from 'lucide-react';
 
 const Templates = () => {
   const [activeCategory, setActiveCategory] = useState('emails');
@@ -12,7 +12,6 @@ const Templates = () => {
   const templateCategories = [
     { id: 'emails', name: 'Emails', icon: Mail },
     { id: 'contracts', name: 'Contracts', icon: File },
-    { id: 'invoice-credit', name: 'Invoice and Credit Note', icon: FileText },
   ];
 
   const emailTemplates = [
@@ -27,20 +26,12 @@ const Templates = () => {
     { id: '3', name: 'Consulting Contract', isDefault: false, description: 'Professional consulting agreement' },
   ];
 
-  const invoiceTemplates = [
-    { id: '1', name: 'Standard Invoice', isDefault: true, description: 'Default invoice template' },
-    { id: '2', name: 'Service Invoice', isDefault: false, description: 'Template for service-based billing' },
-    { id: '3', name: 'Credit Note', isDefault: false, description: 'Standard credit note template' },
-  ];
-
   const getTemplatesByCategory = (category: string) => {
     switch (category) {
       case 'emails':
         return emailTemplates;
       case 'contracts':
         return contractTemplates;
-      case 'invoice-credit':
-        return invoiceTemplates;
       default:
         return [];
     }
@@ -82,7 +73,7 @@ const Templates = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Templates</h2>
-          <p className="text-gray-600">Manage email, contract, and invoice templates</p>
+          <p className="text-gray-600">Manage email and contract templates</p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
@@ -91,7 +82,7 @@ const Templates = () => {
       </div>
 
       <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           {templateCategories.map((category) => {
             const Icon = category.icon;
             return (
@@ -113,7 +104,7 @@ const Templates = () => {
             
             {getTemplatesByCategory(category.id).length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <category.icon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p>No templates found for this category</p>
                 <p className="text-sm">Create your first template to get started</p>
               </div>
