@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp, X, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -119,6 +119,16 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   const handleSendInvoice = (invoiceId: string) => {
     console.log(`Sending invoice ${invoiceId}`);
     // Implementation for sending invoice
+  };
+
+  const handleSendReminder = (invoiceId: string) => {
+    console.log(`Sending payment reminder for invoice ${invoiceId}`);
+    // Implementation for sending payment reminder
+  };
+
+  const handleSendReminderFee = (invoiceId: string) => {
+    console.log(`Sending reminder fee for invoice ${invoiceId}`);
+    // Implementation for sending reminder fee
   };
 
   const handleDownloadStatement = () => {
@@ -627,6 +637,9 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                           <Badge className={getPaymentStatusColor(invoice.status)}>
                             {invoice.status.toUpperCase()}
                           </Badge>
+                          {invoice.status === 'overdue' && (
+                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                          )}
                         </div>
                         <p className="text-sm text-gray-600">Invoice Date: {invoice.date}</p>
                         <p className="text-sm text-gray-600">Due Date: {invoice.dueDate}</p>
@@ -653,6 +666,28 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                             <Send className="h-4 w-4 mr-2" />
                             Payment Link
                           </Button>
+                        )}
+                        {invoice.status === 'overdue' && (
+                          <>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleSendReminder(invoice.id)}
+                              className="text-orange-600 hover:text-orange-700"
+                            >
+                              <AlertTriangle className="h-4 w-4 mr-2" />
+                              Send Reminder
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleSendReminderFee(invoice.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <AlertTriangle className="h-4 w-4 mr-2" />
+                              Send Reminder Fee
+                            </Button>
+                          </>
                         )}
                       </div>
                     </div>
