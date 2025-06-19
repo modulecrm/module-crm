@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import CreateCustomerForm from './CreateCustomerForm';
 import CustomerTableView from './CustomerTableView';
 import CustomViewEditor from './CustomViewEditor';
+import CustomerDetailPage from './CustomerDetailPage';
 
 interface Customer {
   id: string;
@@ -57,6 +58,7 @@ const CustomerList = () => {
   const [activeCustomView, setActiveCustomView] = useState<string | null>(null);
   const [showCustomViewEditor, setShowCustomViewEditor] = useState(false);
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
     fetchCustomers();
@@ -601,6 +603,24 @@ const CustomerList = () => {
     setSelectedCustomers([]);
   };
 
+  const handleCustomerClick = (customer: Customer) => {
+    setSelectedCustomer(customer);
+  };
+
+  const handleBackToList = () => {
+    setSelectedCustomer(null);
+  };
+
+  // If a customer is selected, show the detail page
+  if (selectedCustomer) {
+    return (
+      <CustomerDetailPage 
+        customer={selectedCustomer} 
+        onBack={handleBackToList}
+      />
+    );
+  }
+
   const loadCustomViews = () => {
     const saved = localStorage.getItem('customerCustomViews');
     if (saved) {
@@ -751,13 +771,18 @@ const CustomerList = () => {
           onCustomerSelect={handleCustomerSelect}
           onSelectAll={handleSelectAll}
           onClearSelection={handleClearSelection}
+          onCustomerClick={handleCustomerClick}
         />
       ) : (
         <>
           {/* Customer Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCustomers.map((customer) => (
-              <div key={customer.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+              <div 
+                key={customer.id} 
+                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => handleCustomerClick(customer)}
+              >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2">
                     {customer.custom_fields?.customer_type === 'business' ? (

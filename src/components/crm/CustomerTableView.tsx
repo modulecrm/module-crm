@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Mail, Phone, MapPin, Building2, User, Star, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +43,7 @@ interface CustomerTableViewProps {
   onCustomerSelect: (customerId: string) => void;
   onSelectAll: () => void;
   onClearSelection: () => void;
+  onCustomerClick?: (customer: Customer) => void;
 }
 
 const CustomerTableView: React.FC<CustomerTableViewProps> = ({
@@ -51,7 +53,8 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
   selectedCustomers,
   onCustomerSelect,
   onSelectAll,
-  onClearSelection
+  onClearSelection,
+  onCustomerClick
 }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
@@ -180,11 +183,17 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
           {customers.map((customer) => (
             <TableRow 
               key={customer.id} 
-              className={`hover:bg-gray-50 ${
+              className={`hover:bg-gray-50 cursor-pointer ${
                 selectedCustomers.includes(customer.id) ? 'bg-blue-50' : ''
               }`}
+              onClick={(e) => {
+                // Only navigate to detail if clicking on the row but not on the checkbox
+                if (!(e.target as HTMLElement).closest('[role="checkbox"]') && onCustomerClick) {
+                  onCustomerClick(customer);
+                }
+              }}
             >
-              <TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
                 <Checkbox
                   checked={selectedCustomers.includes(customer.id)}
                   onCheckedChange={() => onCustomerSelect(customer.id)}
