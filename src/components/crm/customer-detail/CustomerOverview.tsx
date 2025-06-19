@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp } from 'lucide-react';
+import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp, X } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -42,9 +42,11 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   const [isInvoicesOpen, setIsInvoicesOpen] = useState(false);
   const [isRevenueOpen, setIsRevenueOpen] = useState(false);
   const [isAccountStatementOpen, setIsAccountStatementOpen] = useState(false);
+  const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] = useState(false);
   const [showPurchaseDetails, setShowPurchaseDetails] = useState(false);
   const [statementFromDate, setStatementFromDate] = useState('');
   const [statementToDate, setStatementToDate] = useState('');
+  const [cancellationDate, setCancellationDate] = useState('2024-03-15'); // Default to current period end
 
   // Mock data for demonstration
   const subscriptionType = "Premium - Monthly";
@@ -124,6 +126,12 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
     // Implementation for sending account statement
   };
 
+  const handleCancelSubscription = () => {
+    console.log(`Cancelling subscription on ${cancellationDate}`);
+    setIsCancelSubscriptionOpen(false);
+    // Implementation for cancelling subscription
+  };
+
   return (
     <div className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -152,7 +160,51 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                   <h3 className="text-lg font-medium mb-2">Current Subscription</h3>
                   <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <p className="font-semibold text-blue-900">{subscriptionType}</p>
-                    <p className="text-sm text-blue-700">Next billing: March 15, 2024</p>
+                    <p className="text-sm text-blue-700 mb-3">Next billing: March 15, 2024</p>
+                    
+                    <Dialog open={isCancelSubscriptionOpen} onOpenChange={setIsCancelSubscriptionOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          <X className="h-4 w-4 mr-2" />
+                          Cancel Subscription
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Cancel Subscription</DialogTitle>
+                          <DialogDescription>
+                            Your current payment period expires on March 15, 2024. 
+                            Please select when you'd like your subscription to be cancelled.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="cancellation-date" className="text-right">
+                              Cancel Date
+                            </Label>
+                            <Input
+                              id="cancellation-date"
+                              type="date"
+                              value={cancellationDate}
+                              onChange={(e) => setCancellationDate(e.target.value)}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="text-sm text-gray-600 col-span-4">
+                            <p>• If you cancel before March 15, 2024, you'll lose access immediately</p>
+                            <p>• If you cancel on March 15, 2024, you'll have access until the end of your current billing period</p>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setIsCancelSubscriptionOpen(false)}>
+                            Keep Subscription
+                          </Button>
+                          <Button variant="destructive" onClick={handleCancelSubscription}>
+                            Confirm Cancellation
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
                 
