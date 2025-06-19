@@ -127,9 +127,9 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   };
 
   const handleCancelSubscription = () => {
-    console.log(`Cancelling subscription on ${cancellationDate}`);
+    console.log(`Cancelling customer subscription on ${cancellationDate}`);
     setIsCancelSubscriptionOpen(false);
-    // Implementation for cancelling subscription
+    // Implementation for cancelling customer subscription
   };
 
   return (
@@ -171,16 +171,16 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                          <DialogTitle>Cancel Subscription</DialogTitle>
+                          <DialogTitle>Cancel Customer Subscription</DialogTitle>
                           <DialogDescription>
-                            Your current payment period expires on March 15, 2024. 
-                            Please select when you'd like your subscription to be cancelled.
+                            The customer has paid until March 15, 2024. 
+                            Please select when you'd like to terminate their subscription service.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="cancellation-date" className="text-right">
-                              Cancel Date
+                              Termination Date
                             </Label>
                             <Input
                               id="cancellation-date"
@@ -191,16 +191,17 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                             />
                           </div>
                           <div className="text-sm text-gray-600 col-span-4">
-                            <p>• If you cancel before March 15, 2024, you'll lose access immediately</p>
-                            <p>• If you cancel on March 15, 2024, you'll have access until the end of your current billing period</p>
+                            <p>• Customer has paid until March 15, 2024</p>
+                            <p>• If you terminate before March 15, 2024, consider providing a pro-rated refund</p>
+                            <p>• If you terminate on March 15, 2024, the customer receives full value for their payment</p>
                           </div>
                         </div>
                         <DialogFooter>
                           <Button variant="outline" onClick={() => setIsCancelSubscriptionOpen(false)}>
-                            Keep Subscription
+                            Keep Active
                           </Button>
                           <Button variant="destructive" onClick={handleCancelSubscription}>
-                            Confirm Cancellation
+                            Confirm Termination
                           </Button>
                         </DialogFooter>
                       </DialogContent>
