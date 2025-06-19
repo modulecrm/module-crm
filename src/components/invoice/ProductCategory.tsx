@@ -10,12 +10,28 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit, Trash2, Package, Tags } from 'lucide-react';
 
 const ProductCategory = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [categoryName, setCategoryName] = useState('');
   const [categoryDescription, setCategoryDescription] = useState('');
+  const [selectedVatRate, setSelectedVatRate] = useState('');
+  const [selectedTaxCategory, setSelectedTaxCategory] = useState('');
+
+  // Mock VAT rates and tax categories (these would typically come from settings)
+  const vatRates = [
+    { id: '1', name: 'Standard VAT', rate: 20, isDefault: true },
+    { id: '2', name: 'Reduced VAT', rate: 5, isDefault: false },
+    { id: '3', name: 'Zero VAT', rate: 0, isDefault: false },
+  ];
+
+  const taxCategories = [
+    { id: '1', name: 'Sales Tax', rate: 8.5 },
+    { id: '2', name: 'Service Tax', rate: 12 },
+    { id: '3', name: 'Import Duty', rate: 15 },
+  ];
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ['product_categories'],
@@ -31,10 +47,17 @@ const ProductCategory = () => {
   });
 
   const handleCreateCategory = () => {
-    console.log('Creating category:', { name: categoryName, description: categoryDescription });
+    console.log('Creating category:', { 
+      name: categoryName, 
+      description: categoryDescription,
+      vatRate: selectedVatRate,
+      taxCategory: selectedTaxCategory
+    });
     setIsDialogOpen(false);
     setCategoryName('');
     setCategoryDescription('');
+    setSelectedVatRate('');
+    setSelectedTaxCategory('');
     // Implementation for creating category
   };
 
@@ -88,6 +111,41 @@ const ProductCategory = () => {
                   placeholder="Brief description of this category"
                   rows={3}
                 />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="vat_rate">VAT Rate</Label>
+                  <Select value={selectedVatRate} onValueChange={setSelectedVatRate}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select VAT rate" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {vatRates.map((rate) => (
+                        <SelectItem key={rate.id} value={rate.id}>
+                          {rate.name} ({rate.rate}%)
+                          {rate.isDefault && <span className="text-xs text-green-600 ml-1">(Default)</span>}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="tax_category">Tax Category</Label>
+                  <Select value={selectedTaxCategory} onValueChange={setSelectedTaxCategory}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select tax category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {taxCategories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name} ({category.rate}%)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               
               <div className="flex justify-end gap-2 pt-4">
