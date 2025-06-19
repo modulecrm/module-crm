@@ -1,13 +1,12 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Puzzle, User, Globe, Zap, Calculator } from 'lucide-react';
+import { FileText, Puzzle, User, Globe, Zap } from 'lucide-react';
 import Templates from './settings/Templates';
 import ModuleSettings from './ModuleSettings';
 import ProfileSettings from './ProfileSettings';
 import LanguageSettings from './LanguageSettings';
 import IntegrationsSettings from './IntegrationsSettings';
-import VATTaxSettings from './settings/VATTaxSettings';
 
 interface SettingsModuleProps {
   enabledModules: string[];
@@ -25,7 +24,7 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="templates" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Templates
@@ -45,10 +44,6 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
           <TabsTrigger value="integrations" className="flex items-center gap-2">
             <Zap className="h-4 w-4" />
             Integrations
-          </TabsTrigger>
-          <TabsTrigger value="vat-tax" className="flex items-center gap-2">
-            <Calculator className="h-4 w-4" />
-            VAT & Tax
           </TabsTrigger>
         </TabsList>
 
@@ -70,10 +65,6 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
 
         <TabsContent value="integrations" className="mt-6">
           <IntegrationsSettings />
-        </TabsContent>
-
-        <TabsContent value="vat-tax" className="mt-6">
-          <VATTaxSettings />
         </TabsContent>
       </Tabs>
     </div>

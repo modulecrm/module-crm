@@ -7,6 +7,7 @@ import ProductCatalog from './invoice/ProductCatalog';
 import ProductCategory from './invoice/ProductCategory';
 import InvoiceReports from './invoice/InvoiceReports';
 import PaymentTracking from './invoice/PaymentTracking';
+import VATTaxSettings from './settings/VATTaxSettings';
 
 const InvoiceModule = () => {
   const [activeTab, setActiveTab] = useState('invoices');
@@ -19,7 +20,7 @@ const InvoiceModule = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="invoices" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Invoices
@@ -39,6 +40,10 @@ const InvoiceModule = () => {
           <TabsTrigger value="reports" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Reports
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Settings
           </TabsTrigger>
         </TabsList>
 
@@ -60,6 +65,10 @@ const InvoiceModule = () => {
 
         <TabsContent value="reports" className="mt-6">
           <InvoiceReports />
+        </TabsContent>
+
+        <TabsContent value="settings" className="mt-6">
+          <VATTaxSettings />
         </TabsContent>
       </Tabs>
     </div>
