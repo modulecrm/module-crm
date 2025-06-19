@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Calculator } from 'lucide-react';
+import { Plus, Edit, Trash2, Calculator, Star } from 'lucide-react';
 
 const VATTaxSettings = () => {
   const [vatRates, setVatRates] = useState([
@@ -58,6 +58,13 @@ const VATTaxSettings = () => {
     setTaxCategories(taxCategories.filter(category => category.id !== id));
   };
 
+  const setDefaultVatRate = (id: string) => {
+    setVatRates(vatRates.map(rate => ({
+      ...rate,
+      isDefault: rate.id === id
+    })));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -94,6 +101,17 @@ const VATTaxSettings = () => {
                   </div>
                 </div>
                 <p className="text-sm text-gray-600">{rate.description}</p>
+                {!rate.isDefault && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setDefaultVatRate(rate.id)}
+                    className="w-full mt-2"
+                  >
+                    <Star className="h-4 w-4 mr-1" />
+                    Set as Default
+                  </Button>
+                )}
               </div>
             ))}
           </div>
