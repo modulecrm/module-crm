@@ -721,20 +721,24 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
       {/* Action Shortcuts */}
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" className="flex items-center gap-2">
-          <FileText className="h-4 w-4" />
-          Send Invoice
+          <Plus className="h-4 w-4" />
+          Product
         </Button>
         <Button variant="outline" size="sm" className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
-          Create Task
+          Subscription
+        </Button>
+        <Button variant="outline" size="sm" className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Payment
         </Button>
         <Button variant="outline" size="sm" className="flex items-center gap-2">
           <Mail className="h-4 w-4" />
-          Start Email
+          Email
         </Button>
         <Button variant="outline" size="sm" className="flex items-center gap-2">
-          <History className="h-4 w-4" />
-          View Subscription Log
+          <Plus className="h-4 w-4" />
+          Task
         </Button>
       </div>
     </div>
