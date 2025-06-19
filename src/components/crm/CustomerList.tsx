@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Plus, Mail, Phone, MapPin, Tag, Users, Star, Building2, User, Grid3X3, List, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -64,6 +63,486 @@ const CustomerList = () => {
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  const createSampleCustomers = async () => {
+    const sampleCustomers = [
+      {
+        name: 'John Smith',
+        email: 'john.smith@techcorp.com',
+        phone: '+1-555-0101',
+        company: 'TechCorp Solutions',
+        status: 'active',
+        lead_score: 85,
+        tags: ['enterprise', 'high-value'],
+        industry: 'Technology',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'referral',
+          segment: 'enterprise',
+          employees_count: 250,
+          revenue: 1250000
+        },
+        address: {
+          country: 'United States',
+          city: 'San Francisco'
+        }
+      },
+      {
+        name: 'Sarah Johnson',
+        email: 'sarah.johnson@gmail.com',
+        phone: '+1-555-0102',
+        company: '',
+        status: 'potential',
+        lead_score: 72,
+        tags: ['individual', 'consultant'],
+        industry: 'Consulting',
+        custom_fields: {
+          customer_type: 'private',
+          language: 'English',
+          currency: 'USD',
+          source: 'website',
+          segment: 'individual'
+        },
+        address: {
+          country: 'United States',
+          city: 'New York'
+        }
+      },
+      {
+        name: 'Michael Chen',
+        email: 'michael.chen@innovate.com',
+        phone: '+1-555-0103',
+        company: 'Innovate Industries',
+        status: 'active',
+        lead_score: 91,
+        tags: ['startup', 'tech'],
+        industry: 'Software',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'cold_call',
+          segment: 'startup',
+          employees_count: 45,
+          revenue: 850000
+        },
+        address: {
+          country: 'United States',
+          city: 'Austin'
+        }
+      },
+      {
+        name: 'Emma Williams',
+        email: 'emma.williams@healthcare.org',
+        phone: '+1-555-0104',
+        company: 'Healthcare Plus',
+        status: 'active',
+        lead_score: 78,
+        tags: ['healthcare', 'non-profit'],
+        industry: 'Healthcare',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'trade_show',
+          segment: 'mid-market',
+          employees_count: 120,
+          revenue: 650000
+        },
+        address: {
+          country: 'United States',
+          city: 'Chicago'
+        }
+      },
+      {
+        name: 'David Rodriguez',
+        email: 'david.rodriguez@manufacturing.com',
+        phone: '+1-555-0105',
+        company: 'Rodriguez Manufacturing',
+        status: 'inactive',
+        lead_score: 45,
+        tags: ['manufacturing', 'legacy'],
+        industry: 'Manufacturing',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'Spanish',
+          currency: 'USD',
+          source: 'referral',
+          segment: 'small-business',
+          employees_count: 85,
+          revenue: 450000
+        },
+        address: {
+          country: 'United States',
+          city: 'Phoenix'
+        }
+      },
+      {
+        name: 'Lisa Anderson',
+        email: 'lisa.anderson@retail.com',
+        phone: '+1-555-0106',
+        company: 'Anderson Retail Group',
+        status: 'active',
+        lead_score: 83,
+        tags: ['retail', 'growing'],
+        industry: 'Retail',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'website',
+          segment: 'mid-market',
+          employees_count: 200,
+          revenue: 980000
+        },
+        address: {
+          country: 'United States',
+          city: 'Seattle'
+        }
+      },
+      {
+        name: 'James Wilson',
+        email: 'james.wilson@finance.com',
+        phone: '+1-555-0107',
+        company: 'Wilson Financial Services',
+        status: 'potential',
+        lead_score: 68,
+        tags: ['finance', 'established'],
+        industry: 'Financial Services',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'linkedin',
+          segment: 'enterprise',
+          employees_count: 350,
+          revenue: 2100000
+        },
+        address: {
+          country: 'United States',
+          city: 'Boston'
+        }
+      },
+      {
+        name: 'Maria Garcia',
+        email: 'maria.garcia@education.edu',
+        phone: '+1-555-0108',
+        company: 'Garcia Educational Institute',
+        status: 'active',
+        lead_score: 76,
+        tags: ['education', 'non-profit'],
+        industry: 'Education',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'Spanish',
+          currency: 'USD',
+          source: 'conference',
+          segment: 'education',
+          employees_count: 150,
+          revenue: 320000
+        },
+        address: {
+          country: 'United States',
+          city: 'Miami'
+        }
+      },
+      {
+        name: 'Robert Taylor',
+        email: 'robert.taylor@construction.com',
+        phone: '+1-555-0109',
+        company: 'Taylor Construction Co.',
+        status: 'churned',
+        lead_score: 32,
+        tags: ['construction', 'seasonal'],
+        industry: 'Construction',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'referral',
+          segment: 'small-business',
+          employees_count: 65,
+          revenue: 750000
+        },
+        address: {
+          country: 'United States',
+          city: 'Denver'
+        }
+      },
+      {
+        name: 'Jennifer Brown',
+        email: 'jennifer.brown@consulting.com',
+        phone: '+1-555-0110',
+        company: 'Brown Strategic Consulting',
+        status: 'active',
+        lead_score: 89,
+        tags: ['consulting', 'strategic'],
+        industry: 'Consulting',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'website',
+          segment: 'boutique',
+          employees_count: 25,
+          revenue: 1800000
+        },
+        address: {
+          country: 'United States',
+          city: 'Washington DC'
+        }
+      },
+      {
+        name: 'Thomas Miller',
+        email: 'thomas.miller@logistics.com',
+        phone: '+1-555-0111',
+        company: 'Miller Logistics Solutions',
+        status: 'potential',
+        lead_score: 64,
+        tags: ['logistics', 'international'],
+        industry: 'Logistics',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'cold_email',
+          segment: 'mid-market',
+          employees_count: 180,
+          revenue: 1100000
+        },
+        address: {
+          country: 'United States',
+          city: 'Atlanta'
+        }
+      },
+      {
+        name: 'Susan Davis',
+        email: 'susan.davis@marketing.com',
+        phone: '+1-555-0112',
+        company: 'Davis Marketing Agency',
+        status: 'active',
+        lead_score: 81,
+        tags: ['marketing', 'creative'],
+        industry: 'Marketing',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'networking',
+          segment: 'agency',
+          employees_count: 35,
+          revenue: 950000
+        },
+        address: {
+          country: 'United States',
+          city: 'Los Angeles'
+        }
+      },
+      {
+        name: 'Christopher Lee',
+        email: 'christopher.lee@realestate.com',
+        phone: '+1-555-0113',
+        company: 'Lee Real Estate Group',
+        status: 'active',
+        lead_score: 77,
+        tags: ['real-estate', 'luxury'],
+        industry: 'Real Estate',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'referral',
+          segment: 'luxury',
+          employees_count: 45,
+          revenue: 1350000
+        },
+        address: {
+          country: 'United States',
+          city: 'Las Vegas'
+        }
+      },
+      {
+        name: 'Amanda White',
+        email: 'amanda.white@photography.com',
+        phone: '+1-555-0114',
+        company: 'White Photography Studio',
+        status: 'potential',
+        lead_score: 58,
+        tags: ['creative', 'small-business'],
+        industry: 'Creative Services',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'instagram',
+          segment: 'creative',
+          employees_count: 8,
+          revenue: 180000
+        },
+        address: {
+          country: 'United States',
+          city: 'Portland'
+        }
+      },
+      {
+        name: 'Daniel Martinez',
+        email: 'daniel.martinez@auto.com',
+        phone: '+1-555-0115',
+        company: 'Martinez Auto Group',
+        status: 'active',
+        lead_score: 73,
+        tags: ['automotive', 'family-business'],
+        industry: 'Automotive',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'Spanish',
+          currency: 'USD',
+          source: 'radio',
+          segment: 'automotive',
+          employees_count: 95,
+          revenue: 2800000
+        },
+        address: {
+          country: 'United States',
+          city: 'San Antonio'
+        }
+      },
+      {
+        name: 'Michelle Thompson',
+        email: 'michelle.thompson@wellness.com',
+        phone: '+1-555-0116',
+        company: 'Thompson Wellness Center',
+        status: 'active',
+        lead_score: 69,
+        tags: ['wellness', 'health'],
+        industry: 'Healthcare',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'google_ads',
+          segment: 'wellness',
+          employees_count: 22,
+          revenue: 420000
+        },
+        address: {
+          country: 'United States',
+          city: 'Nashville'
+        }
+      },
+      {
+        name: 'Kevin Jackson',
+        email: 'kevin.jackson@tech.com',
+        phone: '+1-555-0117',
+        company: 'Jackson Tech Innovations',
+        status: 'potential',
+        lead_score: 86,
+        tags: ['tech', 'innovation'],
+        industry: 'Technology',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'accelerator',
+          segment: 'startup',
+          employees_count: 28,
+          revenue: 680000
+        },
+        address: {
+          country: 'United States',
+          city: 'San Diego'
+        }
+      },
+      {
+        name: 'Laura Harris',
+        email: 'laura.harris@legal.com',
+        phone: '+1-555-0118',
+        company: 'Harris Legal Associates',
+        status: 'active',
+        lead_score: 92,
+        tags: ['legal', 'corporate'],
+        industry: 'Legal Services',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'bar_association',
+          segment: 'professional',
+          employees_count: 15,
+          revenue: 1650000
+        },
+        address: {
+          country: 'United States',
+          city: 'Dallas'
+        }
+      },
+      {
+        name: 'Ryan Clark',
+        email: 'ryan.clark@sports.com',
+        phone: '+1-555-0119',
+        company: 'Clark Sports Management',
+        status: 'active',
+        lead_score: 75,
+        tags: ['sports', 'entertainment'],
+        industry: 'Sports & Entertainment',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'sports_network',
+          segment: 'entertainment',
+          employees_count: 18,
+          revenue: 890000
+        },
+        address: {
+          country: 'United States',
+          city: 'Minneapolis'
+        }
+      },
+      {
+        name: 'Nicole Lewis',
+        email: 'nicole.lewis@fashion.com',
+        phone: '+1-555-0120',
+        company: 'Lewis Fashion Boutique',
+        status: 'potential',
+        lead_score: 61,
+        tags: ['fashion', 'boutique'],
+        industry: 'Fashion & Retail',
+        custom_fields: {
+          customer_type: 'business',
+          language: 'English',
+          currency: 'USD',
+          source: 'fashion_show',
+          segment: 'boutique',
+          employees_count: 12,
+          revenue: 340000
+        },
+        address: {
+          country: 'United States',
+          city: 'New Orleans'
+        }
+      }
+    ];
+
+    try {
+      const { data, error } = await supabase
+        .from('customers')
+        .insert(sampleCustomers)
+        .select();
+
+      if (error) {
+        console.error('Error creating sample customers:', error);
+        throw error;
+      }
+
+      console.log('Sample customers created successfully:', data);
+      await fetchCustomers(); // Refresh the list
+    } catch (error) {
+      console.error('Failed to create sample customers:', error);
+    }
+  };
 
   const fetchCustomers = async () => {
     try {
@@ -235,7 +714,24 @@ const CustomerList = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="w-full max-w-none space-y-6">
+      {/* Header with Create Sample Data Button */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Customer Management</h2>
+          <p className="text-gray-600">Manage your customer relationships</p>
+        </div>
+        {customers.length === 0 && (
+          <Button 
+            onClick={createSampleCustomers}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+          >
+            <Users className="h-4 w-4" />
+            Create Sample Customers
+          </Button>
+        )}
+      </div>
+
       {/* Search and Filter Bar */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative">
@@ -347,7 +843,7 @@ const CustomerList = () => {
       ) : (
         <>
           {/* Customer Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
             {filteredCustomers.map((customer) => (
               <div 
                 key={customer.id} 
@@ -434,6 +930,15 @@ const CustomerList = () => {
               <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No customers found</h3>
               <p className="text-gray-600">Try adjusting your search or filters, or create your first customer</p>
+              {customers.length === 0 && (
+                <Button 
+                  onClick={createSampleCustomers}
+                  className="mt-4 flex items-center gap-2 mx-auto bg-blue-600 hover:bg-blue-700"
+                >
+                  <Users className="h-4 w-4" />
+                  Create Sample Customers
+                </Button>
+              )}
             </div>
           )}
         </>
