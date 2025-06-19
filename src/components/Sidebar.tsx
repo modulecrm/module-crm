@@ -18,9 +18,10 @@ import {
 interface SidebarProps {
   activeModule: string;
   onModuleChange: (module: string) => void;
+  enabledModules: string[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabledModules }) => {
   const modules = [
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
     { id: 'crm', name: 'CRM', icon: Users },
