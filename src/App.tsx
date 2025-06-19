@@ -1,38 +1,60 @@
-
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { LanguageProvider } from '@/contexts/LanguageContext';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import AuthPage from '@/components/auth/AuthPage';
-import Index from '@/pages/Index';
-import './App.css';
-
-const queryClient = new QueryClient();
+import React, { useState, useEffect } from 'react';
+import Sidebar from '@/components/Sidebar';
+import Dashboard from '@/components/Dashboard';
+import CRMModule from '@/components/CRMModule';
+import InvoiceModule from '@/components/InvoiceModule';
+import BookingModule from '@/components/BookingModule';
+import SubscriptionModule from '@/components/SubscriptionModule';
+import { useToast } from "@/hooks/use-toast"
+import { Toast } from "@/components/ui/toast"
+import SettingsModule from './components/SettingsModule';
 
 function App() {
+  const [activeModule, setActiveModule] = useState('dashboard');
+  const [enabledModules, setEnabledModules] = useState(['dashboard', 'crm', 'invoice', 'booking', 'subscription']);
+  const { toast } = useToast()
+
+  useEffect(() => {
+    console.log('App: Active module changed to:', activeModule);
+  }, [activeModule]);
+
+  const handleModuleChange = (module: string) => {
+    setActiveModule(module);
+  };
+
+  const renderActiveModule = () => {
+    console.log('App: Rendering module:', activeModule);
+    
+    switch (activeModule) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'crm':
+        return <CRMModule />;
+      case 'invoice':
+        return <InvoiceModule />;
+      case 'booking':
+        return <BookingModule />;
+      case 'subscription':
+        return <SubscriptionModule />;
+      case 'settings':
+        return <SettingsModule />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <LanguageProvider>
-          <Router>
-            <Routes>
-              <Route path="/auth" element={<AuthPage />} />
-              <Route 
-                path="/*" 
-                element={
-                  <ProtectedRoute>
-                    <Index />
-                  </ProtectedRoute>
-                } 
-              />
-            </Routes>
-          </Router>
-          <Toaster />
-        </LanguageProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar
+        activeModule={activeModule}
+        onModuleChange={handleModuleChange}
+        enabledModules={enabledModules}
+      />
+      <main className="flex-1 p-4">
+        {renderActiveModule()}
+      </main>
+      <Toast />
+    </div>
   );
 }
 
