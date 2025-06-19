@@ -34,151 +34,151 @@ interface Integration {
 const integrationCategories = [
   {
     id: 'accounting',
-    name: 'Bogføring & Regnskab',
-    description: 'Synkronisering af fakturaer, bilag, moms, kontoplan og regnskabsrapporter',
+    name: 'Accounting & Bookkeeping',
+    description: 'Synchronization of invoices, receipts, VAT, chart of accounts and financial reports',
     icon: Calculator,
     color: 'from-blue-500 to-blue-600',
     integrations: [
-      { id: 'dinero', name: 'Dinero', description: 'Cloud-based regnskabssystem', status: 'available' as const },
-      { id: 'billy', name: 'Billy', description: 'Simpel fakturering og regnskab', status: 'available' as const },
-      { id: 'economic', name: 'e-conomic', description: 'Professionelt regnskabssystem', status: 'connected' as const },
-      { id: 'fortnox', name: 'Fortnox', description: 'Skandinavisk regnskabsløsning', status: 'available' as const },
-      { id: 'xero', name: 'Xero', description: 'International regnskabssoftware', status: 'coming-soon' as const },
-      { id: 'quickbooks', name: 'QuickBooks', description: 'Verdens mest brugte regnskabssystem', status: 'available' as const }
+      { id: 'dinero', name: 'Dinero', description: 'Cloud-based accounting system', status: 'available' as const },
+      { id: 'billy', name: 'Billy', description: 'Simple invoicing and accounting', status: 'available' as const },
+      { id: 'economic', name: 'e-conomic', description: 'Professional accounting system', status: 'connected' as const },
+      { id: 'fortnox', name: 'Fortnox', description: 'Scandinavian accounting solution', status: 'available' as const },
+      { id: 'xero', name: 'Xero', description: 'International accounting software', status: 'coming-soon' as const },
+      { id: 'quickbooks', name: 'QuickBooks', description: 'World\'s most used accounting system', status: 'available' as const }
     ]
   },
   {
     id: 'payments',
-    name: 'Betalingsgateways & POS',
-    description: 'Modtag betalinger direkte via CRM, fakturamodul og webshop',
+    name: 'Payment Gateways & POS',
+    description: 'Receive payments directly through CRM, invoice module and webshop',
     icon: CreditCard,
     color: 'from-green-500 to-green-600',
     integrations: [
-      { id: 'stripe', name: 'Stripe', description: 'Globalt betalingssystem', status: 'connected' as const },
-      { id: 'paypal', name: 'PayPal', description: 'Kendt betalingsløsning', status: 'available' as const },
-      { id: 'quickpay', name: 'QuickPay', description: 'Dansk betalingsgateway', status: 'available' as const },
-      { id: 'mobilepay', name: 'MobilePay', description: 'Mobil betalingsapp', status: 'coming-soon' as const },
-      { id: 'klarna', name: 'Klarna', description: 'Køb nu, betal senere', status: 'available' as const },
-      { id: 'nets', name: 'Nets', description: 'Nordisk betalingsløsning', status: 'available' as const }
+      { id: 'stripe', name: 'Stripe', description: 'Global payment system', status: 'connected' as const },
+      { id: 'paypal', name: 'PayPal', description: 'Well-known payment solution', status: 'available' as const },
+      { id: 'quickpay', name: 'QuickPay', description: 'Danish payment gateway', status: 'available' as const },
+      { id: 'mobilepay', name: 'MobilePay', description: 'Mobile payment app', status: 'coming-soon' as const },
+      { id: 'klarna', name: 'Klarna', description: 'Buy now, pay later', status: 'available' as const },
+      { id: 'nets', name: 'Nets', description: 'Nordic payment solution', status: 'available' as const }
     ]
   },
   {
     id: 'communication',
-    name: 'E-mail & Kommunikation',
-    description: 'Automatisk udsendelse af fakturaer, påmindelser, og kundeopfølgning',
+    name: 'Email & Communication',
+    description: 'Automatic sending of invoices, reminders, and customer follow-up',
     icon: Mail,
     color: 'from-purple-500 to-purple-600',
     integrations: [
-      { id: 'gmail', name: 'Gmail', description: 'Google e-mail integration', status: 'available' as const },
-      { id: 'outlook', name: 'Outlook', description: 'Microsoft e-mail platform', status: 'available' as const },
-      { id: 'smtp', name: 'IMAP/SMTP', description: 'Standard e-mail protokoller', status: 'available' as const },
-      { id: 'mailgun', name: 'Mailgun', description: 'E-mail API service', status: 'connected' as const },
-      { id: 'sendgrid', name: 'SendGrid', description: 'Cloud e-mail delivery', status: 'available' as const },
-      { id: 'twilio', name: 'Twilio', description: 'SMS og kommunikation', status: 'available' as const }
+      { id: 'gmail', name: 'Gmail', description: 'Google email integration', status: 'available' as const },
+      { id: 'outlook', name: 'Outlook', description: 'Microsoft email platform', status: 'available' as const },
+      { id: 'smtp', name: 'IMAP/SMTP', description: 'Standard email protocols', status: 'available' as const },
+      { id: 'mailgun', name: 'Mailgun', description: 'Email API service', status: 'connected' as const },
+      { id: 'sendgrid', name: 'SendGrid', description: 'Cloud email delivery', status: 'available' as const },
+      { id: 'twilio', name: 'Twilio', description: 'SMS and communication', status: 'available' as const }
     ]
   },
   {
     id: 'documents',
-    name: 'Dokumentsignering & Fildeling',
-    description: 'Digital underskrift af kontrakter, deling af bilag og fakturaer',
+    name: 'Document Signing & File Sharing',
+    description: 'Digital signature of contracts, sharing of receipts and invoices',
     icon: FileText,
     color: 'from-orange-500 to-orange-600',
     integrations: [
-      { id: 'docusign', name: 'DocuSign', description: 'Digital signatur platform', status: 'available' as const },
-      { id: 'hellosign', name: 'HelloSign', description: 'Simpel e-signatur', status: 'available' as const },
-      { id: 'adobe-sign', name: 'Adobe Sign', description: 'Adobe e-signatur løsning', status: 'coming-soon' as const },
-      { id: 'dropbox', name: 'Dropbox', description: 'Cloud fil deling', status: 'available' as const },
+      { id: 'docusign', name: 'DocuSign', description: 'Digital signature platform', status: 'available' as const },
+      { id: 'hellosign', name: 'HelloSign', description: 'Simple e-signature', status: 'available' as const },
+      { id: 'adobe-sign', name: 'Adobe Sign', description: 'Adobe e-signature solution', status: 'coming-soon' as const },
+      { id: 'dropbox', name: 'Dropbox', description: 'Cloud file sharing', status: 'available' as const },
       { id: 'google-drive', name: 'Google Drive', description: 'Google cloud storage', status: 'connected' as const },
       { id: 'onedrive', name: 'OneDrive', description: 'Microsoft cloud storage', status: 'available' as const }
     ]
   },
   {
     id: 'crm-booking',
-    name: 'Booking, CRM & Projekter',
-    description: 'Fakturering ud fra bookinger, abonnementsfornyelser, eller milepæle',
+    name: 'Booking, CRM & Projects',
+    description: 'Invoicing based on bookings, subscription renewals, or milestones',
     icon: Users,
     color: 'from-teal-500 to-teal-600',
     integrations: [
-      { id: 'internal-crm', name: 'Internt CRM-modul', description: 'Indbygget CRM system', status: 'connected' as const },
-      { id: 'booking-module', name: 'Booking-modul', description: 'Indbygget booking system', status: 'connected' as const },
-      { id: 'project-module', name: 'Project Management-modul', description: 'Indbygget projekt styring', status: 'available' as const },
-      { id: 'asana', name: 'Asana', description: 'Team projekt management', status: 'available' as const },
-      { id: 'trello', name: 'Trello', description: 'Kanban projekt boards', status: 'available' as const },
-      { id: 'clickup', name: 'ClickUp', description: 'Alt-i-en produktivitetsapp', status: 'coming-soon' as const }
+      { id: 'internal-crm', name: 'Internal CRM Module', description: 'Built-in CRM system', status: 'connected' as const },
+      { id: 'booking-module', name: 'Booking Module', description: 'Built-in booking system', status: 'connected' as const },
+      { id: 'project-module', name: 'Project Management Module', description: 'Built-in project management', status: 'available' as const },
+      { id: 'asana', name: 'Asana', description: 'Team project management', status: 'available' as const },
+      { id: 'trello', name: 'Trello', description: 'Kanban project boards', status: 'available' as const },
+      { id: 'clickup', name: 'ClickUp', description: 'All-in-one productivity app', status: 'coming-soon' as const }
     ]
   },
   {
     id: 'ecommerce',
-    name: 'Webshop & Fysisk butik (POS)',
-    description: 'Automatisk fakturering af salg fra online shop eller kassesystem',
+    name: 'Webshop & Physical Store (POS)',
+    description: 'Automatic invoicing of sales from online shop or POS system',
     icon: ShoppingCart,
     color: 'from-pink-500 to-pink-600',
     integrations: [
       { id: 'shopify', name: 'Shopify', description: 'E-commerce platform', status: 'available' as const },
       { id: 'woocommerce', name: 'WooCommerce', description: 'WordPress webshop', status: 'available' as const },
       { id: 'magento', name: 'Magento', description: 'Enterprise e-commerce', status: 'coming-soon' as const },
-      { id: 'square', name: 'Square', description: 'POS og betalingssystem', status: 'available' as const },
+      { id: 'square', name: 'Square', description: 'POS and payment system', status: 'available' as const },
       { id: 'lightspeed', name: 'Lightspeed', description: 'Retail POS system', status: 'available' as const },
       { id: 'bigcommerce', name: 'BigCommerce', description: 'SaaS e-commerce platform', status: 'available' as const }
     ]
   },
   {
     id: 'compliance',
-    name: 'Moms & Compliance',
-    description: 'Automatisk håndtering af momssatser og eksport af fakturaer til det offentlige',
+    name: 'VAT & Compliance',
+    description: 'Automatic handling of VAT rates and export of invoices to government',
     icon: Scale,
     color: 'from-indigo-500 to-indigo-600',
     integrations: [
-      { id: 'avalara', name: 'Avalara', description: 'Automatisk momsberegning', status: 'available' as const },
-      { id: 'taxjar', name: 'TaxJar', description: 'Salgsmoms automation', status: 'available' as const },
-      { id: 'oioubl', name: 'OIOUBL', description: 'Dansk faktura standard', status: 'connected' as const },
-      { id: 'peppol', name: 'Peppol', description: 'EU e-faktura netværk', status: 'available' as const },
-      { id: 'nemhandel', name: 'NemHandel', description: 'Dansk offentlig handel', status: 'available' as const },
-      { id: 'skat-api', name: 'SKAT API', description: 'Integration til Skattestyrelsen', status: 'coming-soon' as const }
+      { id: 'avalara', name: 'Avalara', description: 'Automatic VAT calculation', status: 'available' as const },
+      { id: 'taxjar', name: 'TaxJar', description: 'Sales tax automation', status: 'available' as const },
+      { id: 'oioubl', name: 'OIOUBL', description: 'Danish invoice standard', status: 'connected' as const },
+      { id: 'peppol', name: 'Peppol', description: 'EU e-invoice network', status: 'available' as const },
+      { id: 'nemhandel', name: 'NemHandel', description: 'Danish public trade', status: 'available' as const },
+      { id: 'skat-api', name: 'SKAT API', description: 'Integration with Danish Tax Authority', status: 'coming-soon' as const }
     ]
   },
   {
     id: 'ai-automation',
-    name: 'AI & Automatisering',
-    description: 'Smart prisforslag, automatiske udkast, fejlretning, cash flow forudsigelser',
+    name: 'AI & Automation',
+    description: 'Smart pricing suggestions, automatic drafts, error correction, cash flow predictions',
     icon: Brain,
     color: 'from-violet-500 to-violet-600',
     integrations: [
-      { id: 'openai', name: 'OpenAI (ChatGPT/Aiden)', description: 'AI-assisteret indhold', status: 'available' as const },
+      { id: 'openai', name: 'OpenAI (ChatGPT/Aiden)', description: 'AI-assisted content', status: 'available' as const },
       { id: 'zapier', name: 'Zapier', description: 'Workflow automation', status: 'available' as const },
-      { id: 'make', name: 'Make (Integromat)', description: 'Avanceret automation', status: 'available' as const },
+      { id: 'make', name: 'Make (Integromat)', description: 'Advanced automation', status: 'available' as const },
       { id: 'tray', name: 'Tray.io', description: 'Enterprise integration', status: 'coming-soon' as const },
-      { id: 'huggingface', name: 'Hugging Face', description: 'Open source AI modeller', status: 'coming-soon' as const }
+      { id: 'huggingface', name: 'Hugging Face', description: 'Open source AI models', status: 'coming-soon' as const }
     ]
   },
   {
     id: 'analytics',
-    name: 'Analyse & Rapporter',
-    description: 'Visualisering af omsætning, betalingsstatus og kundeperformance',
+    name: 'Analytics & Reports',
+    description: 'Visualization of revenue, payment status and customer performance',
     icon: BarChart3,
     color: 'from-cyan-500 to-cyan-600',
     integrations: [
-      { id: 'looker', name: 'Google Looker Studio', description: 'Gratis data visualisering', status: 'available' as const },
+      { id: 'looker', name: 'Google Looker Studio', description: 'Free data visualization', status: 'available' as const },
       { id: 'powerbi', name: 'Power BI', description: 'Microsoft business intelligence', status: 'available' as const },
       { id: 'plecto', name: 'Plecto', description: 'Real-time dashboards', status: 'connected' as const },
       { id: 'klipfolio', name: 'Klipfolio', description: 'Cloud dashboards', status: 'available' as const },
-      { id: 'tableau', name: 'Tableau', description: 'Avanceret data analyse', status: 'coming-soon' as const },
-      { id: 'excel', name: 'Excel', description: 'Microsoft regneark', status: 'available' as const }
+      { id: 'tableau', name: 'Tableau', description: 'Advanced data analysis', status: 'coming-soon' as const },
+      { id: 'excel', name: 'Excel', description: 'Microsoft spreadsheet', status: 'available' as const }
     ]
   },
   {
     id: 'erp',
-    name: 'ERP & HR-systemer',
-    description: 'Integration til ressourceplanlægning, medarbejderfakturering og løn',
+    name: 'ERP & HR Systems',
+    description: 'Integration with resource planning, employee invoicing and payroll',
     icon: Building2,
     color: 'from-gray-500 to-gray-600',
     integrations: [
       { id: 'sap', name: 'SAP', description: 'Enterprise resource planning', status: 'coming-soon' as const },
       { id: 'netsuite', name: 'NetSuite', description: 'Oracle ERP system', status: 'available' as const },
-      { id: 'dynamics', name: 'Microsoft Dynamics', description: 'Microsoft ERP løsning', status: 'available' as const },
+      { id: 'dynamics', name: 'Microsoft Dynamics', description: 'Microsoft ERP solution', status: 'available' as const },
       { id: 'erpnext', name: 'ERPNext', description: 'Open source ERP', status: 'available' as const },
-      { id: 'visma', name: 'Visma', description: 'Nordisk ERP og løn', status: 'available' as const },
-      { id: 'workday', name: 'Workday', description: 'HR og finansiel management', status: 'coming-soon' as const }
+      { id: 'visma', name: 'Visma', description: 'Nordic ERP and payroll', status: 'available' as const },
+      { id: 'workday', name: 'Workday', description: 'HR and financial management', status: 'coming-soon' as const }
     ]
   }
 ];
