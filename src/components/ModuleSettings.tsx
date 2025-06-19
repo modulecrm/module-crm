@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Check, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Building2, Zap, ExternalLink, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import ModuleSearch from './ModuleSearch';
 
 interface ModuleSettingsProps {
   enabledModules: string[];
@@ -123,6 +123,19 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
     });
   };
 
+  const handleSearchSelect = (moduleId: string) => {
+    // Scroll to the module card
+    const moduleElement = document.getElementById(`module-${moduleId}`);
+    if (moduleElement) {
+      moduleElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Add a brief highlight effect
+      moduleElement.classList.add('ring-2', 'ring-blue-500');
+      setTimeout(() => {
+        moduleElement.classList.remove('ring-2', 'ring-blue-500');
+      }, 2000);
+    }
+  };
+
   const confirmToggle = () => {
     if (confirmationDialog.module) {
       onToggleModule(confirmationDialog.module.id);
@@ -139,7 +152,11 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
     const Icon = module.icon;
     
     return (
-      <div key={module.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200 relative">
+      <div 
+        id={`module-${module.id}`}
+        key={module.id} 
+        className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200 relative"
+      >
         {module.premium && (
           <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
             PREMIUM
@@ -196,6 +213,9 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
         <h1 className="text-3xl font-bold text-gray-900">Module Settings</h1>
         <p className="text-gray-600 mt-2">Enable or disable modules according to your needs</p>
       </div>
+
+      {/* Search Field */}
+      <ModuleSearch onModuleSelect={handleSearchSelect} />
 
       {/* Core Modules */}
       <div className="mb-12">

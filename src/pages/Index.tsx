@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -13,7 +12,11 @@ import InvoiceModule from '../components/InvoiceModule';
 const Index = () => {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [activeSettingsTab, setActiveSettingsTab] = useState('modules');
-  const [enabledModules, setEnabledModules] = useState(['dashboard', 'crm', 'booking', 'invoices']);
+  // Activate all core modules and coworking module as requested
+  const [enabledModules, setEnabledModules] = useState([
+    'dashboard', 'crm', 'invoices', 'subscription', 'booking', 'tasks', 
+    'projects', 'newsletters', 'support', 'coworking'
+  ]);
 
   // Load saved settings from localStorage
   useEffect(() => {

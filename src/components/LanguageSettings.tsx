@@ -1,16 +1,19 @@
 
 import React, { useState } from 'react';
-import { Plus, Search, Globe } from 'lucide-react';
+import { Plus, Search, Globe, Save, Wand2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { Button } from './ui/button';
 
 const LanguageSettings = () => {
-  const { availableLanguages, translations, addLanguage, updateTranslation, t } = useLanguage();
+  const { currentLanguage, availableLanguages, translations, addLanguage, updateTranslation, setCurrentLanguage, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [newLanguageCode, setNewLanguageCode] = useState('');
   const [newLanguageName, setNewLanguageName] = useState('');
   const [showAddLanguage, setShowAddLanguage] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const categories = ['All', ...Array.from(new Set(translations.map(t => t.category)))];
 
@@ -27,18 +30,94 @@ const LanguageSettings = () => {
       setNewLanguageCode('');
       setNewLanguageName('');
       setShowAddLanguage(false);
+      setHasUnsavedChanges(true);
     }
   };
 
   const handleTranslationChange = (key: string, languageCode: string, value: string) => {
     updateTranslation(key, languageCode, value);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleLanguageChange = (languageCode: string) => {
+    setCurrentLanguage(languageCode);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleAutoTranslate = async (targetLanguage: string) => {
+    setIsTranslating(true);
+    
+    // Simulate AI translation - in a real app, this would call an AI translation service
+    for (const translation of translations) {
+      if (!translation.translations[targetLanguage]) {
+        // Mock translation logic - you'd replace this with actual AI translation
+        const mockTranslation = `[${targetLanguage.toUpperCase()}] ${translation.defaultText}`;
+        updateTranslation(translation.key, targetLanguage, mockTranslation);
+      }
+    }
+    
+    setIsTranslating(false);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleSave = () => {
+    // In a real app, this would save to a backend/database
+    console.log('Saving language settings...');
+    setHasUnsavedChanges(false);
+    // Show success toast or notification
   };
 
   return (
     <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('settings.languageSettings')}</h1>
-        <p className="text-gray-600">Manage translations for all text in the CRM system</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('settings.languageSettings')}</h1>
+          <p className="text-gray-600">Manage translations for all text in the CRM system</p>
+        </div>
+        <Button 
+          onClick={handleSave} 
+          disabled={!hasUnsavedChanges}
+          className="flex items-center gap-2"
+        >
+          <Save className="h-4 w-4" />
+          Save Changes
+        </Button>
+      </div>
+
+      {/* Language Selection with Auto-translate */}
+      <div className="mb-6 bg-white p-6 rounded-lg border border-gray-200">
+        <h3 className="text-lg font-semibold mb-4">Current Language & Auto-Translation</h3>
+        <div className="flex flex-wrap gap-4 items-center">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Active Language</label>
+            <select
+              value={currentLanguage}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {availableLanguages.map(language => (
+                <option key={language.code} value={language.code}>{language.name}</option>
+              ))}
+            </select>
+          </div>
+          
+          {availableLanguages.filter(lang => lang.code !== 'en').map(language => (
+            <div key={language.code}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Auto-translate to {language.name}
+              </label>
+              <Button
+                onClick={() => handleAutoTranslate(language.code)}
+                disabled={isTranslating}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Wand2 className="h-4 w-4" />
+                {isTranslating ? 'Translating...' : 'Auto-translate'}
+              </Button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Controls */}
