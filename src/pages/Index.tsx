@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -8,6 +9,7 @@ import CRMModule from '../components/CRMModule';
 import BookingModule from '../components/BookingModule';
 import SubscriptionModule from '../components/SubscriptionModule';
 import InvoiceModule from '../components/InvoiceModule';
+import ModuleSearch from '../components/ModuleSearch';
 
 const Index = () => {
   const [activeModule, setActiveModule] = useState('dashboard');
@@ -41,6 +43,35 @@ const Index = () => {
         return [...prev, moduleId];
       }
     });
+  };
+
+  const handleSearchSelect = (moduleId: string) => {
+    // Navigate to settings if not already there, then scroll to module
+    if (activeModule !== 'settings') {
+      setActiveModule('settings');
+      setActiveSettingsTab('modules');
+      // Wait for the component to render before scrolling
+      setTimeout(() => {
+        const moduleElement = document.getElementById(`module-${moduleId}`);
+        if (moduleElement) {
+          moduleElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          moduleElement.classList.add('ring-2', 'ring-blue-500');
+          setTimeout(() => {
+            moduleElement.classList.remove('ring-2', 'ring-blue-500');
+          }, 2000);
+        }
+      }, 100);
+    } else {
+      // Already in settings, just scroll to module
+      const moduleElement = document.getElementById(`module-${moduleId}`);
+      if (moduleElement) {
+        moduleElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        moduleElement.classList.add('ring-2', 'ring-blue-500');
+        setTimeout(() => {
+          moduleElement.classList.remove('ring-2', 'ring-blue-500');
+        }, 2000);
+      }
+    }
   };
 
   const renderActiveModule = () => {
@@ -166,6 +197,10 @@ const Index = () => {
           enabledModules={enabledModules}
         />
         <div className="flex-1 overflow-auto">
+          {/* Global Module Search */}
+          <div className="bg-white border-b border-gray-200 px-8 py-4">
+            <ModuleSearch onModuleSelect={handleSearchSelect} />
+          </div>
           {renderActiveModule()}
         </div>
       </div>
