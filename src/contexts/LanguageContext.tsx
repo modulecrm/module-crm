@@ -14,6 +14,7 @@ interface LanguageContextType {
   translations: Translation[];
   setCurrentLanguage: (language: string) => void;
   addLanguage: (code: string, name: string) => void;
+  deleteLanguage: (code: string) => void;
   updateTranslation: (key: string, languageCode: string, text: string) => void;
   t: (key: string) => string;
 }
@@ -105,6 +106,28 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const deleteLanguage = (code: string) => {
+    // Don't allow deleting English (default language)
+    if (code === 'en') return;
+    
+    // Remove the language from available languages
+    setAvailableLanguages(prev => prev.filter(lang => lang.code !== code));
+    
+    // Remove all translations for this language
+    setTranslations(prev => prev.map(translation => {
+      const { [code]: removed, ...remainingTranslations } = translation.translations;
+      return {
+        ...translation,
+        translations: remainingTranslations
+      };
+    }));
+    
+    // If the deleted language was the current language, switch to English
+    if (currentLanguage === code) {
+      setCurrentLanguage('en');
+    }
+  };
+
   const updateTranslation = (key: string, languageCode: string, text: string) => {
     setTranslations(prev => prev.map(translation => 
       translation.key === key 
@@ -133,6 +156,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       translations,
       setCurrentLanguage,
       addLanguage,
+      deleteLanguage,
       updateTranslation,
       t
     }}>

@@ -1,12 +1,11 @@
-
 import React, { useState } from 'react';
-import { Plus, Search, Globe, Save, Wand2 } from 'lucide-react';
+import { Plus, Search, Globe, Save, Wand2, Trash2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Button } from './ui/button';
 
 const LanguageSettings = () => {
-  const { currentLanguage, availableLanguages, translations, addLanguage, updateTranslation, setCurrentLanguage, t } = useLanguage();
+  const { currentLanguage, availableLanguages, translations, addLanguage, deleteLanguage, updateTranslation, setCurrentLanguage, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [newLanguageCode, setNewLanguageCode] = useState('');
@@ -30,6 +29,14 @@ const LanguageSettings = () => {
       setNewLanguageCode('');
       setNewLanguageName('');
       setShowAddLanguage(false);
+      setHasUnsavedChanges(true);
+    }
+  };
+
+  const handleDeleteLanguage = (languageCode: string) => {
+    if (languageCode === 'en') return; // Don't allow deleting English
+    if (confirm(`Are you sure you want to delete the ${availableLanguages.find(l => l.code === languageCode)?.name} language? This will remove all translations for this language.`)) {
+      deleteLanguage(languageCode);
       setHasUnsavedChanges(true);
     }
   };
@@ -102,18 +109,29 @@ const LanguageSettings = () => {
           </div>
           
           {availableLanguages.filter(lang => lang.code !== 'en').map(language => (
-            <div key={language.code}>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Auto-translate to {language.name}
-              </label>
+            <div key={language.code} className="flex items-end gap-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Auto-translate to {language.name}
+                </label>
+                <Button
+                  onClick={() => handleAutoTranslate(language.code)}
+                  disabled={isTranslating}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Wand2 className="h-4 w-4" />
+                  {isTranslating ? 'Translating...' : 'Auto-translate'}
+                </Button>
+              </div>
               <Button
-                onClick={() => handleAutoTranslate(language.code)}
-                disabled={isTranslating}
+                onClick={() => handleDeleteLanguage(language.code)}
                 variant="outline"
-                className="flex items-center gap-2"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                title={`Delete ${language.name} language`}
               >
-                <Wand2 className="h-4 w-4" />
-                {isTranslating ? 'Translating...' : 'Auto-translate'}
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           ))}
@@ -201,9 +219,20 @@ const LanguageSettings = () => {
               <TableHead className="w-64">English (Default)</TableHead>
               {availableLanguages.filter(lang => lang.code !== 'en').map(language => (
                 <TableHead key={language.code} className="w-64">
-                  <div className="flex items-center">
-                    <Globe className="h-4 w-4 mr-2" />
-                    {language.name}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Globe className="h-4 w-4 mr-2" />
+                      {language.name}
+                    </div>
+                    <Button
+                      onClick={() => handleDeleteLanguage(language.code)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-6 w-6"
+                      title={`Delete ${language.name} language`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 </TableHead>
               ))}
