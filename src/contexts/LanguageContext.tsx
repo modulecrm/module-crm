@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface Translation {
@@ -24,7 +23,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const defaultTranslations: Translation[] = [
   // Navigation
   { key: 'nav.dashboard', category: 'Navigation', defaultText: 'Dashboard', translations: {} },
-  { key: 'nav.crm', category: 'Navigation', defaultText: 'CRM Core Module', translations: {} },
+  { key: 'nav.crm', category: 'Navigation', defaultText: 'Customers', translations: {} },
   { key: 'nav.subscription', category: 'Navigation', defaultText: 'Subscription Management', translations: {} },
   { key: 'nav.booking', category: 'Navigation', defaultText: 'Booking Management', translations: {} },
   { key: 'nav.tasks', category: 'Navigation', defaultText: 'Task Management', translations: {} },

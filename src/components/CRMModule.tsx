@@ -21,7 +21,7 @@ const CRMModule = () => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">CRM Core Module</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
         <p className="text-gray-600 mt-2">Comprehensive customer relationship management</p>
       </div>
 

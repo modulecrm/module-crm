@@ -14,7 +14,7 @@ const Sidebar = ({ activeModule, onModuleChange, enabledModules }: SidebarProps)
 
   const modules = [
     { id: 'dashboard', name: t('nav.dashboard'), icon: Home, color: 'text-blue-500' },
-    { id: 'crm', name: t('nav.crm'), icon: Users, color: 'text-green-500' },
+    { id: 'crm', name: 'Customers', icon: Users, color: 'text-green-500' },
     { id: 'invoices', name: 'Invoice Management', icon: FileText, color: 'text-blue-500' },
     { id: 'subscription', name: t('nav.subscription'), icon: Building2, color: 'text-purple-500' },
     { id: 'booking', name: t('nav.booking'), icon: Calendar, color: 'text-orange-500' },
