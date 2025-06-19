@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -8,6 +6,7 @@ import ModuleSettings from '../components/ModuleSettings';
 import LanguageSettings from '../components/LanguageSettings';
 import ProfileSettings from '../components/ProfileSettings';
 import PaymentSettings from '../components/subscription/PaymentSettings';
+import IntegrationsSettings from '../components/IntegrationsSettings';
 import CRMModule from '../components/CRMModule';
 import BookingModule from '../components/BookingModule';
 import SubscriptionModule from '../components/SubscriptionModule';
@@ -187,6 +186,16 @@ const Index = () => {
                   Payment Settings
                 </button>
                 <button
+                  onClick={() => setActiveSettingsTab('integrations')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeSettingsTab === 'integrations'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Integrations
+                </button>
+                <button
                   onClick={() => setActiveSettingsTab('language')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     activeSettingsTab === 'language'
@@ -205,6 +214,7 @@ const Index = () => {
             )}
             {activeSettingsTab === 'profile' && <ProfileSettings enabledModules={enabledModules} />}
             {activeSettingsTab === 'payments' && <PaymentSettings />}
+            {activeSettingsTab === 'integrations' && <IntegrationsSettings />}
             {activeSettingsTab === 'language' && <LanguageSettings />}
           </div>
         );
@@ -234,4 +244,3 @@ const Index = () => {
 };
 
 export default Index;
-
