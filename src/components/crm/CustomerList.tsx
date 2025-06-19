@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Plus, Mail, Phone, MapPin, Tag, Users, Star, Building2, User, Grid3X3, List, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -44,7 +45,7 @@ const CustomerList = () => {
   const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [viewMode, setViewMode<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [customViews, setCustomViews] = useState<Array<{
     id: string;
     name: string;
@@ -218,6 +219,16 @@ const CustomerList = () => {
   useEffect(() => {
     loadCustomViews();
   }, []);
+
+  // If a customer is selected, show the detail page
+  if (selectedCustomer) {
+    return (
+      <CustomerDetailPage 
+        customer={selectedCustomer} 
+        onBack={handleBackToList}
+      />
+    );
+  }
 
   if (loading) {
     return <div className="p-8">Loading customers...</div>;
