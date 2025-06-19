@@ -19,6 +19,15 @@ const modules = [
     learnMoreUrl: 'https://example.com/crm-module'
   },
   {
+    id: 'invoices',
+    name: 'Invoice Management',
+    icon: FileText,
+    color: 'from-blue-400 to-blue-600',
+    price: '$39/month',
+    learnMoreUrl: 'https://example.com/invoice-module',
+    required: true // Core dependency for other modules
+  },
+  {
     id: 'subscription',
     name: 'Subscription Management',
     icon: Building2,
@@ -101,6 +110,11 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
   });
 
   const handleModuleToggle = (module: any) => {
+    // Prevent disabling core modules
+    if (module.required && enabledModules.includes(module.id)) {
+      return; // Don't allow disabling required modules
+    }
+    
     const isEnabled = enabledModules.includes(module.id);
     setConfirmationDialog({
       isOpen: true,
@@ -131,6 +145,11 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
             PREMIUM
           </div>
         )}
+        {module.required && (
+          <div className="absolute top-4 right-4 bg-gradient-to-r from-red-400 to-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+            REQUIRED
+          </div>
+        )}
         <div className={`h-2 bg-gradient-to-r ${module.color}`}></div>
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
@@ -139,9 +158,10 @@ const ModuleSettings = ({ enabledModules, onToggleModule }: ModuleSettingsProps)
             </div>
             <button
               onClick={() => handleModuleToggle(module)}
+              disabled={module.required && isEnabled}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 isEnabled ? 'bg-blue-600' : 'bg-gray-200'
-              }`}
+              } ${module.required && isEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${

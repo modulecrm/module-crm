@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -7,11 +8,12 @@ import LanguageSettings from '../components/LanguageSettings';
 import CRMModule from '../components/CRMModule';
 import BookingModule from '../components/BookingModule';
 import SubscriptionModule from '../components/SubscriptionModule';
+import InvoiceModule from '../components/InvoiceModule';
 
 const Index = () => {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [activeSettingsTab, setActiveSettingsTab] = useState('modules');
-  const [enabledModules, setEnabledModules] = useState(['dashboard', 'crm', 'booking']);
+  const [enabledModules, setEnabledModules] = useState(['dashboard', 'crm', 'booking', 'invoices']);
 
   // Load saved settings from localStorage
   useEffect(() => {
@@ -29,8 +31,8 @@ const Index = () => {
   const handleToggleModule = (moduleId: string) => {
     setEnabledModules(prev => {
       if (prev.includes(moduleId)) {
-        // Don't allow disabling dashboard
-        if (moduleId === 'dashboard') return prev;
+        // Don't allow disabling dashboard or invoices (core dependency)
+        if (moduleId === 'dashboard' || moduleId === 'invoices') return prev;
         return prev.filter(id => id !== moduleId);
       } else {
         return [...prev, moduleId];
@@ -48,6 +50,8 @@ const Index = () => {
         return <BookingModule />;
       case 'subscription':
         return <SubscriptionModule />;
+      case 'invoices':
+        return <InvoiceModule />;
       case 'tasks':
         return (
           <div className="p-8">

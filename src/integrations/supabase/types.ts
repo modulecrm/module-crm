@@ -295,6 +295,173 @@ export type Database = {
           },
         ]
       }
+      invoice_line_items: {
+        Row: {
+          created_at: string
+          description: string
+          discount_percentage: number | null
+          id: string
+          invoice_id: string | null
+          line_total: number
+          product_id: string | null
+          quantity: number
+          tax_rate: number | null
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          discount_percentage?: number | null
+          id?: string
+          invoice_id?: string | null
+          line_total: number
+          product_id?: string | null
+          quantity?: number
+          tax_rate?: number | null
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          discount_percentage?: number | null
+          id?: string
+          invoice_id?: string | null
+          line_total?: number
+          product_id?: string | null
+          quantity?: number
+          tax_rate?: number | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_line_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices_extended"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_line_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "invoice_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_products: {
+        Row: {
+          category: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          sku: string | null
+          updated_at: string
+          vat_rate: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          sku?: string | null
+          updated_at?: string
+          vat_rate?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          sku?: string | null
+          updated_at?: string
+          vat_rate?: number | null
+        }
+        Relationships: []
+      }
+      invoice_templates: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean | null
+          name: string
+          template_data: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          template_data?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          template_data?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      invoice_workflows: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          requires_approval: boolean | null
+          template_id: string | null
+          trigger_conditions: Json | null
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          requires_approval?: boolean | null
+          template_id?: string | null
+          trigger_conditions?: Json | null
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          requires_approval?: boolean | null
+          template_id?: string | null
+          trigger_conditions?: Json | null
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_workflows_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "invoice_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           amount: number
@@ -348,6 +515,122 @@ export type Database = {
           },
         ]
       }
+      invoices_extended: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          customer_id: string | null
+          deal_id: string | null
+          discount_amount: number
+          due_date: string | null
+          id: string
+          invoice_number: string
+          is_recurring: boolean | null
+          metadata: Json | null
+          next_invoice_date: string | null
+          notes: string | null
+          paid_at: string | null
+          payment_terms: string | null
+          recurring_frequency: string | null
+          sent_at: string | null
+          status: string
+          subscription_id: string | null
+          subtotal: number
+          tax_amount: number
+          template_id: string | null
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          customer_id?: string | null
+          deal_id?: string | null
+          discount_amount?: number
+          due_date?: string | null
+          id?: string
+          invoice_number: string
+          is_recurring?: boolean | null
+          metadata?: Json | null
+          next_invoice_date?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_terms?: string | null
+          recurring_frequency?: string | null
+          sent_at?: string | null
+          status?: string
+          subscription_id?: string | null
+          subtotal?: number
+          tax_amount?: number
+          template_id?: string | null
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          customer_id?: string | null
+          deal_id?: string | null
+          discount_amount?: number
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          is_recurring?: boolean | null
+          metadata?: Json | null
+          next_invoice_date?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_terms?: string | null
+          recurring_frequency?: string | null
+          sent_at?: string | null
+          status?: string
+          subscription_id?: string | null
+          subtotal?: number
+          tax_amount?: number
+          template_id?: string | null
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_extended_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_extended_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_extended_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_extended_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "invoice_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_methods: {
         Row: {
           brand: string | null
@@ -389,6 +672,41 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      payment_reminders: {
+        Row: {
+          email_content: string | null
+          id: string
+          invoice_id: string | null
+          reminder_type: string
+          sent_at: string
+          status: string | null
+        }
+        Insert: {
+          email_content?: string | null
+          id?: string
+          invoice_id?: string | null
+          reminder_type: string
+          sent_at?: string
+          status?: string | null
+        }
+        Update: {
+          email_content?: string | null
+          id?: string
+          invoice_id?: string | null
+          reminder_type?: string
+          sent_at?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_reminders_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices_extended"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pipeline_stages: {
         Row: {
