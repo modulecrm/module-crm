@@ -38,17 +38,17 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
           const Icon = stat.icon;
           return (
             <div key={stat.name} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.name}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                  <p className={`text-sm mt-2 ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                    {stat.change} from last month
-                  </p>
-                </div>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
                 <div className={`${stat.color} p-3 rounded-lg`}>
                   <Icon className="h-6 w-6 text-white" />
                 </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">{stat.name}</p>
+                <p className={`text-sm mt-1 ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                  {stat.change} from last month
+                </p>
               </div>
             </div>
           );
@@ -72,47 +72,47 @@ const Dashboard = ({ enabledModules }: DashboardProps) => {
           </div>
         </div>
 
-        {/* Enabled Modules */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Active Modules</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {enabledModules.filter(module => module !== 'dashboard').map((moduleId) => {
-              const moduleNames: { [key: string]: string } = {
-                crm: 'CRM Core',
-                subscription: 'Subscriptions',
-                booking: 'Booking',
-                tasks: 'Tasks',
-                projects: 'Projects',
-                newsletters: 'Newsletters',
-                support: 'Support'
-              };
-              
-              return (
-                <div key={moduleId} className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-100">
-                  <p className="text-sm font-medium text-blue-900">
-                    {moduleNames[moduleId] || moduleId}
-                  </p>
-                </div>
-              );
-            })}
+        {/* Today's Bookings - Only show if booking module is enabled */}
+        {enabledModules.includes('booking') && (
+          <div>
+            <TodaysBookings />
           </div>
-          
-          {enabledModules.length === 1 && (
-            <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <p className="text-sm text-yellow-800">
-                Go to Settings to enable more modules
-              </p>
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Today's Bookings - Only show if booking module is enabled */}
-      {enabledModules.includes('booking') && (
-        <div className="mb-8">
-          <TodaysBookings />
+      {/* Active Modules - Moved down */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Active Modules</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {enabledModules.filter(module => module !== 'dashboard').map((moduleId) => {
+            const moduleNames: { [key: string]: string } = {
+              crm: 'CRM Core',
+              subscription: 'Subscriptions',
+              booking: 'Booking',
+              tasks: 'Tasks',
+              projects: 'Projects',
+              newsletters: 'Newsletters',
+              support: 'Support'
+            };
+            
+            return (
+              <div key={moduleId} className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-100">
+                <p className="text-sm font-medium text-blue-900">
+                  {moduleNames[moduleId] || moduleId}
+                </p>
+              </div>
+            );
+          })}
         </div>
-      )}
+        
+        {enabledModules.length === 1 && (
+          <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+            <p className="text-sm text-yellow-800">
+              Go to Settings to enable more modules
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
