@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp, X, ChevronDown, ChevronRight, AlertTriangle, BarChart3, User, CheckSquare, Users } from 'lucide-react';
+import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp, X, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -274,7 +275,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   };
 
   return (
-    <div className="p-6 w-full">
+    <div className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {/* Subscription Type - Clickable */}
         <Sheet open={isSubscriptionOpen} onOpenChange={setIsSubscriptionOpen}>
@@ -646,7 +647,7 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                         <p className="text-sm font-medium mt-1">Amount: {invoice.amount}</p>
                       </div>
                       <div className="flex flex-col gap-2 w-full lg:w-auto min-w-[200px]">
-                        <Button variant="ghost" size="sm" className="w-full">
+                        <Button variant="ghost" size="sm" className="w-full lg:w-auto">
                           <Download className="h-4 w-4 mr-2" />
                           Download
                         </Button>
@@ -717,74 +718,11 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
         </Card>
       </div>
 
-      {/* Additional Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {/* Lead Score */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                <BarChart3 className="h-4 w-4 text-yellow-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Lead Score</p>
-                <p className="font-semibold">{customer.lead_score}/100</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Total Purchases */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
-                <Package className="h-4 w-4 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Total Purchases</p>
-                <p className="font-semibold">24</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Open Tasks */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center">
-                <CheckSquare className="h-4 w-4 text-red-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Open Tasks</p>
-                <p className="font-semibold">3</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Last Contact */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                <Users className="h-4 w-4 text-indigo-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Last Contact</p>
-                <p className="font-semibold">2 days ago</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Action Shortcuts */}
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
-          Sales
+          Product
         </Button>
         <Button variant="outline" size="sm" className="flex items-center gap-2">
           <Plus className="h-4 w-4" />

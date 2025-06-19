@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Edit, Settings, MessageSquare, FileText, Package, CheckSquare, BarChart3, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -48,10 +49,10 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ customer, onBac
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
-    <div className="min-h-screen bg-gray-50 w-full">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 w-full">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
+      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0 flex-1">
             <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 flex-shrink-0">
               <ArrowLeft className="h-4 w-4" />
@@ -79,13 +80,13 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ customer, onBac
       </div>
 
       {/* Sticky Overview Section */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 w-full">
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
         <CustomerOverview customer={customer} />
       </div>
 
       {/* Main Content with Tabs */}
-      <div className="px-6 py-6 w-full">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 w-full">
+      <div className="px-4 md:px-6 py-4 md:py-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
           <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 gap-1 h-auto">
             <TabsTrigger value="overview" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
               <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
