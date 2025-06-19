@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Check, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Building2, Zap, ExternalLink } from 'lucide-react';
+import { Check, Users, Calendar, CheckSquare, FolderOpen, Mail, MessageSquare, LifeBuoy, Building2, Zap, ExternalLink, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
