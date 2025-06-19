@@ -32,49 +32,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     console.log('AuthProvider: Setting up auth state management');
     
-    let mounted = true;
-    
-    // Set up auth state listener first
+    // Single source of truth - only use the auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          // Only set loading to false after we have processed the auth state
-          if (loading) {
-            setLoading(false);
-          }
-        }
-      }
-    );
-
-    // Get initial session separately
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Error getting session:', error);
-      } else {
-        console.log('Initial session:', session?.user?.email);
-      }
-      
-      if (mounted) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
-    }).catch((error) => {
-      console.error('Error in getSession:', error);
-      if (mounted) {
-        setLoading(false);
-      }
+    );
+
+    // Trigger initial auth state check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.email);
+      // The onAuthStateChange will handle the state update
     });
 
     return () => {
       console.log('AuthProvider: Cleaning up auth subscription');
-      mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // Empty dependency array to run only once
+  }, []);
 
   const signOut = async () => {
     try {
