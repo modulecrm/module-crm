@@ -30,7 +30,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener first
+    console.log('AuthProvider: Setting up auth state management');
+    
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
@@ -52,14 +54,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('AuthProvider: Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
     try {
+      console.log('AuthProvider: Signing out user');
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      // Force page reload for clean state
       window.location.href = '/auth';
     } catch (error) {
       console.error('Error signing out:', error);

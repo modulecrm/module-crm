@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -16,9 +17,8 @@ import ModuleSearch from '../components/ModuleSearch';
 const Index = () => {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [activeSettingsTab, setActiveSettingsTab] = useState('modules');
-  // Activate all core modules and coworking module as requested
   const [enabledModules, setEnabledModules] = useState([
-    'dashboard', 'crm', 'invoices', 'subscription', 'booking', 'tasks', 
+    'dashboard', 'crm', 'invoice', 'subscription', 'booking', 'tasks',
     'projects', 'newsletters', 'support', 'coworking'
   ]);
 
@@ -38,8 +38,7 @@ const Index = () => {
   const handleToggleModule = (moduleId: string) => {
     setEnabledModules(prev => {
       if (prev.includes(moduleId)) {
-        // Don't allow disabling dashboard or invoices (core dependency)
-        if (moduleId === 'dashboard' || moduleId === 'invoices') return prev;
+        if (moduleId === 'dashboard' || moduleId === 'invoice') return prev;
         return prev.filter(id => id !== moduleId);
       } else {
         return [...prev, moduleId];
@@ -48,11 +47,9 @@ const Index = () => {
   };
 
   const handleSearchSelect = (moduleId: string) => {
-    // Navigate to settings if not already there, then scroll to module
     if (activeModule !== 'settings') {
       setActiveModule('settings');
       setActiveSettingsTab('modules');
-      // Wait for the component to render before scrolling
       setTimeout(() => {
         const moduleElement = document.getElementById(`module-${moduleId}`);
         if (moduleElement) {
@@ -64,7 +61,6 @@ const Index = () => {
         }
       }, 100);
     } else {
-      // Already in settings, just scroll to module
       const moduleElement = document.getElementById(`module-${moduleId}`);
       if (moduleElement) {
         moduleElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -86,7 +82,7 @@ const Index = () => {
         return <BookingModule />;
       case 'subscription':
         return <SubscriptionModule />;
-      case 'invoices':
+      case 'invoice':
         return <InvoiceModule />;
       case 'tasks':
         return (
@@ -151,7 +147,7 @@ const Index = () => {
               <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
               <p className="text-gray-600 mt-2">Manage your CRM system configuration</p>
             </div>
-            
+
             {/* Settings Tabs */}
             <div className="border-b border-gray-200 mb-8">
               <nav className="flex space-x-8">
@@ -225,9 +221,9 @@ const Index = () => {
 
   return (
     <LanguageProvider>
-      <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar 
-          activeModule={activeModule} 
+      <div className="min-h-screen bg-gray-50 flex w-full">
+        <Sidebar
+          activeModule={activeModule}
           onModuleChange={setActiveModule}
           enabledModules={enabledModules}
         />

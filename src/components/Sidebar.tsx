@@ -4,12 +4,12 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import UserMenu from '@/components/auth/UserMenu';
-import { 
-  BarChart3, 
-  Users, 
-  FileText, 
-  Calendar, 
-  CreditCard, 
+import {
+  BarChart3,
+  Users,
+  FileText,
+  Calendar,
+  CreditCard,
   Settings,
   Search,
   Globe
@@ -37,6 +37,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
     { id: 'integrations', name: 'Integrations', icon: Settings },
   ];
 
+  const handleModuleClick = (moduleId: string) => {
+    console.log('Sidebar: Switching to module:', moduleId);
+    if (settingsItems.some(item => item.id === moduleId)) {
+      onModuleChange('settings');
+    } else {
+      onModuleChange(moduleId);
+    }
+  };
+
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
       {/* Header */}
@@ -46,21 +55,22 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
           <UserMenu />
         </div>
       </div>
-      
+
       {/* Navigation */}
       <nav className="flex-1 p-4">
         <div className="space-y-1">
           {modules.map((module) => {
             const Icon = module.icon;
+            const isActive = activeModule === module.id;
             return (
               <Button
                 key={module.id}
-                variant={activeModule === module.id ? "default" : "ghost"}
+                variant={isActive ? "default" : "ghost"}
                 className={cn(
                   "w-full justify-start",
-                  activeModule === module.id && "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                  isActive && "bg-blue-50 text-blue-700 hover:bg-blue-100"
                 )}
-                onClick={() => onModuleChange(module.id)}
+                onClick={() => handleModuleClick(module.id)}
               >
                 <Icon className="mr-2 h-4 w-4" />
                 {module.name}
@@ -68,23 +78,24 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
             );
           })}
         </div>
-        
+
         <Separator className="my-4" />
-        
+
         {/* Settings */}
         <div className="space-y-1">
           <p className="text-xs font-medium text-gray-500 px-2 mb-2">SETTINGS</p>
           {settingsItems.map((item) => {
             const Icon = item.icon;
+            const isActive = activeModule === 'settings';
             return (
               <Button
                 key={item.id}
-                variant={activeModule === item.id ? "default" : "ghost"}
+                variant={isActive ? "default" : "ghost"}
                 className={cn(
                   "w-full justify-start",
-                  activeModule === item.id && "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                  isActive && "bg-blue-50 text-blue-700 hover:bg-blue-100"
                 )}
-                onClick={() => onModuleChange(item.id)}
+                onClick={() => handleModuleClick(item.id)}
               >
                 <Icon className="mr-2 h-4 w-4" />
                 {item.name}
