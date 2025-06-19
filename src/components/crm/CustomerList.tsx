@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Plus, Mail, Phone, MapPin, Tag, Users, Star, Building2, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,7 +54,15 @@ const CustomerList = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCustomers(data || []);
+      
+      // Type cast the data to match our Customer interface
+      const typedCustomers: Customer[] = (data || []).map(customer => ({
+        ...customer,
+        custom_fields: customer.custom_fields as Customer['custom_fields'],
+        address: customer.address as Customer['address']
+      }));
+      
+      setCustomers(typedCustomers);
     } catch (error) {
       console.error('Error fetching customers:', error);
     } finally {
@@ -283,7 +290,7 @@ const CustomerList = () => {
           customer_type: 'business',
           language: 'en',
           currency: 'USD',
-          source: 'referral',
+8          source: 'referral',
           segment: 'Sustainable Retail',
           employees_count: 45,
           revenue: 3500000,
