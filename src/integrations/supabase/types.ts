@@ -25,6 +25,7 @@ export type Database = {
           subject: string
           type: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -41,6 +42,7 @@ export type Database = {
           subject: string
           type: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -57,6 +59,7 @@ export type Database = {
           subject?: string
           type?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -128,6 +131,7 @@ export type Database = {
           metadata: Json | null
           subject: string | null
           type: string
+          user_id: string | null
         }
         Insert: {
           content?: string | null
@@ -140,6 +144,7 @@ export type Database = {
           metadata?: Json | null
           subject?: string | null
           type: string
+          user_id?: string | null
         }
         Update: {
           content?: string | null
@@ -152,6 +157,7 @@ export type Database = {
           metadata?: Json | null
           subject?: string | null
           type?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -189,6 +195,7 @@ export type Database = {
           tags: string[] | null
           title: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           address?: Json | null
@@ -208,6 +215,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           address?: Json | null
@@ -227,6 +235,7 @@ export type Database = {
           tags?: string[] | null
           title?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -247,6 +256,7 @@ export type Database = {
           stage: string
           title: string
           updated_at: string | null
+          user_id: string | null
           value: number | null
         }
         Insert: {
@@ -265,6 +275,7 @@ export type Database = {
           stage?: string
           title: string
           updated_at?: string | null
+          user_id?: string | null
           value?: number | null
         }
         Update: {
@@ -283,6 +294,7 @@ export type Database = {
           stage?: string
           title?: string
           updated_at?: string | null
+          user_id?: string | null
           value?: number | null
         }
         Relationships: [
@@ -895,6 +907,7 @@ export type Database = {
           status: string | null
           title: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -910,6 +923,7 @@ export type Database = {
           status?: string | null
           title: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -925,6 +939,7 @@ export type Database = {
           status?: string | null
           title?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1017,15 +1032,47 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "admin"
+        | "manager"
+        | "sales_rep"
+        | "support_agent"
+        | "marketing"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1140,6 +1187,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "manager", "sales_rep", "support_agent", "marketing"],
+    },
   },
 } as const
