@@ -139,6 +139,7 @@ const CustomerList: React.FC = () => {
   const [isCustomViewEditorOpen, setIsCustomViewEditorOpen] = useState(false);
   const [customViews, setCustomViews] = useState<any[]>([]);
   const [activeView, setActiveView] = useState('all');
+  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
 
   useEffect(() => {
     // Load customers from local storage or an API here
@@ -158,24 +159,9 @@ const CustomerList: React.FC = () => {
     setCurrentView('create');
   };
 
-  const handleSaveCustomer = (customerData: any) => {
-    const newCustomer: Customer = {
-      id: Date.now().toString(),
-      name: customerData.name,
-      email: customerData.email,
-      phone: customerData.phone || '',
-      company: customerData.company || '',
-      status: customerData.status || 'active',
-      lead_score: customerData.lead_score || 0,
-      tags: customerData.tags || [],
-      industry: customerData.industry || '',
-      created_at: new Date().toISOString(),
-      custom_fields: customerData.custom_fields || {},
-      address: customerData.address || {}
-    };
-
-    setCustomers(prev => [newCustomer, ...prev]);
+  const handleCustomerCreated = () => {
     setCurrentView('list');
+    // Optionally refresh customer list here
   };
 
   const handleSaveCustomView = (view: any) => {
@@ -192,6 +178,41 @@ const CustomerList: React.FC = () => {
 
   const createSampleCustomers = () => {
     setCustomers(sampleCustomers);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'inactive':
+        return 'bg-red-100 text-red-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getLeadScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  const handleCustomerSelect = (customerId: string) => {
+    setSelectedCustomers(prev => 
+      prev.includes(customerId) 
+        ? prev.filter(id => id !== customerId)
+        : [...prev, customerId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedCustomers(filteredCustomers.map(c => c.id));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedCustomers([]);
   };
 
   const filteredCustomers = customers.filter(customer => {
@@ -250,8 +271,8 @@ const CustomerList: React.FC = () => {
   if (currentView === 'create') {
     return (
       <CreateCustomerForm 
-        onSave={handleSaveCustomer}
-        onCancel={() => setCurrentView('list')}
+        onClose={() => setCurrentView('list')}
+        onSuccess={handleCustomerCreated}
       />
     );
   }
@@ -333,7 +354,6 @@ const CustomerList: React.FC = () => {
           </div>
         </div>
 
-        {/* Custom Views Tabs */}
         <div className="mt-4">
           <Tabs value={activeView} onValueChange={setActiveView}>
             <TabsList className="w-full sm:w-auto">
@@ -377,8 +397,13 @@ const CustomerList: React.FC = () => {
         ) : (
           <CustomerTableView 
             customers={filteredCustomers}
-            onViewCustomer={handleViewCustomer}
-            viewMode={viewMode}
+            getStatusColor={getStatusColor}
+            getLeadScoreColor={getLeadScoreColor}
+            selectedCustomers={selectedCustomers}
+            onCustomerSelect={handleCustomerSelect}
+            onSelectAll={handleSelectAll}
+            onClearSelection={handleClearSelection}
+            onCustomerClick={handleViewCustomer}
           />
         )}
       </div>
