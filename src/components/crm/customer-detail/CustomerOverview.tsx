@@ -6,7 +6,8 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -39,7 +40,9 @@ interface CustomerOverviewProps {
 const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [isInvoicesOpen, setIsInvoicesOpen] = useState(false);
+  const [isRevenueOpen, setIsRevenueOpen] = useState(false);
   const [isAccountStatementOpen, setIsAccountStatementOpen] = useState(false);
+  const [showPurchaseDetails, setShowPurchaseDetails] = useState(false);
   const [statementFromDate, setStatementFromDate] = useState('');
   const [statementToDate, setStatementToDate] = useState('');
 
@@ -67,6 +70,27 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
     { id: "INV-2024-003", date: "2024-03-15", amount: "DKK 2,500", dueDate: "2024-04-15", paid: false, status: "overdue" },
     { id: "INV-2024-002", date: "2024-02-15", amount: "DKK 2,500", dueDate: "2024-03-15", paid: true, status: "paid" },
     { id: "INV-2024-001", date: "2024-01-15", amount: "DKK 2,500", dueDate: "2024-02-15", paid: true, status: "paid" },
+  ];
+
+  // Mock purchase data
+  const purchaseCategories = [
+    { category: 'Subscriptions', amount: 'DKK 48,000', count: 16, percentage: 66 },
+    { category: 'Add-ons', amount: 'DKK 15,000', count: 8, percentage: 21 },
+    { category: 'Support', amount: 'DKK 9,540', count: 5, percentage: 13 },
+  ];
+
+  const detailedPurchases = [
+    { id: '1', date: '2024-03-01', item: 'Premium Subscription', category: 'Subscriptions', amount: 'DKK 2,500' },
+    { id: '2', date: '2024-02-15', item: 'Additional Storage', category: 'Add-ons', amount: 'DKK 500' },
+    { id: '3', date: '2024-02-01', item: 'Premium Subscription', category: 'Subscriptions', amount: 'DKK 2,500' },
+    { id: '4', date: '2024-01-20', item: 'Priority Support', category: 'Support', amount: 'DKK 1,200' },
+    { id: '5', date: '2024-01-01', item: 'Premium Subscription', category: 'Subscriptions', amount: 'DKK 2,500' },
+  ];
+
+  const subscriptionHistory = [
+    { plan: 'Premium - Monthly', startDate: '2024-01-01', endDate: 'Current', status: 'Active' },
+    { plan: 'Basic - Monthly', startDate: '2023-06-01', endDate: '2023-12-31', status: 'Ended' },
+    { plan: 'Starter - Monthly', startDate: '2023-01-01', endDate: '2023-05-31', status: 'Upgraded' },
   ];
 
   const getPaymentStatusColor = (status: string) => {
@@ -161,25 +185,126 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                     ))}
                   </div>
                 </div>
+
+                <div className="mt-6">
+                  <h3 className="text-lg font-medium mb-4">Subscription History</h3>
+                  <div className="space-y-3">
+                    {subscriptionHistory.map((sub, index) => (
+                      <div key={index} className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-semibold">{sub.plan}</h4>
+                            <p className="text-sm text-gray-600">Start: {sub.startDate}</p>
+                            <p className="text-sm text-gray-600">End: {sub.endDate}</p>
+                          </div>
+                          <Badge className={sub.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                            {sub.status}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </SheetContent>
         </Sheet>
 
-        {/* Total Revenue */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 font-bold">💰</span>
-              </div>
+        {/* Total Revenue - Now Clickable */}
+        <Sheet open={isRevenueOpen} onOpenChange={setIsRevenueOpen}>
+          <SheetTrigger asChild>
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-green-600 font-bold">💰</span>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Total Revenue</p>
+                    <p className="font-semibold text-green-600">{totalRevenue}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </SheetTrigger>
+          <SheetContent className="w-[400px] sm:w-[540px]">
+            <SheetHeader>
+              <SheetTitle>Revenue & Purchase Overview</SheetTitle>
+              <SheetDescription>
+                Detailed revenue and purchase analysis for {customer.name}
+              </SheetDescription>
+            </SheetHeader>
+            <div className="mt-6 space-y-6">
+              {/* Purchase Categories Overview */}
               <div>
-                <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="font-semibold text-green-600">{totalRevenue}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium">Purchase Categories</h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowPurchaseDetails(!showPurchaseDetails)}
+                  >
+                    {showPurchaseDetails ? 'Hide Details' : 'View Details'}
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {purchaseCategories.map((category, index) => (
+                    <div key={index} className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4 text-gray-400" />
+                          <span className="font-medium">{category.category}</span>
+                        </div>
+                        <span className="font-semibold text-green-600">{category.amount}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-gray-600">
+                        <span>{category.count} purchases</span>
+                        <span>{category.percentage}% of total</span>
+                      </div>
+                      <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-green-500 h-2 rounded-full" 
+                          style={{ width: `${category.percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              {/* Detailed Purchase List */}
+              {showPurchaseDetails && (
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Purchase Details</h3>
+                  <div className="border rounded-lg">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Item</TableHead>
+                          <TableHead>Category</TableHead>
+                          <TableHead className="text-right">Amount</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {detailedPurchases.map((purchase) => (
+                          <TableRow key={purchase.id}>
+                            <TableCell className="text-sm">{purchase.date}</TableCell>
+                            <TableCell className="font-medium">{purchase.item}</TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">{purchase.category}</Badge>
+                            </TableCell>
+                            <TableCell className="text-right font-semibold">{purchase.amount}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
             </div>
-          </CardContent>
-        </Card>
+          </SheetContent>
+        </Sheet>
 
         {/* Latest Invoice & Payment Status - Merged and Clickable */}
         <Sheet open={isInvoicesOpen} onOpenChange={setIsInvoicesOpen}>
