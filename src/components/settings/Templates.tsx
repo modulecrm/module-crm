@@ -4,14 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Mail, FileContract, Plus, Edit, Eye, Copy } from 'lucide-react';
+import { FileText, Mail, File, Plus, Edit, Eye, Copy } from 'lucide-react';
 
 const Templates = () => {
   const [activeCategory, setActiveCategory] = useState('emails');
 
   const templateCategories = [
     { id: 'emails', name: 'Emails', icon: Mail },
-    { id: 'contracts', name: 'Contracts', icon: FileContract },
+    { id: 'contracts', name: 'Contracts', icon: File },
     { id: 'invoice-credit', name: 'Invoice and Credit Note', icon: FileText },
   ];
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Dashboard from '@/components/Dashboard';
@@ -22,12 +23,22 @@ function App() {
     setActiveModule(module);
   };
 
+  const handleToggleModule = (moduleId: string) => {
+    setEnabledModules(prev => {
+      if (prev.includes(moduleId)) {
+        return prev.filter(id => id !== moduleId);
+      } else {
+        return [...prev, moduleId];
+      }
+    });
+  };
+
   const renderActiveModule = () => {
     console.log('App: Rendering module:', activeModule);
     
     switch (activeModule) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard enabledModules={enabledModules} />;
       case 'crm':
         return <CRMModule />;
       case 'invoice':
@@ -37,9 +48,9 @@ function App() {
       case 'subscription':
         return <SubscriptionModule />;
       case 'settings':
-        return <SettingsModule />;
+        return <SettingsModule enabledModules={enabledModules} onToggleModule={handleToggleModule} />;
       default:
-        return <Dashboard />;
+        return <Dashboard enabledModules={enabledModules} />;
     }
   };
 

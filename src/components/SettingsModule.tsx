@@ -8,7 +8,12 @@ import ProfileSettings from './ProfileSettings';
 import LanguageSettings from './LanguageSettings';
 import IntegrationsSettings from './IntegrationsSettings';
 
-const SettingsModule = () => {
+interface SettingsModuleProps {
+  enabledModules: string[];
+  onToggleModule: (moduleId: string) => void;
+}
+
+const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps) => {
   const [activeTab, setActiveTab] = useState('templates');
 
   return (
@@ -47,11 +52,11 @@ const SettingsModule = () => {
         </TabsContent>
 
         <TabsContent value="modules" className="mt-6">
-          <ModuleSettings />
+          <ModuleSettings enabledModules={enabledModules} onToggleModule={onToggleModule} />
         </TabsContent>
 
         <TabsContent value="profile" className="mt-6">
-          <ProfileSettings />
+          <ProfileSettings enabledModules={enabledModules} />
         </TabsContent>
 
         <TabsContent value="language" className="mt-6">
