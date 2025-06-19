@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -210,6 +211,7 @@ const IntegrationsSettings = () => {
         if (integration.status === 'connected') {
           connected.push({
             ...integration,
+            category: category.name, // Add the missing category property
             categoryName: category.name,
             categoryIcon: category.icon,
             categoryColor: category.color
