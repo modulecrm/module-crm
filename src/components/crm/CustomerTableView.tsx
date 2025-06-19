@@ -96,10 +96,10 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
       {/* Actions Bar */}
-      <div className="p-4 border-b flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="p-3 md:p-4 border-b flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <div className="flex items-center gap-2">
             <Checkbox
               checked={allSelected || someSelected}
@@ -128,14 +128,15 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
           <DropdownMenuTrigger asChild>
             <Button 
               variant="outline" 
-              className="flex items-center gap-2"
+              size="sm"
+              className="flex items-center gap-2 w-full sm:w-auto"
               disabled={selectedCustomers.length === 0}
             >
               Actions
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-white">
+          <DropdownMenuContent align="end" className="w-48 bg-white z-50">
             <DropdownMenuItem onClick={() => handleAction('send_email')}>
               <Mail className="h-4 w-4 mr-2" />
               Send Email
@@ -159,147 +160,228 @@ const CustomerTableView: React.FC<CustomerTableViewProps> = ({
         </DropdownMenu>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12">
-              <Checkbox
-                checked={allSelected || someSelected}
-                onCheckedChange={allSelected ? onClearSelection : onSelectAll}
-              />
-            </TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Contact</TableHead>
-            <TableHead>Industry</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Lead Score</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Tags</TableHead>
-            <TableHead>Created</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {customers.map((customer) => (
-            <TableRow 
-              key={customer.id} 
-              className={`hover:bg-gray-50 cursor-pointer ${
-                selectedCustomers.includes(customer.id) ? 'bg-blue-50' : ''
-              }`}
-              onClick={(e) => {
-                // Only navigate to detail if clicking on the row but not on the checkbox
-                if (!(e.target as HTMLElement).closest('[role="checkbox"]') && onCustomerClick) {
-                  onCustomerClick(customer);
-                }
-              }}
-            >
-              <TableCell onClick={(e) => e.stopPropagation()}>
+      {/* Mobile Card View for small screens */}
+      <div className="block md:hidden">
+        {customers.map((customer) => (
+          <div
+            key={customer.id}
+            className={`border-b p-4 hover:bg-gray-50 cursor-pointer ${
+              selectedCustomers.includes(customer.id) ? 'bg-blue-50' : ''
+            }`}
+            onClick={(e) => {
+              if (!(e.target as HTMLElement).closest('[role="checkbox"]') && onCustomerClick) {
+                onCustomerClick(customer);
+              }
+            }}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
                 <Checkbox
                   checked={selectedCustomers.includes(customer.id)}
                   onCheckedChange={() => onCustomerSelect(customer.id)}
+                  onClick={(e) => e.stopPropagation()}
                 />
-              </TableCell>
-
-              <TableCell>
-                <div className="flex items-center gap-3">
+                
+                <div className="flex items-center gap-2 min-w-0 flex-1">
                   {customer.custom_fields?.customer_type === 'business' ? (
-                    <Building2 className="h-5 w-5 text-blue-500" />
+                    <Building2 className="h-4 w-4 text-blue-500 flex-shrink-0" />
                   ) : (
-                    <User className="h-5 w-5 text-green-500" />
+                    <User className="h-4 w-4 text-green-500 flex-shrink-0" />
                   )}
-                  <div>
-                    <div className="font-semibold text-gray-900">{customer.name}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-gray-900 text-sm truncate">{customer.name}</div>
                     {customer.company && (
-                      <div className="text-sm text-gray-500">{customer.company}</div>
+                      <div className="text-xs text-gray-500 truncate">{customer.company}</div>
                     )}
                   </div>
                 </div>
-              </TableCell>
-
-              <TableCell>
-                <Badge variant="outline" className="text-xs">
-                  {customer.custom_fields?.customer_type === 'business' ? 'B2B' : 'B2C'}
-                </Badge>
-              </TableCell>
-
-              <TableCell>
-                <div className="space-y-1">
-                  {customer.email && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Mail className="h-3 w-3 mr-2" />
-                      {customer.email}
-                    </div>
-                  )}
-                  {customer.phone && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Phone className="h-3 w-3 mr-2" />
-                      {customer.phone}
-                    </div>
-                  )}
-                </div>
-              </TableCell>
-
-              <TableCell>
-                <span className="text-sm text-gray-600">{customer.industry || '-'}</span>
-              </TableCell>
-
-              <TableCell>
-                {customer.address?.country && (
-                  <div className="flex items-center text-sm text-gray-600">
-                    <MapPin className="h-3 w-3 mr-2" />
-                    {customer.address.city}, {customer.address.country}
-                  </div>
-                )}
-              </TableCell>
-
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Star className={`h-4 w-4 ${getLeadScoreColor(customer.lead_score)}`} />
-                  <span className={`text-sm font-medium ${getLeadScoreColor(customer.lead_score)}`}>
+              </div>
+              
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Badge className={getStatusColor(customer.status)} />
+                <div className="flex items-center gap-1">
+                  <Star className={`h-3 w-3 ${getLeadScoreColor(customer.lead_score)}`} />
+                  <span className={`text-xs font-medium ${getLeadScoreColor(customer.lead_score)}`}>
                     {customer.lead_score}
                   </span>
                 </div>
-              </TableCell>
+              </div>
+            </div>
 
-              <TableCell>
-                <Badge className={getStatusColor(customer.status)}>
-                  {customer.status}
-                </Badge>
-              </TableCell>
+            <div className="grid grid-cols-1 gap-2 text-xs text-gray-600 mb-2">
+              {customer.email && (
+                <div className="flex items-center">
+                  <Mail className="h-3 w-3 mr-2" />
+                  <span className="truncate">{customer.email}</span>
+                </div>
+              )}
+              {customer.phone && (
+                <div className="flex items-center">
+                  <Phone className="h-3 w-3 mr-2" />
+                  <span className="truncate">{customer.phone}</span>
+                </div>
+              )}
+              {customer.address?.country && (
+                <div className="flex items-center">
+                  <MapPin className="h-3 w-3 mr-2" />
+                  <span className="truncate">{customer.address.city}, {customer.address.country}</span>
+                </div>
+              )}
+            </div>
 
-              <TableCell>
-                {customer.tags && customer.tags.length > 0 ? (
-                  <div className="flex flex-wrap gap-1">
-                    {customer.tags.slice(0, 2).map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {customer.tags.length > 2 && (
-                      <span className="text-xs text-gray-500">
-                        +{customer.tags.length - 2}
-                      </span>
+            <div className="flex justify-between items-center text-xs">
+              <Badge variant="outline">
+                {customer.custom_fields?.customer_type === 'business' ? 'B2B' : 'B2C'}
+              </Badge>
+              <span className="text-gray-500">{formatDate(customer.created_at)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={allSelected || someSelected}
+                  onCheckedChange={allSelected ? onClearSelection : onSelectAll}
+                />
+              </TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Contact</TableHead>
+              <TableHead>Industry</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Lead Score</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Tags</TableHead>
+              <TableHead>Created</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {customers.map((customer) => (
+              <TableRow 
+                key={customer.id} 
+                className={`hover:bg-gray-50 cursor-pointer ${
+                  selectedCustomers.includes(customer.id) ? 'bg-blue-50' : ''
+                }`}
+                onClick={(e) => {
+                  if (!(e.target as HTMLElement).closest('[role="checkbox"]') && onCustomerClick) {
+                    onCustomerClick(customer);
+                  }
+                }}
+              >
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                    checked={selectedCustomers.includes(customer.id)}
+                    onCheckedChange={() => onCustomerSelect(customer.id)}
+                  />
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    {customer.custom_fields?.customer_type === 'business' ? (
+                      <Building2 className="h-5 w-5 text-blue-500" />
+                    ) : (
+                      <User className="h-5 w-5 text-green-500" />
+                    )}
+                    <div>
+                      <div className="font-semibold text-gray-900">{customer.name}</div>
+                      {customer.company && (
+                        <div className="text-sm text-gray-500">{customer.company}</div>
+                      )}
+                    </div>
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  <Badge variant="outline" className="text-xs">
+                    {customer.custom_fields?.customer_type === 'business' ? 'B2B' : 'B2C'}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>
+                  <div className="space-y-1">
+                    {customer.email && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Mail className="h-3 w-3 mr-2" />
+                        {customer.email}
+                      </div>
+                    )}
+                    {customer.phone && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Phone className="h-3 w-3 mr-2" />
+                        {customer.phone}
+                      </div>
                     )}
                   </div>
-                ) : (
-                  <span className="text-xs text-gray-400">No tags</span>
-                )}
-              </TableCell>
+                </TableCell>
 
-              <TableCell>
-                <span className="text-sm text-gray-600">
-                  {formatDate(customer.created_at)}
-                </span>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                <TableCell>
+                  <span className="text-sm text-gray-600">{customer.industry || '-'}</span>
+                </TableCell>
+
+                <TableCell>
+                  {customer.address?.country && (
+                    <div className="flex items-center text-sm text-gray-600">
+                      <MapPin className="h-3 w-3 mr-2" />
+                      {customer.address.city}, {customer.address.country}
+                    </div>
+                  )}
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Star className={`h-4 w-4 ${getLeadScoreColor(customer.lead_score)}`} />
+                    <span className={`text-sm font-medium ${getLeadScoreColor(customer.lead_score)}`}>
+                      {customer.lead_score}
+                    </span>
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  <Badge className={getStatusColor(customer.status)}>
+                    {customer.status}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>
+                  {customer.tags && customer.tags.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {customer.tags.slice(0, 2).map((tag, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {customer.tags.length > 2 && (
+                        <span className="text-xs text-gray-500">
+                          +{customer.tags.length - 2}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-gray-400">No tags</span>
+                  )}
+                </TableCell>
+
+                <TableCell>
+                  <span className="text-sm text-gray-600">
+                    {formatDate(customer.created_at)}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
       {customers.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-lg font-medium text-gray-900 mb-2">No customers found</div>
-          <p className="text-gray-600">Try adjusting your search or filters</p>
+        <div className="text-center py-8 md:py-12">
+          <div className="text-base md:text-lg font-medium text-gray-900 mb-2">No customers found</div>
+          <p className="text-sm md:text-base text-gray-600">Try adjusting your search or filters</p>
         </div>
       )}
     </div>

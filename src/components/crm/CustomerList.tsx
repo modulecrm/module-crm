@@ -710,31 +710,33 @@ const CustomerList = () => {
   }
 
   if (loading) {
-    return <div className="p-8">Loading customers...</div>;
+    return <div className="p-4 md:p-8">Loading customers...</div>;
   }
 
   return (
-    <div className="w-full max-w-none space-y-6">
+    <div className="w-full max-w-none space-y-4 md:space-y-6 p-4 md:p-0">
       {/* Header with Create Sample Data Button */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Customer Management</h2>
-          <p className="text-gray-600">Manage your customer relationships</p>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Customer Management</h2>
+          <p className="text-sm md:text-base text-gray-600">Manage your customer relationships</p>
         </div>
         {customers.length === 0 && (
           <Button 
             onClick={createSampleCustomers}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
           >
             <Users className="h-4 w-4" />
-            Create Sample Customers
+            <span className="hidden sm:inline">Create Sample Customers</span>
+            <span className="sm:hidden">Create Samples</span>
           </Button>
         )}
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1 relative">
+      <div className="flex flex-col gap-3 md:gap-4">
+        {/* First Row - Search */}
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <Input
             placeholder="Search customers..."
@@ -743,85 +745,107 @@ const CustomerList = () => {
             className="pl-10"
           />
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="potential">Potential</option>
-          <option value="inactive">Inactive</option>
-          <option value="churned">Churned</option>
-        </select>
-        <select
-          value={customerTypeFilter}
-          onChange={(e) => setCustomerTypeFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="all">All Types</option>
-          <option value="business">B2B</option>
-          <option value="private">B2C</option>
-        </select>
 
-        {/* Custom Views Dropdown */}
-        <select
-          value={activeCustomView || ''}
-          onChange={(e) => setActiveCustomView(e.target.value || null)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Customers</option>
-          {customViews.map(view => (
-            <option key={view.id} value={view.id}>{view.name}</option>
-          ))}
-        </select>
+        {/* Second Row - Filters and Actions */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-3 flex-1">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="potential">Potential</option>
+              <option value="inactive">Inactive</option>
+              <option value="churned">Churned</option>
+            </select>
 
-        {/* View Mode Toggle */}
-        <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-          <Button
-            variant={viewMode === 'grid' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('grid')}
-            className="rounded-none"
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'list' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('list')}
-            className="rounded-none"
-          >
-            <List className="h-4 w-4" />
-          </Button>
+            <select
+              value={customerTypeFilter}
+              onChange={(e) => setCustomerTypeFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="all">All Types</option>
+              <option value="business">B2B</option>
+              <option value="private">B2C</option>
+            </select>
+
+            {/* Custom Views Dropdown */}
+            <select
+              value={activeCustomView || ''}
+              onChange={(e) => setActiveCustomView(e.target.value || null)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="">All Customers</option>
+              {customViews.map(view => (
+                <option key={view.id} value={view.id}>{view.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+            {/* View Mode Toggle */}
+            <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className="rounded-none flex-1 sm:flex-none"
+              >
+                <Grid3X3 className="h-4 w-4" />
+                <span className="ml-2 sm:hidden">Grid</span>
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+                className="rounded-none flex-1 sm:flex-none"
+              >
+                <List className="h-4 w-4" />
+                <span className="ml-2 sm:hidden">List</span>
+              </Button>
+            </div>
+
+            {/* Edit Custom View Button */}
+            <Button
+              onClick={() => setShowCustomViewEditor(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 w-full sm:w-auto"
+            >
+              <Edit className="h-4 w-4" />
+              <span className="hidden sm:inline">Custom View</span>
+              <span className="sm:hidden">Custom</span>
+            </Button>
+
+            <Button 
+              onClick={() => setShowCreateForm(true)} 
+              size="sm"
+              className="flex items-center gap-2 w-full sm:w-auto"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Add Customer</span>
+              <span className="sm:hidden">Add</span>
+            </Button>
+          </div>
         </div>
-
-        {/* Edit Custom View Button */}
-        <Button
-          onClick={() => setShowCustomViewEditor(true)}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <Edit className="h-4 w-4" />
-          Custom View
-        </Button>
-
-        <Button onClick={() => setShowCreateForm(true)} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Add Customer
-        </Button>
       </div>
 
       {/* Active Custom View Indicator */}
       {activeCustomView && (
-        <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
-          <Filter className="h-4 w-4" />
-          Active view: {customViews.find(v => v.id === activeCustomView)?.name}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            <span>Active view: {customViews.find(v => v.id === activeCustomView)?.name}</span>
+          </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setActiveCustomView(null)}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-blue-600 hover:text-blue-800 p-1 h-auto"
           >
             Clear
           </Button>
@@ -843,65 +867,65 @@ const CustomerList = () => {
       ) : (
         <>
           {/* Customer Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6">
             {filteredCustomers.map((customer) => (
               <div 
                 key={customer.id} 
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => handleCustomerClick(customer)}
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-2">
+                <div className="flex justify-between items-start mb-3 md:mb-4">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     {customer.custom_fields?.customer_type === 'business' ? (
-                      <Building2 className="h-5 w-5 text-blue-500" />
+                      <Building2 className="h-4 w-4 md:h-5 md:w-5 text-blue-500 flex-shrink-0" />
                     ) : (
-                      <User className="h-5 w-5 text-green-500" />
+                      <User className="h-4 w-4 md:h-5 md:w-5 text-green-500 flex-shrink-0" />
                     )}
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{customer.name}</h3>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-gray-900 text-sm md:text-base truncate">{customer.name}</h3>
                       {customer.company && (
-                        <p className="text-sm text-gray-500">{customer.company}</p>
+                        <p className="text-xs md:text-sm text-gray-500 truncate">{customer.company}</p>
                       )}
                       <Badge className="text-xs mt-1" variant="outline">
                         {customer.custom_fields?.customer_type === 'business' ? 'B2B' : 'B2C'}
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Star className={`h-4 w-4 ${getLeadScoreColor(customer.lead_score)}`} />
-                    <span className={`text-sm font-medium ${getLeadScoreColor(customer.lead_score)}`}>
+                  <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                    <Star className={`h-3 w-3 md:h-4 md:w-4 ${getLeadScoreColor(customer.lead_score)}`} />
+                    <span className={`text-xs md:text-sm font-medium ${getLeadScoreColor(customer.lead_score)}`}>
                       {customer.lead_score}
                     </span>
                   </div>
                 </div>
 
-                <div className="space-y-2 mb-4">
+                <div className="space-y-1 md:space-y-2 mb-3 md:mb-4">
                   {customer.email && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Mail className="h-4 w-4 mr-2" />
-                      {customer.email}
+                    <div className="flex items-center text-xs md:text-sm text-gray-600">
+                      <Mail className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">{customer.email}</span>
                     </div>
                   )}
                   {customer.phone && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Phone className="h-4 w-4 mr-2" />
-                      {customer.phone}
+                    <div className="flex items-center text-xs md:text-sm text-gray-600">
+                      <Phone className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">{customer.phone}</span>
                     </div>
                   )}
                   {customer.address?.country && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {customer.address.city}, {customer.address.country}
+                    <div className="flex items-center text-xs md:text-sm text-gray-600">
+                      <MapPin className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">{customer.address.city}, {customer.address.country}</span>
                     </div>
                   )}
                   {customer.industry && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Users className="h-4 w-4 mr-2" />
-                      {customer.industry}
+                    <div className="flex items-center text-xs md:text-sm text-gray-600">
+                      <Users className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">{customer.industry}</span>
                     </div>
                   )}
                   {customer.custom_fields?.source && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 truncate">
                       Source: {customer.custom_fields.source}
                     </div>
                   )}
@@ -916,7 +940,7 @@ const CustomerList = () => {
                     <div className="flex items-center gap-1">
                       <Tag className="h-3 w-3 text-gray-400" />
                       <span className="text-xs text-gray-500">
-                        {customer.tags.length} tags
+                        {customer.tags.length} tag{customer.tags.length !== 1 ? 's' : ''}
                       </span>
                     </div>
                   )}
@@ -926,14 +950,14 @@ const CustomerList = () => {
           </div>
 
           {filteredCustomers.length === 0 && (
-            <div className="text-center py-12">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No customers found</h3>
-              <p className="text-gray-600">Try adjusting your search or filters, or create your first customer</p>
+            <div className="text-center py-8 md:py-12">
+              <Users className="h-8 w-8 md:h-12 md:w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-base md:text-lg font-medium text-gray-900 mb-2">No customers found</h3>
+              <p className="text-sm md:text-base text-gray-600 mb-4">Try adjusting your search or filters, or create your first customer</p>
               {customers.length === 0 && (
                 <Button 
                   onClick={createSampleCustomers}
-                  className="mt-4 flex items-center gap-2 mx-auto bg-blue-600 hover:bg-blue-700"
+                  className="flex items-center gap-2 mx-auto bg-blue-600 hover:bg-blue-700"
                 >
                   <Users className="h-4 w-4" />
                   Create Sample Customers

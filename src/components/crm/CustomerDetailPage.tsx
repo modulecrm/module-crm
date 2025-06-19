@@ -51,26 +51,29 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ customer, onBac
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
+      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0 flex-1">
+            <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 flex-shrink-0">
               <ArrowLeft className="h-4 w-4" />
-              Back to Customers
+              <span className="hidden sm:inline">Back to Customers</span>
+              <span className="sm:hidden">Back</span>
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{customer.name}</h1>
-              <p className="text-gray-600">{customer.company || 'Individual Customer'}</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate">{customer.name}</h1>
+              <p className="text-sm md:text-base text-gray-600 truncate">{customer.company || 'Individual Customer'}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
               <Edit className="h-4 w-4 mr-2" />
-              Edit Customer
+              <span className="hidden sm:inline">Edit Customer</span>
+              <span className="sm:hidden">Edit</span>
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
               <Settings className="h-4 w-4 mr-2" />
-              Settings
+              <span className="hidden sm:inline">Settings</span>
+              <span className="sm:hidden">Settings</span>
             </Button>
           </div>
         </div>
@@ -82,40 +85,48 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ customer, onBac
       </div>
 
       {/* Main Content with Tabs */}
-      <div className="px-6 py-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Overview
+      <div className="px-4 md:px-6 py-4 md:py-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 gap-1 h-auto">
+            <TabsTrigger value="overview" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Overview</span>
+              <span className="sm:hidden">Stats</span>
             </TabsTrigger>
-            <TabsTrigger value="info" className="flex items-center gap-2">
-              <Edit className="h-4 w-4" />
-              Info & Contacts
+            <TabsTrigger value="info" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <Edit className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Info & Contacts</span>
+              <span className="sm:hidden">Info</span>
             </TabsTrigger>
-            <TabsTrigger value="communication" className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Communication
+            <TabsTrigger value="communication" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <MessageSquare className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Communication</span>
+              <span className="sm:hidden">Comm</span>
             </TabsTrigger>
-            <TabsTrigger value="documents" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Documents
+            <TabsTrigger value="documents" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <FileText className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Documents</span>
+              <span className="sm:hidden">Docs</span>
             </TabsTrigger>
-            <TabsTrigger value="purchases" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Purchases
+            <TabsTrigger value="purchases" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <Package className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Purchases</span>
+              <span className="sm:hidden">Sales</span>
             </TabsTrigger>
-            <TabsTrigger value="tasks" className="flex items-center gap-2">
-              <CheckSquare className="h-4 w-4" />
-              Tasks
+            <TabsTrigger value="tasks" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <CheckSquare className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Tasks</span>
+              <span className="sm:hidden">Tasks</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
+            <TabsTrigger value="analytics" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Data</span>
             </TabsTrigger>
-            <TabsTrigger value="gdpr" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              GDPR/KYC
+            <TabsTrigger value="gdpr" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <Shield className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden sm:inline">GDPR/KYC</span>
+              <span className="sm:hidden">GDPR</span>
             </TabsTrigger>
           </TabsList>
 
