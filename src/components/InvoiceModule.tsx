@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Package, Settings, BarChart3, Calendar, CreditCard } from 'lucide-react';
+import { FileText, Package, Settings, BarChart3, Calendar, CreditCard, Tags } from 'lucide-react';
 import InvoiceList from './invoice/InvoiceList';
 import CreateInvoice from './invoice/CreateInvoice';
 import ProductCatalog from './invoice/ProductCatalog';
 import InvoiceTemplates from './invoice/InvoiceTemplates';
-import InvoiceWorkflows from './invoice/InvoiceWorkflows';
+import ProductCategory from './invoice/ProductCategory';
 import InvoiceReports from './invoice/InvoiceReports';
 import PaymentTracking from './invoice/PaymentTracking';
 
@@ -38,9 +38,9 @@ const InvoiceModule = () => {
             <Settings className="h-4 w-4" />
             Templates
           </TabsTrigger>
-          <TabsTrigger value="workflows" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Workflows
+          <TabsTrigger value="categories" className="flex items-center gap-2">
+            <Tags className="h-4 w-4" />
+            Categories
           </TabsTrigger>
           <TabsTrigger value="payments" className="flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
@@ -68,8 +68,8 @@ const InvoiceModule = () => {
           <InvoiceTemplates />
         </TabsContent>
 
-        <TabsContent value="workflows" className="mt-6">
-          <InvoiceWorkflows />
+        <TabsContent value="categories" className="mt-6">
+          <ProductCategory />
         </TabsContent>
 
         <TabsContent value="payments" className="mt-6">
