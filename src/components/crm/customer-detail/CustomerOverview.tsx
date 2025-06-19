@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CreditCard, FileText, Download, Mail, Plus, Calendar, History, ArrowUpDown, Send, Package, TrendingUp, X, ChevronDown, ChevronRight } from 'lucide-react';
 
 interface Customer {
@@ -46,6 +47,10 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
   const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] = useState(false);
   const [showPurchaseDetails, setShowPurchaseDetails] = useState(false);
   const [isSubscriptionHistoryOpen, setIsSubscriptionHistoryOpen] = useState(false);
+  const [isPlanSwitchOpen, setIsPlanSwitchOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState('');
+  const [switchTiming, setSwitchTiming] = useState('');
+  const [upgradeInvoicing, setUpgradeInvoicing] = useState('');
   const [statementFromDate, setStatementFromDate] = useState('');
   const [statementToDate, setStatementToDate] = useState('');
   const [cancellationDate, setCancellationDate] = useState('2024-03-15'); // Default to current period end
@@ -134,6 +139,130 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
     // Implementation for cancelling customer subscription
   };
 
+  const handlePlanSwitch = () => {
+    const currentPlan = subscriptionPlans.find(p => p.current);
+    const newPlan = subscriptionPlans.find(p => p.id === selectedPlan);
+    
+    if (!currentPlan || !newPlan) return;
+    
+    const currentPrice = parseInt(currentPlan.price.replace('DKK ', ''));
+    const newPrice = parseInt(newPlan.price.replace('DKK ', ''));
+    const planChangeType = newPrice > currentPrice ? 'Upgrade' : 'Downgrade';
+    
+    console.log(`Processing ${planChangeType} from ${currentPlan.name} to ${newPlan.name}`);
+    console.log(`Switch timing: ${switchTiming}`);
+    if (planChangeType === 'Upgrade' && upgradeInvoicing) {
+      console.log(`Invoicing preference: ${upgradeInvoicing}`);
+    }
+    
+    setIsPlanSwitchOpen(false);
+    setSelectedPlan('');
+    setSwitchTiming('');
+    setUpgradeInvoicing('');
+    // Implementation for plan switching
+  };
+
+  const renderPlanSwitchDialog = () => {
+    if (!selectedPlan) return null;
+    
+    const currentPlan = subscriptionPlans.find(p => p.current);
+    const newPlan = subscriptionPlans.find(p => p.id === selectedPlan);
+    
+    if (!currentPlan || !newPlan) return null;
+    
+    const currentPrice = parseInt(currentPlan.price.replace('DKK ', ''));
+    const newPrice = parseInt(newPlan.price.replace('DKK ', ''));
+    const isUpgrade = newPrice > currentPrice;
+    const priceDifference = Math.abs(newPrice - currentPrice);
+    
+    return (
+      <div className="mt-6 p-4 border rounded-lg bg-gray-50">
+        <h4 className="font-semibold mb-3">
+          {isUpgrade ? 'Upgrade' : 'Downgrade'} Confirmation
+        </h4>
+        <p className="text-sm text-gray-600 mb-4">
+          Switching from {currentPlan.name} (DKK {currentPrice}) to {newPlan.name} (DKK {newPrice})
+          {isUpgrade ? ` - Additional DKK ${priceDifference}/month` : ` - Save DKK ${priceDifference}/month`}
+        </p>
+        
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm font-medium">When should the change take effect?</Label>
+            <RadioGroup value={switchTiming} onValueChange={setSwitchTiming} className="mt-2">
+              {isUpgrade ? (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="immediate" id="immediate" />
+                    <Label htmlFor="immediate" className="text-sm">
+                      Immediately (pro-rated billing)
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="next-period" id="next-period" />
+                    <Label htmlFor="next-period" className="text-sm">
+                      At next billing cycle (March 15, 2024)
+                    </Label>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="next-period" id="next-period" />
+                  <Label htmlFor="next-period" className="text-sm">
+                    At end of current billing cycle (March 15, 2024)
+                  </Label>
+                </div>
+              )}
+            </RadioGroup>
+          </div>
+          
+          {isUpgrade && switchTiming === 'immediate' && (
+            <div>
+              <Label className="text-sm font-medium">How to handle the price difference?</Label>
+              <RadioGroup value={upgradeInvoicing} onValueChange={setUpgradeInvoicing} className="mt-2">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="invoice-now" id="invoice-now" />
+                  <Label htmlFor="invoice-now" className="text-sm">
+                    Create invoice for DKK {priceDifference} now
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="next-invoice" id="next-invoice" />
+                  <Label htmlFor="next-invoice" className="text-sm">
+                    Add DKK {priceDifference} to next period's invoice
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          )}
+        </div>
+        
+        <div className="flex gap-2 mt-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              setSelectedPlan('');
+              setSwitchTiming('');
+              setUpgradeInvoicing('');
+            }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            size="sm"
+            onClick={handlePlanSwitch}
+            disabled={
+              !switchTiming || 
+              (isUpgrade && switchTiming === 'immediate' && !upgradeInvoicing)
+            }
+          >
+            Confirm {isUpgrade ? 'Upgrade' : 'Downgrade'}
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -164,83 +293,112 @@ const CustomerOverview: React.FC<CustomerOverviewProps> = ({ customer }) => {
                     <p className="font-semibold text-blue-900">{subscriptionType}</p>
                     <p className="text-sm text-blue-700 mb-3">Next billing: March 15, 2024</p>
                     
-                    <Dialog open={isCancelSubscriptionOpen} onOpenChange={setIsCancelSubscriptionOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="destructive" size="sm">
-                          <X className="h-4 w-4 mr-2" />
-                          Cancel Subscription
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>Cancel Customer Subscription</DialogTitle>
-                          <DialogDescription>
-                            The customer has paid until March 15, 2024. 
-                            Please select when you'd like to terminate their subscription service.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="cancellation-date" className="text-right">
-                              Termination Date
-                            </Label>
-                            <Input
-                              id="cancellation-date"
-                              type="date"
-                              value={cancellationDate}
-                              onChange={(e) => setCancellationDate(e.target.value)}
-                              className="col-span-3"
-                            />
-                          </div>
-                          <div className="text-sm text-gray-600 col-span-4">
-                            <p>• Customer has paid until March 15, 2024</p>
-                            <p>• If you terminate before March 15, 2024, consider providing a pro-rated refund</p>
-                            <p>• If you terminate on March 15, 2024, the customer receives full value for their payment</p>
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => setIsCancelSubscriptionOpen(false)}>
-                            Keep Active
+                    <div className="flex gap-2">
+                      <Dialog open={isPlanSwitchOpen} onOpenChange={setIsPlanSwitchOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <ArrowUpDown className="h-4 w-4 mr-2" />
+                            Switch Plan
                           </Button>
-                          <Button variant="destructive" onClick={handleCancelSubscription}>
-                            Confirm Termination
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px]">
+                          <DialogHeader>
+                            <DialogTitle>Switch Subscription Plan</DialogTitle>
+                            <DialogDescription>
+                              Choose a new plan for {customer.name}
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <Label className="text-sm font-medium mb-3 block">Available Plans</Label>
+                              <div className="space-y-3">
+                                {subscriptionPlans.filter(plan => !plan.current).map((plan) => (
+                                  <div 
+                                    key={plan.id} 
+                                    className={`p-4 rounded-lg border cursor-pointer transition-colors ${
+                                      selectedPlan === plan.id ? 'border-blue-300 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                    onClick={() => setSelectedPlan(plan.id)}
+                                  >
+                                    <div className="flex justify-between items-start">
+                                      <div>
+                                        <h4 className="font-semibold">{plan.name}</h4>
+                                        <p className="text-sm text-gray-600 mb-2">{plan.price}/month</p>
+                                        <ul className="text-xs text-gray-600 space-y-1">
+                                          {plan.features.map((feature, index) => (
+                                            <li key={index}>• {feature}</li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                      <div className="w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                                        {selectedPlan === plan.id && (
+                                          <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {renderPlanSwitchDialog()}
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsPlanSwitchOpen(false)}>
+                              Cancel
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog open={isCancelSubscriptionOpen} onOpenChange={setIsCancelSubscriptionOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <X className="h-4 w-4 mr-2" />
+                            Cancel Subscription
                           </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Cancel Customer Subscription</DialogTitle>
+                            <DialogDescription>
+                              The customer has paid until March 15, 2024. 
+                              Please select when you'd like to terminate their subscription service.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="cancellation-date" className="text-right">
+                                Termination Date
+                              </Label>
+                              <Input
+                                id="cancellation-date"
+                                type="date"
+                                value={cancellationDate}
+                                onChange={(e) => setCancellationDate(e.target.value)}
+                                className="col-span-3"
+                              />
+                            </div>
+                            <div className="text-sm text-gray-600 col-span-4">
+                              <p>• Customer has paid until March 15, 2024</p>
+                              <p>• If you terminate before March 15, 2024, consider providing a pro-rated refund</p>
+                              <p>• If you terminate on March 15, 2024, the customer receives full value for their payment</p>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsCancelSubscriptionOpen(false)}>
+                              Keep Active
+                            </Button>
+                            <Button variant="destructive" onClick={handleCancelSubscription}>
+                              Confirm Termination
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </div>
                 </div>
                 
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Available Plans</h3>
-                  <div className="space-y-3">
-                    {subscriptionPlans.map((plan) => (
-                      <div key={plan.id} className={`p-4 rounded-lg border ${plan.current ? 'border-blue-300 bg-blue-50' : 'border-gray-200'}`}>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-semibold">{plan.name}</h4>
-                              {plan.current && <Badge className="bg-blue-100 text-blue-800">Current</Badge>}
-                            </div>
-                            <p className="text-sm text-gray-600 mb-2">{plan.price}/month</p>
-                            <ul className="text-xs text-gray-600 space-y-1">
-                              {plan.features.map((feature, index) => (
-                                <li key={index}>• {feature}</li>
-                              ))}
-                            </ul>
-                          </div>
-                          {!plan.current && (
-                            <Button size="sm" variant="outline">
-                              <ArrowUpDown className="h-4 w-4 mr-2" />
-                              Switch
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
                 <Collapsible open={isSubscriptionHistoryOpen} onOpenChange={setIsSubscriptionHistoryOpen}>
                   <div className="mt-6">
                     <CollapsibleTrigger asChild>
