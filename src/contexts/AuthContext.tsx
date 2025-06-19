@@ -32,50 +32,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     console.log('AuthProvider: Setting up auth state management');
     
-    let initialCheck = false;
-    
-    // Set up auth state listener
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
-        
-        // Only set loading to false after the initial check
-        if (!initialCheck) {
-          setLoading(false);
-          initialCheck = true;
-        }
+        setLoading(false);
       }
     );
 
-    // Get initial session
-    const getInitialSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Error getting initial session:', error);
-        } else {
-          console.log('Initial session check:', session?.user?.email);
-        }
-        
-        // If onAuthStateChange hasn't fired yet, update state directly
-        if (!initialCheck) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-          initialCheck = true;
-        }
-      } catch (error) {
-        console.error('Error in getSession:', error);
-        if (!initialCheck) {
-          setLoading(false);
-          initialCheck = true;
-        }
+    // Get initial session - this will trigger the onAuthStateChange listener
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting initial session:', error);
+        setLoading(false);
+      } else {
+        console.log('Initial session check:', session?.user?.email);
+        // Let the onAuthStateChange handler update the state
       }
-    };
-
-    getInitialSession();
+    }).catch((error) => {
+      console.error('Error in getSession:', error);
+      setLoading(false);
+    });
 
     return () => {
       console.log('AuthProvider: Cleaning up auth subscription');
