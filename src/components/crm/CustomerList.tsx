@@ -290,7 +290,7 @@ const CustomerList = () => {
           customer_type: 'business',
           language: 'en',
           currency: 'USD',
-8          source: 'referral',
+          source: 'referral',
           segment: 'Sustainable Retail',
           employees_count: 45,
           revenue: 3500000,
