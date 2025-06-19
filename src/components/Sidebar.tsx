@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -11,11 +11,6 @@ import {
   Calendar,
   CreditCard,
   Settings,
-  ChevronDown,
-  ChevronRight,
-  Search,
-  Globe,
-  User
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -25,8 +20,6 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabledModules }) => {
-  const [isSettingsExpanded, setIsSettingsExpanded] = useState(false);
-
   const modules = [
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
     { id: 'crm', name: 'CRM', icon: Users },
@@ -35,27 +28,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
     { id: 'subscription', name: 'Subscription', icon: CreditCard },
   ];
 
-  const settingsItems = [
-    { id: 'modules', name: 'Modules', icon: Search },
-    { id: 'profile', name: 'Profile', icon: User },
-    { id: 'language', name: 'Language', icon: Globe },
-    { id: 'integrations', name: 'Integrations', icon: Settings },
-  ];
-
   const handleModuleClick = (moduleId: string) => {
     console.log('Sidebar: Switching to module:', moduleId);
-    if (settingsItems.some(item => item.id === moduleId)) {
-      onModuleChange('settings');
-    } else {
-      onModuleChange(moduleId);
-    }
-  };
-
-  const handleSettingsClick = () => {
-    setIsSettingsExpanded(!isSettingsExpanded);
-    if (!isSettingsExpanded) {
-      onModuleChange('settings');
-    }
+    onModuleChange(moduleId);
   };
 
   return (
@@ -93,48 +68,21 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
 
         <Separator className="my-4" />
 
-        {/* Settings with collapsible submenu */}
+        {/* Settings */}
         <div className="space-y-1">
           <p className="text-xs font-medium text-gray-500 px-2 mb-2">SETTINGS</p>
           
-          {/* Settings main button */}
           <Button
             variant={activeModule === 'settings' ? "default" : "ghost"}
             className={cn(
               "w-full justify-start",
               activeModule === 'settings' && "bg-blue-50 text-blue-700 hover:bg-blue-100"
             )}
-            onClick={handleSettingsClick}
+            onClick={() => handleModuleClick('settings')}
           >
             <Settings className="mr-2 h-4 w-4" />
             Settings
-            {isSettingsExpanded ? (
-              <ChevronDown className="ml-auto h-4 w-4" />
-            ) : (
-              <ChevronRight className="ml-auto h-4 w-4" />
-            )}
           </Button>
-
-          {/* Collapsible submenu */}
-          {isSettingsExpanded && (
-            <div className="ml-4 space-y-1 border-l border-gray-200 pl-4">
-              {settingsItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Button
-                    key={item.id}
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start text-sm"
-                    onClick={() => handleModuleClick(item.id)}
-                  >
-                    <Icon className="mr-2 h-3 w-3" />
-                    {item.name}
-                  </Button>
-                );
-              })}
-            </div>
-          )}
         </div>
       </nav>
     </div>
