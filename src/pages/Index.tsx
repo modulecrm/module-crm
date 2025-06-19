@@ -227,12 +227,14 @@ const Index = () => {
           onModuleChange={setActiveModule}
           enabledModules={enabledModules}
         />
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto w-full">
           {/* Global Module Search */}
-          <div className="bg-white border-b border-gray-200 px-8 py-4">
+          <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-4">
             <ModuleSearch onModuleSelect={handleSearchSelect} />
           </div>
-          {renderActiveModule()}
+          <div className="w-full">
+            {renderActiveModule()}
+          </div>
         </div>
       </div>
     </LanguageProvider>
