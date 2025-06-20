@@ -1,10 +1,9 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Puzzle, User, Globe, Zap } from 'lucide-react';
+import { FileText, Puzzle, Globe, Zap } from 'lucide-react';
 import Templates from './settings/Templates';
 import ModuleSettings from './ModuleSettings';
-import ProfileSettings from './ProfileSettings';
 import LanguageSettings from './LanguageSettings';
 import IntegrationsSettings from './IntegrationsSettings';
 
@@ -24,7 +23,7 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="templates" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Templates
@@ -32,10 +31,6 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
           <TabsTrigger value="modules" className="flex items-center gap-2">
             <Puzzle className="h-4 w-4" />
             Modules
-          </TabsTrigger>
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Profile
           </TabsTrigger>
           <TabsTrigger value="language" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
@@ -53,10 +48,6 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
 
         <TabsContent value="modules" className="mt-6">
           <ModuleSettings enabledModules={enabledModules} onToggleModule={onToggleModule} />
-        </TabsContent>
-
-        <TabsContent value="profile" className="mt-6">
-          <ProfileSettings enabledModules={enabledModules} />
         </TabsContent>
 
         <TabsContent value="language" className="mt-6">
