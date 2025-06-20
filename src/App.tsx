@@ -8,6 +8,7 @@ import InvoiceModule from '@/components/InvoiceModule';
 import BookingModule from '@/components/BookingModule';
 import SubscriptionModule from '@/components/SubscriptionModule';
 import SettingsModule from './components/SettingsModule';
+import UserPage from './components/UserPage';
 import TaskEdit from './pages/TaskEdit';
 import { useToast } from "@/hooks/use-toast"
 
@@ -50,6 +51,8 @@ function App() {
         return <SubscriptionModule />;
       case 'settings':
         return <SettingsModule enabledModules={enabledModules} onToggleModule={handleToggleModule} />;
+      case 'user':
+        return <UserPage />;
       default:
         return <Dashboard enabledModules={enabledModules} />;
     }
