@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -63,7 +64,8 @@ const mockInvoices = [
 ];
 
 const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
-  console.log('ProfileSettings: Component is rendering - this is the PROFILE page, not dashboard');
+  console.log('🔷 ProfileSettings: PROFILE SETTINGS COMPONENT IS RENDERING');
+  console.log('🔷 ProfileSettings: This is NOT the Dashboard - this is the PROFILE page');
   
   // Mock user data - in a real app this would come from authentication/database
   const [userProfile, setUserProfile] = useState({
@@ -210,11 +212,19 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
   };
 
   return (
-    <div className="p-8">
-      {/* Clear Profile Settings Header */}
-      <div className="mb-8 border-b border-gray-200 pb-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-        <p className="text-lg text-gray-600">Manage your personal account, billing information, and subscription details</p>
+    <div className="p-8" data-testid="profile-settings-page">
+      {/* VERY CLEAR Profile Settings Header - NOT Dashboard */}
+      <div className="mb-8 border-b-4 border-blue-500 pb-6 bg-blue-50 p-6 rounded-lg">
+        <h1 className="text-4xl font-bold text-blue-900 mb-3 flex items-center gap-3">
+          <User className="h-8 w-8" />
+          Profile Settings
+        </h1>
+        <p className="text-lg text-blue-700 font-medium">
+          Manage your personal account, billing information, and subscription details
+        </p>
+        <p className="text-sm text-blue-600 mt-2">
+          📋 This is your Profile Settings page - NOT the Dashboard
+        </p>
       </div>
 
       <div className="space-y-6">
