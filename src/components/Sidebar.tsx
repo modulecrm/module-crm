@@ -97,7 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
             onClick={() => handleModuleClick('profile')}
           >
             <User className="mr-2 h-4 w-4" />
-            Profile
+            Users
           </Button>
         </div>
       </nav>
