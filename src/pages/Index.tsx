@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -84,6 +83,8 @@ const Index = () => {
         return <SubscriptionModule />;
       case 'invoice':
         return <InvoiceModule />;
+      case 'profile':
+        return <ProfileSettings enabledModules={enabledModules} />;
       case 'tasks':
         return (
           <div className="p-8">
@@ -162,16 +163,6 @@ const Index = () => {
                   Modules
                 </button>
                 <button
-                  onClick={() => setActiveSettingsTab('profile')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    activeSettingsTab === 'profile'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  Profile and Invoice
-                </button>
-                <button
                   onClick={() => setActiveSettingsTab('payments')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     activeSettingsTab === 'payments'
@@ -208,7 +199,6 @@ const Index = () => {
             {activeSettingsTab === 'modules' && (
               <ModuleSettings enabledModules={enabledModules} onToggleModule={handleToggleModule} />
             )}
-            {activeSettingsTab === 'profile' && <ProfileSettings enabledModules={enabledModules} />}
             {activeSettingsTab === 'payments' && <PaymentSettings />}
             {activeSettingsTab === 'integrations' && <IntegrationsSettings />}
             {activeSettingsTab === 'language' && <LanguageSettings />}
