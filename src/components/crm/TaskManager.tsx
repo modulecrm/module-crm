@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
@@ -239,6 +238,10 @@ const TaskManager = () => {
     }
   };
 
+  const handleStatsCardClick = (filterType: string) => {
+    setFilter(filterType);
+  };
+
   if (loading) {
     return <div className="p-8">Loading tasks...</div>;
   }
@@ -328,42 +331,62 @@ const TaskManager = () => {
         </Card>
       )}
 
-      {/* Task Stats */}
+      {/* Task Stats - Now clickable */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Total Tasks</span>
-            <Clock className="h-4 w-4 text-gray-400" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{tasks.length}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Pending</span>
-            <AlertCircle className="h-4 w-4 text-yellow-500" />
-          </div>
-          <p className="text-2xl font-bold text-yellow-600">
-            {tasks.filter(t => t.status === 'pending').length}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Completed</span>
-            <CheckCircle className="h-4 w-4 text-green-500" />
-          </div>
-          <p className="text-2xl font-bold text-green-600">
-            {tasks.filter(t => t.status === 'completed').length}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Overdue</span>
-            <AlertCircle className="h-4 w-4 text-red-500" />
-          </div>
-          <p className="text-2xl font-bold text-red-600">
-            {tasks.filter(t => isOverdue(t.due_date) && t.status !== 'completed').length}
-          </p>
-        </div>
+        <Card 
+          className={`cursor-pointer transition-all hover:shadow-md ${filter === 'all' ? 'ring-2 ring-blue-500' : ''}`}
+          onClick={() => handleStatsCardClick('all')}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Total Tasks</span>
+              <Clock className="h-4 w-4 text-gray-400" />
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{tasks.length}</p>
+          </CardContent>
+        </Card>
+        <Card 
+          className={`cursor-pointer transition-all hover:shadow-md ${filter === 'pending' ? 'ring-2 ring-blue-500' : ''}`}
+          onClick={() => handleStatsCardClick('pending')}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Pending</span>
+              <AlertCircle className="h-4 w-4 text-yellow-500" />
+            </div>
+            <p className="text-2xl font-bold text-yellow-600">
+              {tasks.filter(t => t.status === 'pending').length}
+            </p>
+          </CardContent>
+        </Card>
+        <Card 
+          className={`cursor-pointer transition-all hover:shadow-md ${filter === 'completed' ? 'ring-2 ring-blue-500' : ''}`}
+          onClick={() => handleStatsCardClick('completed')}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Completed</span>
+              <CheckCircle className="h-4 w-4 text-green-500" />
+            </div>
+            <p className="text-2xl font-bold text-green-600">
+              {tasks.filter(t => t.status === 'completed').length}
+            </p>
+          </CardContent>
+        </Card>
+        <Card 
+          className={`cursor-pointer transition-all hover:shadow-md ${filter === 'overdue' ? 'ring-2 ring-blue-500' : ''}`}
+          onClick={() => handleStatsCardClick('overdue')}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Overdue</span>
+              <AlertCircle className="h-4 w-4 text-red-500" />
+            </div>
+            <p className="text-2xl font-bold text-red-600">
+              {tasks.filter(t => isOverdue(t.due_date) && t.status !== 'completed').length}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Select All Checkbox */}
