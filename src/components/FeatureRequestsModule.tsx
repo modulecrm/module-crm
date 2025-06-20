@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { MessageSquare, Plus, Vote, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import FeatureRequestList from './feature-requests/FeatureRequestList';
 import CreateFeatureRequestDialog from './feature-requests/CreateFeatureRequestDialog';
 import MyVotesManager from './feature-requests/MyVotesManager';
@@ -27,84 +26,127 @@ const FeatureRequestsModule = () => {
     enabled: !!user?.id,
   });
 
-  // Combine all modules for the dropdown
+  // Combine all modules for the sidebar
   const allModules = [
-    { id: 'all', name: 'All Modules' },
-    { id: 'my-votes', name: 'My Votes' },
-    { id: 'dashboard', name: 'Dashboard' },
-    ...modules.map(m => ({ id: m.id, name: m.name })),
-    ...branchModules.map(m => ({ id: m.id, name: m.name })),
+    { id: 'all', name: 'All Modules', color: 'from-gray-400 to-gray-500' },
+    { id: 'my-votes', name: 'My Votes', color: 'from-purple-400 to-purple-500' },
+    { id: 'dashboard', name: 'Dashboard', color: 'from-blue-400 to-blue-500' },
+    ...modules,
+    ...branchModules,
   ];
 
   const handleVoteChange = () => {
     refetchVotes();
   };
 
-  const handleModuleChange = (value: string) => {
-    setSelectedModule(value);
+  const handleModuleChange = (moduleId: string) => {
+    setSelectedModule(moduleId);
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-              <MessageSquare className="h-8 w-8" />
-              Feature Requests
-            </h1>
-            <p className="text-gray-600">
-              Help us prioritize development by voting on features you'd like to see
+    <div className="flex h-screen bg-gray-50">
+      {/* Vertical Module Menu - 20% */}
+      <div className="w-1/5 bg-white border-r border-gray-200 overflow-y-auto">
+        <div className="p-6">
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              <Filter className="h-5 w-5" />
+              Filter by Module
+            </h2>
+            <p className="text-sm text-gray-600">
+              Select a module to view its feature requests
             </p>
           </div>
-          <Button onClick={() => setShowCreateDialog(true)} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Request Feature
-          </Button>
+
+          {/* Voting Info */}
+          <Card className="mb-6">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Vote className="h-4 w-4" />
+                Voting Power
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-xs text-gray-600">
+                {totalVotesUsed || 0}/10 votes used
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Module List */}
+          <div className="space-y-2">
+            {allModules.map((module) => {
+              const Icon = module.icon;
+              return (
+                <button
+                  key={module.id}
+                  onClick={() => handleModuleChange(module.id)}
+                  className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
+                    selectedModule === module.id
+                      ? 'bg-blue-50 border-blue-200 border'
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    {Icon && (
+                      <div className={`p-2 rounded-md bg-gradient-to-r ${module.color}`}>
+                        <Icon className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                    <span className={`text-sm font-medium ${
+                      selectedModule === module.id ? 'text-blue-900' : 'text-gray-700'
+                    }`}>
+                      {module.name}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Voting Info Card */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Vote className="h-5 w-5" />
-            Your Voting Power
-          </CardTitle>
-          <CardDescription>
-            You have {totalVotesUsed || 0}/10 votes allocated. You can put multiple votes on features you really want!
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      {/* Main Content - 80% */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6">
+          {/* Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+                  <MessageSquare className="h-6 w-6" />
+                  Feature Requests
+                  {selectedModule !== 'all' && selectedModule !== 'my-votes' && (
+                    <span className="text-lg text-gray-500">
+                      - {allModules.find(m => m.id === selectedModule)?.name}
+                    </span>
+                  )}
+                </h1>
+                <p className="text-gray-600">
+                  {selectedModule === 'my-votes' 
+                    ? 'Manage your votes and see where you\'ve allocated them'
+                    : 'Vote on features you\'d like to see implemented'
+                  }
+                </p>
+              </div>
+              <Button onClick={() => setShowCreateDialog(true)} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Request Feature
+              </Button>
+            </div>
+          </div>
 
-      {/* Module Filter */}
-      <div className="mb-6">
-        <div className="flex items-center gap-4">
-          <Filter className="h-5 w-5 text-gray-500" />
-          <Select value={selectedModule} onValueChange={handleModuleChange}>
-            <SelectTrigger className="w-64">
-              <SelectValue placeholder="Filter by module" />
-            </SelectTrigger>
-            <SelectContent>
-              {allModules.map((module) => (
-                <SelectItem key={module.id} value={module.id}>
-                  {module.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Content based on selected module */}
+          {selectedModule === 'my-votes' ? (
+            <MyVotesManager onVoteChange={handleVoteChange} />
+          ) : (
+            <FeatureRequestList 
+              moduleFilter={selectedModule === 'all' ? null : selectedModule}
+              onVoteChange={handleVoteChange}
+            />
+          )}
         </div>
       </div>
-
-      {/* Content based on selected module */}
-      {selectedModule === 'my-votes' ? (
-        <MyVotesManager onVoteChange={handleVoteChange} />
-      ) : (
-        <FeatureRequestList 
-          moduleFilter={selectedModule === 'all' ? null : selectedModule}
-          onVoteChange={handleVoteChange}
-        />
-      )}
 
       {/* Create Feature Request Dialog */}
       <CreateFeatureRequestDialog 
