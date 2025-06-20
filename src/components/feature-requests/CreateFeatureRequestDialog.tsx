@@ -2,17 +2,14 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/components/ui/use-toast';
-import { useQuery } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 import VoteAllocationSlider from './VoteAllocationSlider';
 import VoteWithdrawalDialog from './VoteWithdrawalDialog';
-import { modules, branchModules } from '../modules/moduleData';
+import FeatureRequestForm from './FeatureRequestForm';
+import { useFeatureRequestForm } from './hooks/useFeatureRequestForm';
+import { useVoteManagement } from './hooks/useVoteManagement';
+import { createFeatureRequestWithVotes } from './services/featureRequestService';
 
 interface CreateFeatureRequestDialogProps {
   open: boolean;
@@ -23,106 +20,35 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showWithdrawalDialog, setShowWithdrawalDialog] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    module: '',
-  });
-  const [voteAllocation, setVoteAllocation] = useState(1);
 
-  const { data: totalVotesUsed } = useQuery({
-    queryKey: ['total-votes-used', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return 0;
-      const { data } = await supabase.rpc('get_user_votes_used', { user_uuid: user.id });
-      return data || 0;
-    },
-    enabled: !!user?.id,
-  });
+  const {
+    formData,
+    updateFormData,
+    resetForm,
+    isFormValid,
+  } = useFeatureRequestForm();
 
-  const { data: userVotes } = useQuery({
-    queryKey: ['user-votes', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      const { data, error } = await supabase
-        .from('feature_votes')
-        .select(`
-          *,
-          feature_requests (
-            id,
-            title,
-            module
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('votes_allocated', { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  const remainingVotes = 10 - (totalVotesUsed || 0);
-
-  // Combine all modules for selection
-  const allModules = [
-    { value: 'dashboard', label: 'Dashboard' },
-    ...modules.map(m => ({ value: m.id, label: m.name })),
-    ...branchModules.map(m => ({ value: m.id, label: m.name })),
-  ];
-
-  const handleWithdrawVotes = async (voteIdsToWithdraw: string[]) => {
-    try {
-      const { error } = await supabase
-        .from('feature_votes')
-        .delete()
-        .in('id', voteIdsToWithdraw);
-
-      if (error) throw error;
-
-      setShowWithdrawalDialog(false);
-      
-      // Proceed with creating the feature request
-      await createFeatureRequest();
-    } catch (error: any) {
-      console.error('Error withdrawing votes:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to withdraw votes",
-        variant: "destructive",
-      });
-    }
-  };
+  const {
+    voteAllocation,
+    setVoteAllocation,
+    remainingVotes,
+    votesNeeded,
+    userVotes,
+    showWithdrawalDialog,
+    setShowWithdrawalDialog,
+    handleWithdrawVotes,
+    resetVoteAllocation,
+  } = useVoteManagement();
 
   const createFeatureRequest = async () => {
     try {
-      // Create the feature request
-      const { data: featureRequest, error: createError } = await supabase
-        .from('feature_requests')
-        .insert({
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          module: formData.module,
-          created_by: user!.id,
-        })
-        .select()
-        .single();
-
-      if (createError) throw createError;
-
-      // Add votes if allocation > 0
-      if (voteAllocation > 0) {
-        const { error: voteError } = await supabase
-          .from('feature_votes')
-          .insert({
-            feature_id: featureRequest.id,
-            user_id: user!.id,
-            votes_allocated: voteAllocation,
-          });
-
-        if (voteError) throw voteError;
-      }
+      await createFeatureRequestWithVotes({
+        title: formData.title,
+        description: formData.description,
+        module: formData.module,
+        userId: user!.id,
+        voteAllocation,
+      });
 
       toast({
         title: "Feature request created",
@@ -131,8 +57,8 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
           : "Your feature request has been submitted successfully",
       });
 
-      setFormData({ title: '', description: '', module: '' });
-      setVoteAllocation(1);
+      resetForm();
+      resetVoteAllocation();
       onOpenChange(false);
     } catch (error: any) {
       console.error('Error creating feature request:', error);
@@ -141,6 +67,13 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
         description: error.message || "Failed to create feature request",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleWithdrawAndCreate = async (voteIdsToWithdraw: string[]) => {
+    const success = await handleWithdrawVotes(voteIdsToWithdraw);
+    if (success) {
+      await createFeatureRequest();
     }
   };
 
@@ -156,7 +89,7 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
       return;
     }
 
-    if (!formData.title.trim() || !formData.module) {
+    if (!isFormValid()) {
       toast({
         title: "Missing information",
         description: "Please fill in all required fields",
@@ -189,8 +122,6 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
     }
   };
 
-  const votesNeeded = Math.max(0, voteAllocation - remainingVotes);
-
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -200,43 +131,10 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="title">Feature Title *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Brief description of the feature"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="module">Module *</Label>
-              <Select value={formData.module} onValueChange={(value) => setFormData({ ...formData, module: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a module" />
-                </SelectTrigger>
-                <SelectContent>
-                  {allModules.map((module) => (
-                    <SelectItem key={module.value} value={module.value}>
-                      {module.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Detailed description of the feature and why it would be valuable"
-                rows={4}
-              />
-            </div>
+            <FeatureRequestForm
+              formData={formData}
+              onFormDataChange={updateFormData}
+            />
 
             <div className="border-t pt-4">
               <VoteAllocationSlider
@@ -261,9 +159,9 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
       <VoteWithdrawalDialog
         open={showWithdrawalDialog}
         onOpenChange={setShowWithdrawalDialog}
-        userVotes={userVotes || []}
+        userVotes={userVotes}
         votesNeeded={votesNeeded}
-        onConfirmWithdrawal={handleWithdrawVotes}
+        onConfirmWithdrawal={handleWithdrawAndCreate}
       />
     </>
   );
