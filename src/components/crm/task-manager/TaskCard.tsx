@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import TaskQuickEdit from './TaskQuickEdit';
+import TaskHoverCard from './TaskHoverCard';
 
 interface Task {
   id: string;
@@ -60,56 +61,61 @@ const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-4">
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={(checked) => onSelect(task.id, checked as boolean)}
-          />
-          
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-            <div className="min-w-0">
-              <h3 className={`font-semibold truncate ${task.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                {task.title}
-              </h3>
-              {task.customer_name && (
-                <p className="text-sm text-gray-500">{task.customer_name}</p>
-              )}
-            </div>
+    <TaskHoverCard task={task}>
+      <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(checked) => onSelect(task.id, checked as boolean)}
+              onClick={(e) => e.stopPropagation()}
+            />
             
-            <div className="text-sm">
-              <div className={`flex items-center gap-1 ${isOverdue(task.due_date) && task.status !== 'completed' ? 'text-red-500' : 'text-gray-600'}`}>
-                <CalendarIcon className="h-3 w-3" />
-                {task.due_date ? formatDate(task.due_date) : 'No due date'}
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+              <div className="min-w-0">
+                <h3 className={`font-semibold truncate ${task.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                  {task.title}
+                </h3>
+                {task.customer_name && (
+                  <p className="text-sm text-gray-500">{task.customer_name}</p>
+                )}
+              </div>
+              
+              <div className="text-sm">
+                <div className={`flex items-center gap-1 ${isOverdue(task.due_date) && task.status !== 'completed' ? 'text-red-500' : 'text-gray-600'}`}>
+                  <CalendarIcon className="h-3 w-3" />
+                  {task.due_date ? formatDate(task.due_date) : 'No due date'}
+                </div>
+              </div>
+              
+              <div>
+                <Badge className={getPriorityColor(task.priority)}>
+                  {task.priority}
+                </Badge>
+              </div>
+              
+              <div>
+                <Badge className={getStatusColor(task.status)}>
+                  {task.status.replace('_', ' ')}
+                </Badge>
+              </div>
+              
+              <div className="text-sm text-gray-600 truncate">
+                {task.description || 'No description'}
               </div>
             </div>
             
-            <div>
-              <Badge className={getPriorityColor(task.priority)}>
-                {task.priority}
-              </Badge>
-            </div>
-            
-            <div>
-              <Badge className={getStatusColor(task.status)}>
-                {task.status.replace('_', ' ')}
-              </Badge>
-            </div>
-            
-            <div className="text-sm text-gray-600 truncate">
-              {task.description || 'No description'}
+            <div onClick={(e) => e.stopPropagation()}>
+              <TaskQuickEdit 
+                task={task} 
+                onUpdate={(updates) => onUpdate(task.id, updates)}
+                onStatusChange={(completed) => onStatusChange(task.id, completed)}
+              />
             </div>
           </div>
-          
-          <TaskQuickEdit 
-            task={task} 
-            onUpdate={(updates) => onUpdate(task.id, updates)}
-            onStatusChange={(completed) => onStatusChange(task.id, completed)}
-          />
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </TaskHoverCard>
   );
 };
 
