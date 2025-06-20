@@ -15,6 +15,17 @@ import { format } from 'date-fns';
 import TaskNotes from '@/components/crm/task-manager/TaskNotes';
 import TaskCustomerInfo from '@/components/crm/task-manager/TaskCustomerInfo';
 
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  status: string;
+  industry: string;
+  address?: any; // Using any to handle Json type from database
+}
+
 interface Task {
   id: string;
   title: string;
@@ -24,19 +35,7 @@ interface Task {
   due_date: string;
   created_at: string;
   customer_id?: string;
-  customers?: {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-    company: string;
-    status: string;
-    industry: string;
-    address?: {
-      city?: string;
-      country?: string;
-    };
-  };
+  customers?: Customer;
   deal_title?: string;
 }
 
@@ -78,9 +77,14 @@ const TaskEdit = () => {
 
       if (error) throw error;
 
-      const taskData = {
+      // Transform the data to match our interface
+      const taskData: Task = {
         ...data,
-        deal_title: data.deals?.title
+        deal_title: data.deals?.title,
+        customers: data.customers ? {
+          ...data.customers,
+          address: data.customers.address || {}
+        } : undefined
       };
 
       setTask(taskData);
@@ -169,6 +173,15 @@ const TaskEdit = () => {
       </div>
     );
   }
+
+  // Prepare customer data with proper address structure for TaskCustomerInfo
+  const customerForInfo = task.customers ? {
+    ...task.customers,
+    address: {
+      city: task.customers.address?.city || '',
+      country: task.customers.address?.country || ''
+    }
+  } : undefined;
 
   return (
     <div className="p-8">
@@ -312,9 +325,9 @@ const TaskEdit = () => {
           {/* Right sidebar (1/3) */}
           <div className="space-y-6">
             {/* Customer Information */}
-            {task.customers && (
+            {customerForInfo && (
               <TaskCustomerInfo 
-                customer={task.customers} 
+                customer={customerForInfo} 
                 taskTitle={task.title}
               />
             )}

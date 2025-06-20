@@ -14,9 +14,6 @@ interface TaskNote {
   content: string;
   created_at: string;
   user_id: string;
-  user_profiles?: {
-    full_name: string;
-  };
 }
 
 interface TaskNotesProps {
@@ -38,10 +35,7 @@ const TaskNotes: React.FC<TaskNotesProps> = ({ taskId }) => {
     try {
       const { data, error } = await supabase
         .from('task_notes')
-        .select(`
-          *,
-          user_profiles (full_name)
-        `)
+        .select('*')
         .eq('task_id', taskId)
         .order('created_at', { ascending: false });
 
@@ -151,7 +145,7 @@ const TaskNotes: React.FC<TaskNotesProps> = ({ taskId }) => {
               <div key={note.id} className="border rounded-lg p-3 bg-gray-50">
                 <div className="flex items-center justify-between mb-2">
                   <Badge variant="outline" className="text-xs">
-                    {note.user_profiles?.full_name || 'Unknown User'}
+                    User
                   </Badge>
                   <div className="flex items-center gap-1 text-xs text-gray-500">
                     <Clock className="h-3 w-3" />
