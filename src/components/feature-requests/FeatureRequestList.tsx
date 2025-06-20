@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,9 +11,10 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface FeatureRequestListProps {
   moduleFilter?: string | null;
+  onVoteChange?: () => void;
 }
 
-const FeatureRequestList = ({ moduleFilter }: FeatureRequestListProps) => {
+const FeatureRequestList = ({ moduleFilter, onVoteChange }: FeatureRequestListProps) => {
   const { user } = useAuth();
 
   const { data: featureRequests, isLoading, refetch } = useQuery({
@@ -58,6 +58,11 @@ const FeatureRequestList = ({ moduleFilter }: FeatureRequestListProps) => {
     enabled: !!user?.id,
   });
 
+  const handleVoteChange = () => {
+    refetch();
+    onVoteChange?.();
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -95,7 +100,7 @@ const FeatureRequestList = ({ moduleFilter }: FeatureRequestListProps) => {
           key={request.id} 
           request={request}
           userVotes={userVotes || []}
-          onVoteChange={() => refetch()}
+          onVoteChange={handleVoteChange}
         />
       ))}
     </div>

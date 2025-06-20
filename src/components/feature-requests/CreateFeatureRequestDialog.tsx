@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
+import { useQuery } from '@tanstack/react-query';
+import VoteAllocationSlider from './VoteAllocationSlider';
 
 interface CreateFeatureRequestDialogProps {
   open: boolean;
@@ -24,6 +26,19 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
     description: '',
     module: '',
   });
+  const [voteAllocation, setVoteAllocation] = useState(1);
+
+  const { data: totalVotesUsed } = useQuery({
+    queryKey: ['total-votes-used', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return 0;
+      const { data } = await supabase.rpc('get_user_votes_used', { user_uuid: user.id });
+      return data || 0;
+    },
+    enabled: !!user?.id,
+  });
+
+  const remainingVotes = 10 - (totalVotesUsed || 0);
 
   const modules = [
     { value: 'dashboard', label: 'Dashboard' },
@@ -54,26 +69,54 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
       return;
     }
 
+    if (voteAllocation > remainingVotes) {
+      toast({
+        title: "Not enough votes",
+        description: `You only have ${remainingVotes} votes remaining`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
+      // Create the feature request
+      const { data: featureRequest, error: createError } = await supabase
         .from('feature_requests')
         .insert({
           title: formData.title.trim(),
           description: formData.description.trim(),
           module: formData.module,
           created_by: user.id,
-        });
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (createError) throw createError;
+
+      // Add votes if allocation > 0
+      if (voteAllocation > 0) {
+        const { error: voteError } = await supabase
+          .from('feature_votes')
+          .insert({
+            feature_id: featureRequest.id,
+            user_id: user.id,
+            votes_allocated: voteAllocation,
+          });
+
+        if (voteError) throw voteError;
+      }
 
       toast({
         title: "Feature request created",
-        description: "Your feature request has been submitted successfully",
+        description: voteAllocation > 0 
+          ? `Your feature request has been submitted with ${voteAllocation} vote${voteAllocation !== 1 ? 's' : ''}`
+          : "Your feature request has been submitted successfully",
       });
 
       setFormData({ title: '', description: '', module: '' });
+      setVoteAllocation(1);
       onOpenChange(false);
     } catch (error: any) {
       console.error('Error creating feature request:', error);
@@ -132,6 +175,23 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
               rows={4}
             />
           </div>
+
+          {remainingVotes > 0 && (
+            <div className="border-t pt-4">
+              <VoteAllocationSlider
+                value={voteAllocation}
+                onChange={setVoteAllocation}
+                maxVotes={Math.min(10, remainingVotes)}
+                remainingVotes={remainingVotes - voteAllocation}
+              />
+            </div>
+          )}
+
+          {remainingVotes === 0 && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+              You have used all 10 of your votes. You can still create feature requests but won't be able to vote on them immediately.
+            </div>
+          )}
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
