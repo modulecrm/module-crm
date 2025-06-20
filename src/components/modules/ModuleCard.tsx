@@ -15,9 +15,10 @@ interface ModuleCardProps {
   };
   isEnabled: boolean;
   onToggle: (module: any) => void;
+  showFeatureRequests?: boolean;
 }
 
-const ModuleCard = ({ module, isEnabled, onToggle }: ModuleCardProps) => {
+const ModuleCard = ({ module, isEnabled, onToggle, showFeatureRequests = false }: ModuleCardProps) => {
   const Icon = module.icon;
   
   return (
