@@ -11,7 +11,6 @@ import {
   Calendar,
   CreditCard,
   Settings,
-  User,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -93,8 +92,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
             )}
             onClick={() => handleModuleClick('user')}
           >
-            <User className="mr-2 h-4 w-4" />
-            User
+            <Users className="mr-2 h-4 w-4" />
+            Users
           </Button>
         </div>
       </nav>
