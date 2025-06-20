@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -72,6 +73,7 @@ const Index = () => {
   };
 
   const renderActiveModule = () => {
+    console.log('App: Rendering module:', activeModule);
     switch (activeModule) {
       case 'dashboard':
         return <Dashboard enabledModules={enabledModules} />;
