@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MessageSquare, Plus, Vote, Filter } from 'lucide-react';
+import { MessageSquare, Plus, Vote, Filter, Grid3X3, User, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import FeatureRequestList from './feature-requests/FeatureRequestList';
@@ -28,9 +28,9 @@ const FeatureRequestsModule = () => {
 
   // Combine all modules for the sidebar
   const allModules = [
-    { id: 'all', name: 'All Modules', color: 'from-gray-400 to-gray-500' },
-    { id: 'my-votes', name: 'My Votes', color: 'from-purple-400 to-purple-500' },
-    { id: 'dashboard', name: 'Dashboard', color: 'from-blue-400 to-blue-500' },
+    { id: 'all', name: 'All Modules', icon: Grid3X3, color: 'from-gray-400 to-gray-500' },
+    { id: 'my-votes', name: 'My Votes', icon: User, color: 'from-purple-400 to-purple-500' },
+    { id: 'dashboard', name: 'Dashboard', icon: BarChart3, color: 'from-blue-400 to-blue-500' },
     ...modules,
     ...branchModules,
   ];
@@ -88,11 +88,9 @@ const FeatureRequestsModule = () => {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    {Icon && (
-                      <div className={`p-2 rounded-md bg-gradient-to-r ${module.color}`}>
-                        <Icon className="h-4 w-4 text-white" />
-                      </div>
-                    )}
+                    <div className={`p-2 rounded-md bg-gradient-to-r ${module.color}`}>
+                      <Icon className="h-4 w-4 text-white" />
+                    </div>
                     <span className={`text-sm font-medium ${
                       selectedModule === module.id ? 'text-blue-900' : 'text-gray-700'
                     }`}>
