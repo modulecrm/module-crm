@@ -11,6 +11,7 @@ interface Task {
   priority: string;
   status: string;
   due_date: string;
+  created_at: string;
   customer_name?: string;
 }
 
