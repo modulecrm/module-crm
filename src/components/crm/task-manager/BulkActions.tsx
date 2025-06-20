@@ -1,21 +1,32 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface BulkActionsProps {
   selectedTasks: string[];
   onBulkUpdate: (updates: any) => void;
   onClearSelection: () => void;
+  onDeleteTasks: (taskIds: string[]) => void;
 }
 
 const BulkActions: React.FC<BulkActionsProps> = ({ 
   selectedTasks, 
   onBulkUpdate, 
-  onClearSelection 
+  onClearSelection,
+  onDeleteTasks
 }) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   if (selectedTasks.length === 0) return null;
+
+  const handleDeleteConfirm = () => {
+    onDeleteTasks(selectedTasks);
+    setShowDeleteDialog(false);
+    onClearSelection();
+  };
 
   return (
     <Card className="bg-blue-50 border-blue-200">
@@ -47,6 +58,32 @@ const BulkActions: React.FC<BulkActionsProps> = ({
                 <SelectItem value="low">Low</SelectItem>
               </SelectContent>
             </Select>
+            
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                >
+                  Delete Tasks
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Tasks</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Do you want to delete {selectedTasks.length} task{selectedTasks.length > 1 ? 's' : ''}? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteConfirm}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <Button 
               variant="outline" 
               size="sm"

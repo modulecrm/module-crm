@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import TaskFilters from './task-manager/TaskFilters';
 import BulkActions from './task-manager/BulkActions';
 import TaskList from './task-manager/TaskList';
 import { Plus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Task {
   id: string;
@@ -29,6 +29,7 @@ const TaskManager = () => {
   const [viewMode, setViewMode] = useState('priority');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchTasks();
@@ -161,6 +162,33 @@ const TaskManager = () => {
     }
   };
 
+  const deleteTasks = async (taskIds: string[]) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .in('id', taskIds);
+
+      if (error) throw error;
+
+      setTasks(prevTasks =>
+        prevTasks.filter(task => !taskIds.includes(task.id))
+      );
+
+      toast({
+        title: "Tasks deleted",
+        description: `${taskIds.length} task${taskIds.length > 1 ? 's' : ''} deleted successfully.`
+      });
+    } catch (error) {
+      console.error('Error deleting tasks:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete tasks. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const isOverdue = (dueDate: string) => {
     return new Date(dueDate) < new Date() && dueDate;
   };
@@ -232,6 +260,7 @@ const TaskManager = () => {
         selectedTasks={selectedTasks}
         onBulkUpdate={bulkUpdateTasks}
         onClearSelection={() => setSelectedTasks([])}
+        onDeleteTasks={deleteTasks}
       />
 
       <TaskStats
