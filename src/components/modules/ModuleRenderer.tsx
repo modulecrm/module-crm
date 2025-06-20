@@ -47,7 +47,7 @@ const ModuleRenderer = ({
           />
         );
       case 'user':
-        return <UserPage />;
+        return <UserPage enabledModules={enabledModules} />;
       default:
         return <Dashboard enabledModules={enabledModules} />;
     }
