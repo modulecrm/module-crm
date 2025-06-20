@@ -212,7 +212,7 @@ const TaskEdit = () => {
         description: "Task updated successfully.",
       });
 
-      navigate('/crm');
+      handleBackToTasks();
     } catch (error) {
       console.error('Error updating task:', error);
       toast({
@@ -226,7 +226,8 @@ const TaskEdit = () => {
   };
 
   const handleBackToTasks = () => {
-    navigate('/crm');
+    // Navigate to CRM module with tasks tab active
+    navigate('/crm?tab=tasks');
   };
 
   if (loading) {

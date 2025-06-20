@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Users, BarChart3, Activity, CheckSquare, MessageSquare, Calendar } from 'lucide-react';
 import CustomerList from './crm/CustomerList';
 import SalesPipeline from './crm/SalesPipeline';
@@ -7,7 +8,15 @@ import ActivityTimeline from './crm/ActivityTimeline';
 import TaskManager from './crm/TaskManager';
 
 const CRMModule = () => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('customers');
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['customers', 'pipeline', 'activities', 'tasks'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   const tabs = [
     { id: 'customers', name: 'Customers', icon: Users, component: CustomerList },
