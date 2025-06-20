@@ -307,6 +307,119 @@ export type Database = {
           },
         ]
       }
+      feature_comments: {
+        Row: {
+          content: string
+          created_at: string
+          feature_id: string
+          id: string
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feature_id: string
+          id?: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feature_id?: string
+          id?: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_comments_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "feature_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_requests: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          module: string
+          status: Database["public"]["Enums"]["feature_status"]
+          title: string
+          updated_at: string
+          vote_count: number
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          module: string
+          status?: Database["public"]["Enums"]["feature_status"]
+          title: string
+          updated_at?: string
+          vote_count?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          module?: string
+          status?: Database["public"]["Enums"]["feature_status"]
+          title?: string
+          updated_at?: string
+          vote_count?: number
+        }
+        Relationships: []
+      }
+      feature_votes: {
+        Row: {
+          created_at: string
+          feature_id: string
+          id: string
+          user_id: string
+          votes_allocated: number
+        }
+        Insert: {
+          created_at?: string
+          feature_id: string
+          id?: string
+          user_id: string
+          votes_allocated?: number
+        }
+        Update: {
+          created_at?: string
+          feature_id?: string
+          id?: string
+          user_id?: string
+          votes_allocated?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_votes_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoice_line_items: {
         Row: {
           created_at: string
@@ -1093,6 +1206,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_votes_used: {
+        Args: { user_uuid: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _user_id: string
@@ -1108,6 +1225,12 @@ export type Database = {
         | "sales_rep"
         | "support_agent"
         | "marketing"
+      feature_status:
+        | "open"
+        | "in_progress"
+        | "completed"
+        | "rejected"
+        | "on_hold"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1224,6 +1347,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "manager", "sales_rep", "support_agent", "marketing"],
+      feature_status: [
+        "open",
+        "in_progress",
+        "completed",
+        "rejected",
+        "on_hold",
+      ],
     },
   },
 } as const

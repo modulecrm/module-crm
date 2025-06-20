@@ -6,9 +6,8 @@ import InvoiceModule from '../InvoiceModule';
 import BookingModule from '../BookingModule';
 import SubscriptionModule from '../SubscriptionModule';
 import SettingsModule from '../SettingsModule';
-import ProfileSettings from '../ProfileSettings';
-import SettingsPage from '../settings/SettingsPage';
 import UserPage from '../UserPage';
+import FeatureRequestsModule from '../FeatureRequestsModule';
 
 interface ModuleRendererProps {
   activeModule: string;
@@ -18,19 +17,17 @@ interface ModuleRendererProps {
   onToggleModule: (moduleId: string) => void;
 }
 
-const ModuleRenderer = ({
-  activeModule,
-  enabledModules,
-  activeSettingsTab,
-  setActiveSettingsTab,
-  onToggleModule,
-}: ModuleRendererProps) => {
-  console.log('🔹 ModuleRenderer: Rendering module:', activeModule);
-
+const ModuleRenderer: React.FC<ModuleRendererProps> = ({ 
+  activeModule, 
+  enabledModules, 
+  activeSettingsTab, 
+  setActiveSettingsTab, 
+  onToggleModule 
+}) => {
   const renderModule = () => {
     switch (activeModule) {
       case 'dashboard':
-        return <Dashboard enabledModules={enabledModules} />;
+        return <Dashboard />;
       case 'crm':
         return <CRMModule />;
       case 'invoice':
@@ -41,19 +38,27 @@ const ModuleRenderer = ({
         return <SubscriptionModule />;
       case 'settings':
         return (
-          <SettingsModule
+          <SettingsModule 
+            activeTab={activeSettingsTab}
+            setActiveTab={setActiveSettingsTab}
             enabledModules={enabledModules}
             onToggleModule={onToggleModule}
           />
         );
       case 'user':
-        return <UserPage enabledModules={enabledModules} />;
+        return <UserPage />;
+      case 'feature-requests':
+        return <FeatureRequestsModule />;
       default:
-        return <Dashboard enabledModules={enabledModules} />;
+        return <Dashboard />;
     }
   };
 
-  return <div className="flex-1 overflow-auto">{renderModule()}</div>;
+  return (
+    <div className="flex-1">
+      {renderModule()}
+    </div>
+  );
 };
 
 export default ModuleRenderer;

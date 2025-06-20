@@ -11,6 +11,7 @@ import {
   Calendar,
   CreditCard,
   Settings,
+  MessageSquare,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -94,6 +95,18 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
           >
             <Users className="mr-2 h-4 w-4" />
             Users
+          </Button>
+
+          <Button
+            variant={activeModule === 'feature-requests' ? "default" : "ghost"}
+            className={cn(
+              "w-full justify-start",
+              activeModule === 'feature-requests' && "bg-blue-50 text-blue-700 hover:bg-blue-100"
+            )}
+            onClick={() => handleModuleClick('feature-requests')}
+          >
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Feature Requests
           </Button>
         </div>
       </nav>
