@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import VoteAllocationSlider from './VoteAllocationSlider';
-import VoteWithdrawalDialog from './VoteWithdrawalDialog';
 import FeatureRequestForm from './FeatureRequestForm';
+import InlineVoteWithdrawal from './components/InlineVoteWithdrawal';
 import { useFeatureRequestForm } from './hooks/useFeatureRequestForm';
 import { useVoteManagement } from './hooks/useVoteManagement';
 import { createFeatureRequestWithVotes } from './services/featureRequestService';
@@ -20,6 +20,7 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedVotesForWithdrawal, setSelectedVotesForWithdrawal] = useState<string[]>([]);
 
   const {
     formData,
@@ -34,11 +35,11 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
     remainingVotes,
     votesNeeded,
     userVotes,
-    showWithdrawalDialog,
-    setShowWithdrawalDialog,
     handleWithdrawVotes,
     resetVoteAllocation,
   } = useVoteManagement();
+
+  const needsWithdrawal = voteAllocation > remainingVotes;
 
   const createFeatureRequest = async () => {
     try {
@@ -59,6 +60,7 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
 
       resetForm();
       resetVoteAllocation();
+      setSelectedVotesForWithdrawal([]);
       onOpenChange(false);
     } catch (error: any) {
       console.error('Error creating feature request:', error);
@@ -67,13 +69,6 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
         description: error.message || "Failed to create feature request",
         variant: "destructive",
       });
-    }
-  };
-
-  const handleWithdrawAndCreate = async (voteIdsToWithdraw: string[]) => {
-    const success = await handleWithdrawVotes(voteIdsToWithdraw);
-    if (success) {
-      await createFeatureRequest();
     }
   };
 
@@ -102,13 +97,32 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
 
     try {
       // Check if we need to withdraw votes
-      if (voteAllocation > remainingVotes) {
-        setShowWithdrawalDialog(true);
-        setIsSubmitting(false);
-        return;
+      if (needsWithdrawal) {
+        // Check if user has selected enough votes for withdrawal
+        const selectedVotesTotal = selectedVotesForWithdrawal.reduce((total, voteId) => {
+          const vote = userVotes.find(v => v.id === voteId);
+          return total + (vote?.votes_allocated || 0);
+        }, 0);
+
+        if (selectedVotesTotal < votesNeeded) {
+          toast({
+            title: "Insufficient votes selected",
+            description: `Please select at least ${votesNeeded} vote${votesNeeded !== 1 ? 's' : ''} to withdraw`,
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Withdraw selected votes first
+        const success = await handleWithdrawVotes(selectedVotesForWithdrawal);
+        if (!success) {
+          setIsSubmitting(false);
+          return;
+        }
       }
 
-      // If we have enough votes, proceed directly
+      // Create the feature request
       await createFeatureRequest();
     } catch (error: any) {
       console.error('Error in submit handler:', error);
@@ -122,48 +136,52 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
     }
   };
 
+  const canSubmit = isFormValid() && (!needsWithdrawal || (needsWithdrawal && selectedVotesForWithdrawal.reduce((total, voteId) => {
+    const vote = userVotes.find(v => v.id === voteId);
+    return total + (vote?.votes_allocated || 0);
+  }, 0) >= votesNeeded));
+
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Request a New Feature</DialogTitle>
-          </DialogHeader>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FeatureRequestForm
-              formData={formData}
-              onFormDataChange={updateFormData}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Request a New Feature</DialogTitle>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <FeatureRequestForm
+            formData={formData}
+            onFormDataChange={updateFormData}
+          />
+
+          <div className="border-t pt-4">
+            <VoteAllocationSlider
+              value={voteAllocation}
+              onChange={setVoteAllocation}
+              remainingVotes={remainingVotes}
             />
+          </div>
 
-            <div className="border-t pt-4">
-              <VoteAllocationSlider
-                value={voteAllocation}
-                onChange={setVoteAllocation}
-                remainingVotes={remainingVotes}
-              />
-            </div>
+          {needsWithdrawal && userVotes.length > 0 && (
+            <InlineVoteWithdrawal
+              userVotes={userVotes}
+              votesNeeded={votesNeeded}
+              onVoteSelectionChange={setSelectedVotesForWithdrawal}
+              selectedVotes={selectedVotesForWithdrawal}
+            />
+          )}
 
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Creating...' : 'Create Request'}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <VoteWithdrawalDialog
-        open={showWithdrawalDialog}
-        onOpenChange={setShowWithdrawalDialog}
-        userVotes={userVotes}
-        votesNeeded={votesNeeded}
-        onConfirmWithdrawal={handleWithdrawAndCreate}
-      />
-    </>
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting || !canSubmit}>
+              {isSubmitting ? 'Creating...' : 'Create Request'}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

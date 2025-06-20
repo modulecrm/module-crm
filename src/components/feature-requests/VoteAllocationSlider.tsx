@@ -2,7 +2,7 @@
 import React from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Vote, AlertTriangle } from 'lucide-react';
+import { Vote } from 'lucide-react';
 
 interface VoteAllocationSliderProps {
   value: number;
@@ -16,7 +16,6 @@ const VoteAllocationSlider = ({ value, onChange, remainingVotes }: VoteAllocatio
   };
 
   const needsWithdrawal = value > remainingVotes;
-  const votesToWithdraw = needsWithdrawal ? value - remainingVotes : 0;
 
   return (
     <div className="space-y-4">
@@ -45,20 +44,8 @@ const VoteAllocationSlider = ({ value, onChange, remainingVotes }: VoteAllocatio
       </div>
       
       {value > 0 && !needsWithdrawal && (
-        <div className="p-2 bg-blue-50 rounded-lg text-sm text-blue-700">
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
           You will allocate {value} vote{value !== 1 ? 's' : ''} to this feature request
-        </div>
-      )}
-
-      {needsWithdrawal && (
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-          <div className="flex items-center gap-2 text-amber-700 mb-2">
-            <AlertTriangle className="h-4 w-4" />
-            <span className="font-medium">Vote Withdrawal Required</span>
-          </div>
-          <p className="text-sm text-amber-600">
-            You need to withdraw {votesToWithdraw} vote{votesToWithdraw !== 1 ? 's' : ''} from other features to allocate {value} vote{value !== 1 ? 's' : ''} to this request.
-          </p>
         </div>
       )}
     </div>
