@@ -43,7 +43,7 @@ const ModuleRenderer = ({
       console.log('🔸 ModuleRenderer: Rendering Invoice module');
       return <InvoiceModule />;
     case 'profile':
-      console.log('🔸 ModuleRenderer: ✅ RENDERING USERS/PROFILE SETTINGS - Direct ProfileSettings component');
+      console.log('🔸 ModuleRenderer: ✅ RENDERING USERS PAGE - Showing ProfileSettings component from sidebar Users menu');
       return <ProfileSettings enabledModules={enabledModules} />;
     case 'tasks':
       return (
