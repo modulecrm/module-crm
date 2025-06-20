@@ -8,6 +8,7 @@ import SubscriptionModule from '../SubscriptionModule';
 import SettingsModule from '../SettingsModule';
 import ProfileSettings from '../ProfileSettings';
 import SettingsPage from '../settings/SettingsPage';
+import UserPage from '../UserPage';
 
 interface ModuleRendererProps {
   activeModule: string;
@@ -45,6 +46,8 @@ const ModuleRenderer = ({
             onToggleModule={onToggleModule}
           />
         );
+      case 'user':
+        return <UserPage />;
       default:
         return <Dashboard enabledModules={enabledModules} />;
     }

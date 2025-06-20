@@ -11,6 +11,7 @@ import {
   Calendar,
   CreditCard,
   Settings,
+  User,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -82,6 +83,18 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
           >
             <Settings className="mr-2 h-4 w-4" />
             Settings
+          </Button>
+
+          <Button
+            variant={activeModule === 'user' ? "default" : "ghost"}
+            className={cn(
+              "w-full justify-start",
+              activeModule === 'user' && "bg-blue-50 text-blue-700 hover:bg-blue-100"
+            )}
+            onClick={() => handleModuleClick('user')}
+          >
+            <User className="mr-2 h-4 w-4" />
+            User
           </Button>
         </div>
       </nav>
