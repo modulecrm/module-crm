@@ -3,7 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, Calendar, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { DollarSign, Calendar, User, Plus } from 'lucide-react';
 
 interface Deal {
   id: string;
@@ -25,14 +29,32 @@ interface PipelineStage {
   probability_default: number;
 }
 
+interface Pipeline {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 const SalesPipeline = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [stages, setStages] = useState<PipelineStage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activePipeline, setActivePipeline] = useState('virtual-office');
+  const [isNewPipelineDialogOpen, setIsNewPipelineDialogOpen] = useState(false);
+  const [newPipelineName, setNewPipelineName] = useState('');
+
+  // Predefined pipelines
+  const predefinedPipelines: Pipeline[] = [
+    { id: 'virtual-office', name: 'Virtual Office' },
+    { id: 'telephone-answering', name: 'Telephone Answering' },
+    { id: 'business-creation', name: 'Business Creation' },
+  ];
+
+  const [customPipelines, setCustomPipelines] = useState<Pipeline[]>([]);
 
   useEffect(() => {
     fetchPipelineData();
-  }, []);
+  }, [activePipeline]);
 
   const fetchPipelineData = async () => {
     try {
@@ -103,6 +125,22 @@ const SalesPipeline = () => {
     return getDealsByStage(stageName).reduce((sum, deal) => sum + (deal.value || 0), 0);
   };
 
+  const handleCreatePipeline = () => {
+    if (newPipelineName.trim()) {
+      const newPipeline: Pipeline = {
+        id: newPipelineName.toLowerCase().replace(/\s+/g, '-'),
+        name: newPipelineName.trim()
+      };
+      setCustomPipelines(prev => [...prev, newPipeline]);
+      setActivePipeline(newPipeline.id);
+      setNewPipelineName('');
+      setIsNewPipelineDialogOpen(false);
+    }
+  };
+
+  const allPipelines = [...predefinedPipelines, ...customPipelines];
+  const currentPipeline = allPipelines.find(p => p.id === activePipeline);
+
   if (loading) {
     return <div className="p-8">Loading pipeline...</div>;
   }
@@ -110,10 +148,68 @@ const SalesPipeline = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Sales Pipeline</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Sales Pipeline</h2>
+          <p className="text-gray-600 mt-1">
+            Active Pipeline: <span className="font-medium">{currentPipeline?.name}</span>
+          </p>
+        </div>
         <div className="flex items-center gap-4 text-sm text-gray-600">
           <span>Total Pipeline Value: ${deals.reduce((sum, deal) => sum + (deal.value || 0), 0).toLocaleString()}</span>
         </div>
+      </div>
+
+      {/* Pipeline Selection Buttons */}
+      <div className="flex flex-wrap gap-3 p-4 bg-gray-50 rounded-lg">
+        {allPipelines.map((pipeline) => (
+          <Button
+            key={pipeline.id}
+            variant={activePipeline === pipeline.id ? "default" : "outline"}
+            onClick={() => setActivePipeline(pipeline.id)}
+            className="min-w-0"
+          >
+            {pipeline.name}
+          </Button>
+        ))}
+        
+        <Dialog open={isNewPipelineDialogOpen} onOpenChange={setIsNewPipelineDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="border-dashed">
+              <Plus className="h-4 w-4 mr-2" />
+              New Pipeline
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New Pipeline</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label htmlFor="pipeline-name">Pipeline Name</Label>
+                <Input
+                  id="pipeline-name"
+                  value={newPipelineName}
+                  onChange={(e) => setNewPipelineName(e.target.value)}
+                  placeholder="Enter pipeline name"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsNewPipelineDialogOpen(false);
+                    setNewPipelineName('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleCreatePipeline}>
+                  Create Pipeline
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
