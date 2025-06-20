@@ -16,7 +16,7 @@ const CreateCustomerForm: React.FC<CreateCustomerFormProps> = ({ onClose, onSucc
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    email: 'kontakt@flexum.dk',
     phone: '',
     company: '',
     title: '',

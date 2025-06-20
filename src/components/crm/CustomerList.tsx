@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Filter, Grid, List, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,7 +32,7 @@ const sampleCustomers: Customer[] = [
   {
     id: '1',
     name: 'John Doe',
-    email: 'john.doe@example.com',
+    email: 'kontakt@flexum.dk',
     phone: '123-456-7890',
     company: 'Acme Corp',
     status: 'active',
@@ -51,7 +52,7 @@ const sampleCustomers: Customer[] = [
   {
     id: '2',
     name: 'Jane Smith',
-    email: 'jane.smith@example.com',
+    email: 'kontakt@flexum.dk',
     phone: '987-654-3210',
     company: 'Beta Inc',
     status: 'inactive',
@@ -71,7 +72,7 @@ const sampleCustomers: Customer[] = [
   {
     id: '3',
     name: 'Alice Johnson',
-    email: 'alice.johnson@example.com',
+    email: 'kontakt@flexum.dk',
     phone: '555-123-4567',
     company: 'Gamma Co',
     status: 'active',
@@ -91,7 +92,7 @@ const sampleCustomers: Customer[] = [
   {
     id: '4',
     name: 'Bob Williams',
-    email: 'bob.williams@example.com',
+    email: 'kontakt@flexum.dk',
     phone: '111-222-3333',
     company: 'Delta Ltd',
     status: 'pending',
@@ -111,7 +112,7 @@ const sampleCustomers: Customer[] = [
   {
     id: '5',
     name: 'Eva Brown',
-    email: 'eva.brown@example.com',
+    email: 'kontakt@flexum.dk',
     phone: '444-555-6666',
     company: 'Epsilon Group',
     status: 'active',
