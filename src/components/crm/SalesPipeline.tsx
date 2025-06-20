@@ -7,18 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { DollarSign, Calendar, User, Plus } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { DollarSign, Calendar, User, Building2, Plus } from 'lucide-react';
 
 interface Deal {
   id: string;
   title: string;
+  company_name: string;
+  contact_person: string;
   value: number;
   currency: string;
   stage: string;
   probability: number;
   expected_close_date: string;
-  customer_id: string;
-  customer_name?: string;
+  pipeline: string;
 }
 
 interface PipelineStage {
@@ -26,67 +28,90 @@ interface PipelineStage {
   name: string;
   position: number;
   color: string;
-  probability_default: number;
 }
 
 interface Pipeline {
   id: string;
   name: string;
   description?: string;
+  stages: PipelineStage[];
 }
 
 const SalesPipeline = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
-  const [stages, setStages] = useState<PipelineStage[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [activePipeline, setActivePipeline] = useState('virtual-office');
   const [isNewPipelineDialogOpen, setIsNewPipelineDialogOpen] = useState(false);
   const [newPipelineName, setNewPipelineName] = useState('');
 
-  // Predefined pipelines
-  const predefinedPipelines: Pipeline[] = [
-    { id: 'virtual-office', name: 'Virtual Office' },
-    { id: 'telephone-answering', name: 'Telephone Answering' },
-    { id: 'business-creation', name: 'Business Creation' },
+  // Define pipelines with their specific stages
+  const pipelines: Pipeline[] = [
+    {
+      id: 'virtual-office',
+      name: 'Virtual Office',
+      stages: [
+        { id: 'lead', name: 'Lead', position: 1, color: '#3B82F6' },
+        { id: 'sign-contract', name: 'Sign Contract', position: 2, color: '#8B5CF6' },
+        { id: 'kyc', name: 'KYC', position: 3, color: '#F59E0B' },
+        { id: 'payment', name: 'Payment', position: 4, color: '#10B981' },
+        { id: 'closed-won', name: 'Closed Won', position: 5, color: '#059669' },
+        { id: 'closed-lost', name: 'Closed Lost', position: 6, color: '#DC2626' },
+        { id: 'closed-rejected', name: 'Closed Rejected', position: 7, color: '#6B7280' },
+      ]
+    },
+    {
+      id: 'business-creation',
+      name: 'Business Creation',
+      stages: [
+        { id: 'lead', name: 'Lead', position: 1, color: '#3B82F6' },
+        { id: 'sign-contract', name: 'Sign Contract', position: 2, color: '#8B5CF6' },
+        { id: 'kyc', name: 'KYC', position: 3, color: '#F59E0B' },
+        { id: 'payment', name: 'Payment', position: 4, color: '#10B981' },
+        { id: 'creation', name: 'Creation', position: 5, color: '#06B6D4' },
+        { id: 'closed-won', name: 'Closed Won', position: 6, color: '#059669' },
+        { id: 'closed-lost', name: 'Closed Lost', position: 7, color: '#DC2626' },
+        { id: 'closed-rejected', name: 'Closed Rejected', position: 8, color: '#6B7280' },
+      ]
+    },
+    {
+      id: 'call-handling',
+      name: 'Call Handling',
+      stages: [
+        { id: 'lead', name: 'Lead', position: 1, color: '#3B82F6' },
+        { id: 'sign-contract', name: 'Sign Contract', position: 2, color: '#8B5CF6' },
+        { id: 'payment', name: 'Payment', position: 3, color: '#10B981' },
+        { id: 'setup', name: 'Setup', position: 4, color: '#06B6D4' },
+        { id: 'closed-won', name: 'Closed Won', position: 5, color: '#059669' },
+        { id: 'closed-lost', name: 'Closed Lost', position: 6, color: '#DC2626' },
+        { id: 'closed-rejected', name: 'Closed Rejected', position: 7, color: '#6B7280' },
+      ]
+    }
+  ];
+
+  // Sample deals data
+  const sampleDeals: Deal[] = [
+    // Virtual Office deals
+    { id: '1', title: 'Virtual Office Package', company_name: 'TechStart Inc.', contact_person: 'John Smith', value: 1200, currency: 'USD', stage: 'lead', probability: 20, expected_close_date: '2024-07-15', pipeline: 'virtual-office' },
+    { id: '2', title: 'Premium Virtual Office', company_name: 'Digital Solutions Ltd.', contact_person: 'Sarah Johnson', value: 2400, currency: 'USD', stage: 'sign-contract', probability: 60, expected_close_date: '2024-07-10', pipeline: 'virtual-office' },
+    { id: '3', title: 'Basic Virtual Office', company_name: 'Startup Hub', contact_person: 'Mike Wilson', value: 800, currency: 'USD', stage: 'kyc', probability: 75, expected_close_date: '2024-07-08', pipeline: 'virtual-office' },
+    { id: '4', title: 'Corporate Virtual Office', company_name: 'Enterprise Corp', contact_person: 'Lisa Brown', value: 3600, currency: 'USD', stage: 'payment', probability: 90, expected_close_date: '2024-07-05', pipeline: 'virtual-office' },
+    
+    // Business Creation deals
+    { id: '5', title: 'LLC Formation', company_name: 'NewBiz Ventures', contact_person: 'David Lee', value: 2500, currency: 'USD', stage: 'lead', probability: 30, expected_close_date: '2024-07-20', pipeline: 'business-creation' },
+    { id: '6', title: 'Corporation Setup', company_name: 'Future Industries', contact_person: 'Emma Davis', value: 4500, currency: 'USD', stage: 'sign-contract', probability: 65, expected_close_date: '2024-07-12', pipeline: 'business-creation' },
+    { id: '7', title: 'Partnership Formation', company_name: 'Twin Enterprises', contact_person: 'Robert Kim', value: 1800, currency: 'USD', stage: 'creation', probability: 85, expected_close_date: '2024-07-03', pipeline: 'business-creation' },
+    
+    // Call Handling deals
+    { id: '8', title: 'Phone Answering Service', company_name: 'Medical Practice', contact_person: 'Dr. Anderson', value: 1500, currency: 'USD', stage: 'lead', probability: 25, expected_close_date: '2024-07-18', pipeline: 'call-handling' },
+    { id: '9', title: 'Virtual Receptionist', company_name: 'Law Firm Associates', contact_person: 'Attorney Miller', value: 2200, currency: 'USD', stage: 'payment', probability: 80, expected_close_date: '2024-07-07', pipeline: 'call-handling' },
+    { id: '10', title: 'Call Center Package', company_name: 'Sales Company', contact_person: 'Tom Richards', value: 3800, currency: 'USD', stage: 'setup', probability: 90, expected_close_date: '2024-07-02', pipeline: 'call-handling' },
   ];
 
   const [customPipelines, setCustomPipelines] = useState<Pipeline[]>([]);
 
   useEffect(() => {
-    fetchPipelineData();
-  }, [activePipeline]);
-
-  const fetchPipelineData = async () => {
-    try {
-      // Fetch stages
-      const { data: stagesData, error: stagesError } = await supabase
-        .from('pipeline_stages')
-        .select('*')
-        .order('position');
-
-      if (stagesError) throw stagesError;
-
-      // Fetch deals with customer names
-      const { data: dealsData, error: dealsError } = await supabase
-        .from('deals')
-        .select(`
-          *,
-          customers (name)
-        `);
-
-      if (dealsError) throw dealsError;
-
-      setStages(stagesData || []);
-      setDeals(dealsData?.map(deal => ({
-        ...deal,
-        customer_name: deal.customers?.name
-      })) || []);
-    } catch (error) {
-      console.error('Error fetching pipeline data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setDeals(sampleDeals);
+  }, []);
 
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
@@ -95,41 +120,40 @@ const SalesPipeline = () => {
     
     if (source.droppableId === destination.droppableId) return;
 
-    // Update deal stage in database
-    try {
-      const { error } = await supabase
-        .from('deals')
-        .update({ stage: destination.droppableId })
-        .eq('id', draggableId);
-
-      if (error) throw error;
-
-      // Update local state
-      setDeals(prevDeals => 
-        prevDeals.map(deal => 
-          deal.id === draggableId 
-            ? { ...deal, stage: destination.droppableId }
-            : deal
-        )
-      );
-    } catch (error) {
-      console.error('Error updating deal:', error);
-    }
+    // Update local state
+    setDeals(prevDeals => 
+      prevDeals.map(deal => 
+        deal.id === draggableId 
+          ? { ...deal, stage: destination.droppableId }
+          : deal
+      )
+    );
   };
 
-  const getDealsByStage = (stageName: string) => {
-    return deals.filter(deal => deal.stage === stageName.toLowerCase());
+  const getCurrentPipeline = () => {
+    return [...pipelines, ...customPipelines].find(p => p.id === activePipeline) || pipelines[0];
   };
 
-  const getStageTotal = (stageName: string) => {
-    return getDealsByStage(stageName).reduce((sum, deal) => sum + (deal.value || 0), 0);
+  const getDealsByStage = (stageId: string) => {
+    return deals.filter(deal => deal.stage === stageId && deal.pipeline === activePipeline);
+  };
+
+  const getStageTotal = (stageId: string) => {
+    return getDealsByStage(stageId).reduce((sum, deal) => sum + (deal.value || 0), 0);
   };
 
   const handleCreatePipeline = () => {
     if (newPipelineName.trim()) {
       const newPipeline: Pipeline = {
         id: newPipelineName.toLowerCase().replace(/\s+/g, '-'),
-        name: newPipelineName.trim()
+        name: newPipelineName.trim(),
+        stages: [
+          { id: 'lead', name: 'Lead', position: 1, color: '#3B82F6' },
+          { id: 'qualified', name: 'Qualified', position: 2, color: '#8B5CF6' },
+          { id: 'proposal', name: 'Proposal', position: 3, color: '#F59E0B' },
+          { id: 'closed-won', name: 'Closed Won', position: 4, color: '#059669' },
+          { id: 'closed-lost', name: 'Closed Lost', position: 5, color: '#DC2626' },
+        ]
       };
       setCustomPipelines(prev => [...prev, newPipeline]);
       setActivePipeline(newPipeline.id);
@@ -138,12 +162,10 @@ const SalesPipeline = () => {
     }
   };
 
-  const allPipelines = [...predefinedPipelines, ...customPipelines];
-  const currentPipeline = allPipelines.find(p => p.id === activePipeline);
-
-  if (loading) {
-    return <div className="p-8">Loading pipeline...</div>;
-  }
+  const currentPipeline = getCurrentPipeline();
+  const allPipelines = [...pipelines, ...customPipelines];
+  const pipelineDeals = deals.filter(deal => deal.pipeline === activePipeline);
+  const totalPipelineValue = pipelineDeals.reduce((sum, deal) => sum + (deal.value || 0), 0);
 
   return (
     <div className="space-y-6">
@@ -155,7 +177,7 @@ const SalesPipeline = () => {
           </p>
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-600">
-          <span>Total Pipeline Value: ${deals.reduce((sum, deal) => sum + (deal.value || 0), 0).toLocaleString()}</span>
+          <span>Total Pipeline Value: ${totalPipelineValue.toLocaleString()}</span>
         </div>
       </div>
 
@@ -214,80 +236,90 @@ const SalesPipeline = () => {
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-6 overflow-x-auto pb-4">
-          {stages.map((stage) => {
-            const stageDeals = getDealsByStage(stage.name);
-            const stageTotal = getStageTotal(stage.name);
+          {currentPipeline.stages.map((stage) => {
+            const stageDeals = getDealsByStage(stage.id);
+            const stageTotal = getStageTotal(stage.id);
             
             return (
               <div key={stage.id} className="flex-shrink-0 w-80">
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold text-gray-900">{stage.name}</h3>
-                    <Badge variant="secondary">
-                      {stageDeals.length}
-                    </Badge>
-                  </div>
-                  
-                  <div className="text-sm text-gray-600 mb-4">
-                    Total: ${stageTotal.toLocaleString()}
+                <Card className="h-full">
+                  <div className="p-4 border-b" style={{ borderTopColor: stage.color, borderTopWidth: '4px' }}>
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-semibold text-gray-900">{stage.name}</h3>
+                      <Badge variant="secondary" className="bg-gray-100">
+                        {stageDeals.length}
+                      </Badge>
+                    </div>
+                    
+                    <div className="text-sm text-gray-600">
+                      Total: ${stageTotal.toLocaleString()}
+                    </div>
                   </div>
 
-                  <Droppable droppableId={stage.name.toLowerCase()}>
+                  <Droppable droppableId={stage.id}>
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`space-y-3 min-h-[200px] ${
+                        className={`p-4 space-y-3 min-h-[300px] ${
                           snapshot.isDraggingOver ? 'bg-blue-50' : ''
                         }`}
                       >
                         {stageDeals.map((deal, index) => (
                           <Draggable key={deal.id} draggableId={deal.id} index={index}>
                             {(provided, snapshot) => (
-                              <div
+                              <Card
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow ${
-                                  snapshot.isDragging ? 'rotate-2' : ''
+                                className={`cursor-pointer hover:shadow-md transition-shadow ${
+                                  snapshot.isDragging ? 'rotate-2 shadow-lg' : ''
                                 }`}
                               >
-                                <h4 className="font-medium text-gray-900 mb-2">{deal.title}</h4>
-                                
-                                {deal.customer_name && (
-                                  <div className="flex items-center text-sm text-gray-600 mb-2">
-                                    <User className="h-3 w-3 mr-1" />
-                                    {deal.customer_name}
-                                  </div>
-                                )}
-                                
-                                <div className="flex items-center justify-between text-sm">
-                                  <div className="flex items-center text-green-600">
-                                    <DollarSign className="h-3 w-3 mr-1" />
-                                    {deal.value?.toLocaleString() || '0'}
-                                  </div>
-                                  
-                                  {deal.expected_close_date && (
-                                    <div className="flex items-center text-gray-500">
-                                      <Calendar className="h-3 w-3 mr-1" />
-                                      {new Date(deal.expected_close_date).toLocaleDateString()}
+                                <CardContent className="p-4">
+                                  <div className="space-y-3">
+                                    <div>
+                                      <h4 className="font-medium text-gray-900 text-sm mb-1">{deal.title}</h4>
+                                      <div className="flex items-center text-xs text-gray-600 mb-1">
+                                        <Building2 className="h-3 w-3 mr-1" />
+                                        {deal.company_name}
+                                      </div>
+                                      <div className="flex items-center text-xs text-gray-600">
+                                        <User className="h-3 w-3 mr-1" />
+                                        {deal.contact_person}
+                                      </div>
                                     </div>
-                                  )}
-                                </div>
-                                
-                                <div className="mt-2">
-                                  <div className="flex justify-between text-xs text-gray-500 mb-1">
-                                    <span>Probability</span>
-                                    <span>{deal.probability}%</span>
+                                    
+                                    <div className="flex items-center justify-between text-sm">
+                                      <div className="flex items-center text-green-600 font-medium">
+                                        <DollarSign className="h-3 w-3 mr-1" />
+                                        {deal.value?.toLocaleString() || '0'}
+                                      </div>
+                                      
+                                      <div className="flex items-center text-gray-500 text-xs">
+                                        <Calendar className="h-3 w-3 mr-1" />
+                                        {new Date(deal.expected_close_date).toLocaleDateString()}
+                                      </div>
+                                    </div>
+                                    
+                                    <div>
+                                      <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                        <span>Probability</span>
+                                        <span>{deal.probability}%</span>
+                                      </div>
+                                      <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                        <div 
+                                          className="h-1.5 rounded-full transition-all duration-300" 
+                                          style={{ 
+                                            width: `${deal.probability}%`,
+                                            backgroundColor: stage.color
+                                          }}
+                                        ></div>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <div className="w-full bg-gray-200 rounded-full h-1">
-                                    <div 
-                                      className="bg-blue-600 h-1 rounded-full" 
-                                      style={{ width: `${deal.probability}%` }}
-                                    ></div>
-                                  </div>
-                                </div>
-                              </div>
+                                </CardContent>
+                              </Card>
                             )}
                           </Draggable>
                         ))}
@@ -295,7 +327,7 @@ const SalesPipeline = () => {
                       </div>
                     )}
                   </Droppable>
-                </div>
+                </Card>
               </div>
             );
           })}
