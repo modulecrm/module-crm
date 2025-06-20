@@ -1,18 +1,42 @@
 
 import React, { useState } from 'react';
-import { Plus, Search, Globe, Save, Wand2, Trash2 } from 'lucide-react';
+import { Plus, Search, Globe, Save, Wand2, Trash2, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
+// Predefined languages with their locale codes
+const PREDEFINED_LANGUAGES = [
+  { code: 'da', name: 'Danish' },
+  { code: 'de', name: 'German' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'fr', name: 'French' },
+  { code: 'it', name: 'Italian' },
+  { code: 'nl', name: 'Dutch' },
+  { code: 'pt', name: 'Portuguese' },
+  { code: 'sv', name: 'Swedish' },
+  { code: 'no', name: 'Norwegian' },
+  { code: 'fi', name: 'Finnish' },
+  { code: 'pl', name: 'Polish' },
+  { code: 'ru', name: 'Russian' },
+  { code: 'zh', name: 'Chinese' },
+  { code: 'ja', name: 'Japanese' },
+  { code: 'ko', name: 'Korean' },
+  { code: 'ar', name: 'Arabic' },
+  { code: 'tr', name: 'Turkish' },
+  { code: 'hi', name: 'Hindi' },
+  { code: 'th', name: 'Thai' },
+  { code: 'vi', name: 'Vietnamese' }
+];
 
 const LanguageSettings = () => {
   const { currentLanguage, availableLanguages, translations, addLanguage, deleteLanguage, updateTranslation, setCurrentLanguage, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [newLanguageCode, setNewLanguageCode] = useState('');
-  const [newLanguageName, setNewLanguageName] = useState('');
+  const [selectedLanguageToAdd, setSelectedLanguageToAdd] = useState('');
   const [showAddLanguage, setShowAddLanguage] = useState(false);
-  const [isTranslating, setIsTranslating] = useState(false);
+  const [isTranslating, setIsTranslating] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [activeInterface, setActiveInterface] = useState<'user' | 'client'>('user');
 
@@ -25,13 +49,20 @@ const LanguageSettings = () => {
     return matchesSearch && matchesCategory;
   });
 
+  // Get languages that haven't been added yet
+  const availableLanguagesToAdd = PREDEFINED_LANGUAGES.filter(
+    lang => !availableLanguages.some(existing => existing.code === lang.code)
+  );
+
   const handleAddLanguage = () => {
-    if (newLanguageCode && newLanguageName) {
-      addLanguage(newLanguageCode, newLanguageName);
-      setNewLanguageCode('');
-      setNewLanguageName('');
-      setShowAddLanguage(false);
-      setHasUnsavedChanges(true);
+    if (selectedLanguageToAdd) {
+      const languageToAdd = PREDEFINED_LANGUAGES.find(lang => lang.code === selectedLanguageToAdd);
+      if (languageToAdd) {
+        addLanguage(languageToAdd.code, languageToAdd.name);
+        setSelectedLanguageToAdd('');
+        setShowAddLanguage(false);
+        setHasUnsavedChanges(true);
+      }
     }
   };
 
@@ -54,7 +85,7 @@ const LanguageSettings = () => {
   };
 
   const handleAutoTranslate = async (targetLanguage: string) => {
-    setIsTranslating(true);
+    setIsTranslating(targetLanguage);
     
     // Simulate AI translation - in a real app, this would call an AI translation service
     for (const translation of translations) {
@@ -65,7 +96,7 @@ const LanguageSettings = () => {
       }
     }
     
-    setIsTranslating(false);
+    setIsTranslating(null);
     setHasUnsavedChanges(true);
   };
 
@@ -122,10 +153,10 @@ const LanguageSettings = () => {
         </p>
       </div>
 
-      {/* Language Selection with Auto-translate */}
+      {/* Language Selection */}
       <div className="mb-6 bg-white p-6 rounded-lg border border-gray-200">
-        <h3 className="text-lg font-semibold mb-4">Current Language & Auto-Translation</h3>
-        <div className="flex flex-wrap gap-4 items-center">
+        <h3 className="text-lg font-semibold mb-4">Current Language</h3>
+        <div className="flex items-center gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Active Language</label>
             <select
@@ -138,34 +169,6 @@ const LanguageSettings = () => {
               ))}
             </select>
           </div>
-          
-          {availableLanguages.filter(lang => lang.code !== 'en').map(language => (
-            <div key={language.code} className="flex items-end gap-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Auto-translate to {language.name}
-                </label>
-                <Button
-                  onClick={() => handleAutoTranslate(language.code)}
-                  disabled={isTranslating}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
-                  <Wand2 className="h-4 w-4" />
-                  {isTranslating ? 'Translating...' : 'Auto-translate'}
-                </Button>
-              </div>
-              <Button
-                onClick={() => handleDeleteLanguage(language.code)}
-                variant="outline"
-                size="sm"
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                title={`Delete ${language.name} language`}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
         </div>
       </div>
 
@@ -208,24 +211,29 @@ const LanguageSettings = () => {
         {/* Add Language Form */}
         {showAddLanguage && (
           <div className="bg-gray-50 p-4 rounded-lg border">
-            <div className="flex gap-3">
-              <input
-                type="text"
-                placeholder="Language Code (e.g., es, fr, de)"
-                value={newLanguageCode}
-                onChange={(e) => setNewLanguageCode(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <input
-                type="text"
-                placeholder="Language Name (e.g., Spanish, French, German)"
-                value={newLanguageName}
-                onChange={(e) => setNewLanguageName(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent flex-1"
-              />
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Select Language</label>
+                <Select value={selectedLanguageToAdd} onValueChange={setSelectedLanguageToAdd}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a language to add" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 overflow-y-auto bg-white border border-gray-200 shadow-lg z-50">
+                    {availableLanguagesToAdd.map((language) => (
+                      <SelectItem key={language.code} value={language.code}>
+                        <div className="flex items-center justify-between w-full">
+                          <span>{language.name}</span>
+                          <span className="text-xs text-gray-500 ml-2">({language.code})</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <button
                 onClick={handleAddLanguage}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                disabled={!selectedLanguageToAdd}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:bg-gray-400"
               >
                 {t('button.add')}
               </button>
@@ -255,15 +263,27 @@ const LanguageSettings = () => {
                       <Globe className="h-4 w-4 mr-2" />
                       {language.name}
                     </div>
-                    <Button
-                      onClick={() => handleDeleteLanguage(language.code)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-6 w-6"
-                      title={`Delete ${language.name} language`}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        onClick={() => handleAutoTranslate(language.code)}
+                        disabled={isTranslating === language.code}
+                        variant="ghost"
+                        size="sm"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 h-8 w-8"
+                        title={`Auto-translate to ${language.name}`}
+                      >
+                        <Wand2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDeleteLanguage(language.code)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-8 w-8"
+                        title={`Delete ${language.name} language`}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </TableHead>
               ))}
