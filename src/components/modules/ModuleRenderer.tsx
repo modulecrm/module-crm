@@ -29,7 +29,7 @@ const ModuleRenderer = ({
   const renderModule = () => {
     switch (activeModule) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard enabledModules={enabledModules} />;
       case 'crm':
         return <CRMModule />;
       case 'invoice':
@@ -49,7 +49,7 @@ const ModuleRenderer = ({
         console.log('🔹 ModuleRenderer: ✅ RENDERING PROFILE SETTINGS for Users menu');
         return <ProfileSettings enabledModules={enabledModules} />;
       default:
-        return <Dashboard />;
+        return <Dashboard enabledModules={enabledModules} />;
     }
   };
 
