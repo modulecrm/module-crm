@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
@@ -8,6 +9,7 @@ import BookingModule from '@/components/BookingModule';
 import SubscriptionModule from '@/components/SubscriptionModule';
 import SettingsModule from './components/SettingsModule';
 import UserPage from './components/UserPage';
+import FeatureRequestsModule from './components/FeatureRequestsModule';
 import TaskEdit from './pages/TaskEdit';
 import { useToast } from "@/hooks/use-toast"
 
@@ -52,6 +54,8 @@ function App() {
         return <SettingsModule enabledModules={enabledModules} onToggleModule={handleToggleModule} />;
       case 'user':
         return <UserPage enabledModules={enabledModules} />;
+      case 'feature-requests':
+        return <FeatureRequestsModule />;
       default:
         return <Dashboard enabledModules={enabledModules} />;
     }
