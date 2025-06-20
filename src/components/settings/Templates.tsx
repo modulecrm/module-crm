@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,10 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Mail, File, Plus, Edit, Eye, Copy } from 'lucide-react';
+import TemplateEditor from './TemplateEditor';
 
 const Templates = () => {
   const [activeCategory, setActiveCategory] = useState('emails');
   const [selectedModule, setSelectedModule] = useState('crm');
+  const [editingTemplate, setEditingTemplate] = useState(null);
 
   const templateCategories = [
     { id: 'emails', name: 'Emails', icon: Mail },
@@ -112,7 +113,11 @@ const Templates = () => {
             <Eye className="h-4 w-4 mr-1" />
             Preview
           </Button>
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setEditingTemplate(template)}
+          >
             <Edit className="h-4 w-4 mr-1" />
             Edit
           </Button>
@@ -124,6 +129,15 @@ const Templates = () => {
       </CardContent>
     </Card>
   );
+
+  if (editingTemplate) {
+    return (
+      <TemplateEditor 
+        template={editingTemplate} 
+        onBack={() => setEditingTemplate(null)} 
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
