@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -63,7 +64,7 @@ const mockInvoices = [
 ];
 
 const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
-  console.log('ProfileSettings: Component is rendering');
+  console.log('ProfileSettings: Rendering Profile Settings page');
   
   // Mock user data - in a real app this would come from authentication/database
   const [userProfile, setUserProfile] = useState({
@@ -114,7 +115,7 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
     switch (status) {
       case 'paid':
         return (
-          <div className="flex flex-col items-start">
+          <span className="flex flex-col items-start">
             <Badge className="bg-green-100 text-green-700 flex items-center gap-1 mb-1">
               <CheckCircle className="h-3 w-3" />
               Paid
@@ -124,11 +125,11 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
                 Paid: {format(paidDate, 'MMM dd, yyyy')}
               </span>
             )}
-          </div>
+          </span>
         );
       case 'pending':
         return (
-          <div className="flex flex-col items-start">
+          <span className="flex flex-col items-start">
             <Badge className="bg-yellow-100 text-yellow-700 flex items-center gap-1 mb-1">
               <Clock className="h-3 w-3" />
               Pending
@@ -136,12 +137,12 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
             <span className="text-xs text-gray-500">
               No due date set
             </span>
-          </div>
+          </span>
         );
       case 'overdue':
         const daysOverdue = dueDate ? differenceInDays(today, dueDate) : 0;
         return (
-          <div className="flex flex-col items-start">
+          <span className="flex flex-col items-start">
             <Badge className="bg-red-100 text-red-700 flex items-center gap-1 mb-1">
               <AlertCircle className="h-3 w-3" />
               Overdue
@@ -149,7 +150,7 @@ const ProfileSettings = ({ enabledModules }: ProfileSettingsProps) => {
             <span className="text-xs text-red-600 font-medium">
               {daysOverdue} days overdue
             </span>
-          </div>
+          </span>
         );
       default:
         return <Badge variant="secondary">{status}</Badge>;
