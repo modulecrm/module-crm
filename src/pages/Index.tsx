@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -246,4 +244,3 @@ const Index = () => {
 };
 
 export default Index;
-
