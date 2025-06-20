@@ -4,21 +4,68 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Mail, File, Plus, Edit, Eye, Copy } from 'lucide-react';
 
 const Templates = () => {
   const [activeCategory, setActiveCategory] = useState('emails');
+  const [selectedModule, setSelectedModule] = useState('crm');
 
   const templateCategories = [
     { id: 'emails', name: 'Emails', icon: Mail },
     { id: 'contracts', name: 'Contracts', icon: File },
   ];
 
-  const emailTemplates = [
-    { id: '1', name: 'Welcome Email', isDefault: true, description: 'New customer welcome message' },
-    { id: '2', name: 'Invoice Reminder', isDefault: false, description: 'Payment reminder email' },
-    { id: '3', name: 'Quote Follow-up', isDefault: false, description: 'Follow-up after sending quote' },
-  ];
+  const moduleTemplates = {
+    crm: [
+      { id: '1', name: 'Welcome Email', isDefault: true, description: 'New customer welcome message' },
+      { id: '2', name: 'Follow-up Email', isDefault: false, description: 'Customer follow-up after meeting' },
+      { id: '3', name: 'Quote Follow-up', isDefault: false, description: 'Follow-up after sending quote' },
+      { id: '4', name: 'Thank You Email', isDefault: false, description: 'Thank you after purchase' },
+      { id: '5', name: 'Birthday Greeting', isDefault: false, description: 'Customer birthday wishes' },
+    ],
+    invoice: [
+      { id: '1', name: 'Invoice', isDefault: true, description: 'Standard invoice email' },
+      { id: '2', name: 'Credit Note', isDefault: false, description: 'Credit note notification' },
+      { id: '3', name: 'Receipt', isDefault: false, description: 'Payment receipt confirmation' },
+      { id: '4', name: 'Payment Reminder', isDefault: false, description: 'Payment reminder email' },
+      { id: '5', name: 'Due Fee', isDefault: false, description: 'Overdue payment notification' },
+      { id: '6', name: 'Order', isDefault: false, description: 'Order confirmation email' },
+      { id: '7', name: 'Payment Failed', isDefault: false, description: 'Failed payment notification' },
+    ],
+    subscription: [
+      { id: '1', name: 'New Agreement', isDefault: true, description: 'New subscription agreement' },
+      { id: '2', name: 'Renewal Notice', isDefault: false, description: 'Subscription renewal reminder' },
+      { id: '3', name: 'Cancellation Confirmation', isDefault: false, description: 'Subscription cancellation notice' },
+      { id: '4', name: 'Payment Updated', isDefault: false, description: 'Payment method updated' },
+      { id: '5', name: 'Upgrade Notification', isDefault: false, description: 'Plan upgrade confirmation' },
+    ],
+    booking: [
+      { id: '1', name: 'Booking Confirmation', isDefault: true, description: 'Appointment booking confirmation' },
+      { id: '2', name: 'Booking Reminder', isDefault: false, description: 'Appointment reminder 24h before' },
+      { id: '3', name: 'Booking Cancelled', isDefault: false, description: 'Booking cancellation notice' },
+      { id: '4', name: 'Reschedule Request', isDefault: false, description: 'Appointment reschedule notification' },
+      { id: '5', name: 'No-Show Follow-up', isDefault: false, description: 'Follow-up after missed appointment' },
+    ],
+    tasks: [
+      { id: '1', name: 'Task Assignment', isDefault: true, description: 'New task assignment notification' },
+      { id: '2', name: 'Task Completed', isDefault: false, description: 'Task completion notification' },
+      { id: '3', name: 'Task Overdue', isDefault: false, description: 'Overdue task reminder' },
+      { id: '4', name: 'Project Update', isDefault: false, description: 'Project progress update' },
+    ],
+    support: [
+      { id: '1', name: 'Ticket Created', isDefault: true, description: 'Support ticket confirmation' },
+      { id: '2', name: 'Ticket Updated', isDefault: false, description: 'Ticket status update' },
+      { id: '3', name: 'Ticket Resolved', isDefault: false, description: 'Ticket resolution notification' },
+      { id: '4', name: 'Customer Satisfaction', isDefault: false, description: 'Post-support feedback request' },
+    ],
+    newsletters: [
+      { id: '1', name: 'Monthly Newsletter', isDefault: true, description: 'Monthly company newsletter' },
+      { id: '2', name: 'Product Update', isDefault: false, description: 'New product/feature announcement' },
+      { id: '3', name: 'Event Invitation', isDefault: false, description: 'Company event invitation' },
+      { id: '4', name: 'Welcome Series', isDefault: false, description: 'New subscriber welcome series' },
+    ]
+  };
 
   const contractTemplates = [
     { id: '1', name: 'Service Agreement', isDefault: true, description: 'Standard service contract' },
@@ -29,13 +76,23 @@ const Templates = () => {
   const getTemplatesByCategory = (category: string) => {
     switch (category) {
       case 'emails':
-        return emailTemplates;
+        return moduleTemplates[selectedModule] || [];
       case 'contracts':
         return contractTemplates;
       default:
         return [];
     }
   };
+
+  const moduleOptions = [
+    { value: 'crm', label: 'CRM' },
+    { value: 'invoice', label: 'Invoice' },
+    { value: 'subscription', label: 'Subscriptions' },
+    { value: 'booking', label: 'Booking' },
+    { value: 'tasks', label: 'Tasks' },
+    { value: 'support', label: 'Support' },
+    { value: 'newsletters', label: 'Newsletters' },
+  ];
 
   const TemplateCard = ({ template }: { template: any }) => (
     <Card className="hover:shadow-md transition-shadow">
@@ -94,14 +151,42 @@ const Templates = () => {
           })}
         </TabsList>
 
-        {templateCategories.map((category) => (
-          <TabsContent key={category.id} value={category.id} className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {getTemplatesByCategory(category.id).map((template) => (
-                <TemplateCard key={template.id} template={template} />
-              ))}
+        <TabsContent value="emails" className="mt-6">
+          <div className="mb-6">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700">Select Module:</label>
+              <Select value={selectedModule} onValueChange={setSelectedModule}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Choose module" />
+                </SelectTrigger>
+                <SelectContent>
+                  {moduleOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {getTemplatesByCategory('emails').map((template) => (
+              <TemplateCard key={template.id} template={template} />
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="contracts" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {getTemplatesByCategory('contracts').map((template) => (
+              <TemplateCard key={template.id} template={template} />
+            ))}
+          </div>
+        </TabsContent>
+
+        {templateCategories.map((category) => (
+          <TabsContent key={category.id} value={category.id}>
             {getTemplatesByCategory(category.id).length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 <category.icon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
