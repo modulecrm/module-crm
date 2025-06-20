@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -194,6 +195,16 @@ const Index = () => {
                 >
                   Language
                 </button>
+                <button
+                  onClick={() => setActiveSettingsTab('profile')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeSettingsTab === 'profile'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Profile & Invoice Settings
+                </button>
               </nav>
             </div>
 
@@ -204,6 +215,7 @@ const Index = () => {
             {activeSettingsTab === 'payments' && <PaymentSettings />}
             {activeSettingsTab === 'integrations' && <IntegrationsSettings />}
             {activeSettingsTab === 'language' && <LanguageSettings />}
+            {activeSettingsTab === 'profile' && <ProfileSettings enabledModules={enabledModules} />}
           </div>
         );
       default:
@@ -234,3 +246,4 @@ const Index = () => {
 };
 
 export default Index;
+
