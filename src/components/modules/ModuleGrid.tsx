@@ -8,21 +8,34 @@ interface ModuleGridProps {
   modules: any[];
   enabledModules: string[];
   onModuleToggle: (module: any) => void;
+  showFeatureRequests?: boolean;
 }
 
-const ModuleGrid = ({ title, description, modules, enabledModules, onModuleToggle }: ModuleGridProps) => {
+const ModuleGrid = ({ 
+  title, 
+  description, 
+  modules, 
+  enabledModules, 
+  onModuleToggle,
+  showFeatureRequests = false 
+}: ModuleGridProps) => {
   return (
     <div className="mb-12">
-      <h2 className="text-xl font-semibold text-gray-900 mb-2">{title}</h2>
-      {description && <p className="text-gray-600 mb-6">{description}</p>}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+        {description && (
+          <p className="text-gray-600 mt-2">{description}</p>
+        )}
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {modules.map((module) => (
           <ModuleCard
             key={module.id}
             module={module}
             isEnabled={enabledModules.includes(module.id)}
-            onToggle={onModuleToggle}
+            onToggle={() => onModuleToggle(module)}
+            showFeatureRequests={showFeatureRequests}
           />
         ))}
       </div>

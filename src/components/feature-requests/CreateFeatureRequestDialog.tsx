@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
 import { useQuery } from '@tanstack/react-query';
 import VoteAllocationSlider from './VoteAllocationSlider';
+import { modules, branchModules } from '../modules/moduleData';
 
 interface CreateFeatureRequestDialogProps {
   open: boolean;
@@ -40,12 +41,11 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
 
   const remainingVotes = 10 - (totalVotesUsed || 0);
 
-  const modules = [
+  // Combine all modules for selection
+  const allModules = [
     { value: 'dashboard', label: 'Dashboard' },
-    { value: 'crm', label: 'CRM' },
-    { value: 'invoice', label: 'Invoice' },
-    { value: 'booking', label: 'Booking' },
-    { value: 'subscription', label: 'Subscription' },
+    ...modules.map(m => ({ value: m.id, label: m.name })),
+    ...branchModules.map(m => ({ value: m.id, label: m.name })),
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -156,7 +156,7 @@ const CreateFeatureRequestDialog = ({ open, onOpenChange }: CreateFeatureRequest
                 <SelectValue placeholder="Select a module" />
               </SelectTrigger>
               <SelectContent>
-                {modules.map((module) => (
+                {allModules.map((module) => (
                   <SelectItem key={module.value} value={module.value}>
                     {module.label}
                   </SelectItem>
