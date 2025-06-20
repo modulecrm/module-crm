@@ -11,7 +11,6 @@ import {
   Calendar,
   CreditCard,
   Settings,
-  User,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -31,9 +30,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
 
   const handleModuleClick = (moduleId: string) => {
     console.log('🔹 Sidebar: User clicked on module:', moduleId);
-    if (moduleId === 'profile') {
-      console.log('🔹 Sidebar: ✅ PROFILE CLICKED - This should show PROFILE SETTINGS, not Dashboard');
-    }
     onModuleChange(moduleId);
   };
 
@@ -86,18 +82,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
           >
             <Settings className="mr-2 h-4 w-4" />
             Settings
-          </Button>
-
-          <Button
-            variant={activeModule === 'profile' ? "default" : "ghost"}
-            className={cn(
-              "w-full justify-start",
-              activeModule === 'profile' && "bg-blue-50 text-blue-700 hover:bg-blue-100"
-            )}
-            onClick={() => handleModuleClick('profile')}
-          >
-            <User className="mr-2 h-4 w-4" />
-            Users
           </Button>
         </div>
       </nav>

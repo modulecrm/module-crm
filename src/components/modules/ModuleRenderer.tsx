@@ -45,9 +45,6 @@ const ModuleRenderer = ({
             onToggleModule={onToggleModule}
           />
         );
-      case 'profile':
-        console.log('🔹 ModuleRenderer: ✅ RENDERING PROFILE SETTINGS for Users menu');
-        return <ProfileSettings enabledModules={enabledModules} />;
       default:
         return <Dashboard enabledModules={enabledModules} />;
     }
