@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { DollarSign, Calendar, User, Building2, Plus } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { DollarSign, Calendar, User, Building2, Plus, X, Trash2 } from 'lucide-react';
 
 interface Deal {
   id: string;
@@ -37,12 +38,24 @@ interface Pipeline {
   stages: PipelineStage[];
 }
 
+interface CustomStage {
+  name: string;
+  color: string;
+}
+
 const SalesPipeline = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(false);
   const [activePipeline, setActivePipeline] = useState('virtual-office');
   const [isNewPipelineDialogOpen, setIsNewPipelineDialogOpen] = useState(false);
   const [newPipelineName, setNewPipelineName] = useState('');
+  const [customStages, setCustomStages] = useState<CustomStage[]>([
+    { name: 'Lead', color: '#3B82F6' },
+    { name: 'Qualified', color: '#8B5CF6' },
+    { name: 'Proposal', color: '#F59E0B' },
+    { name: 'Closed Won', color: '#059669' },
+    { name: 'Closed Lost', color: '#DC2626' },
+  ]);
 
   // Define pipelines with their specific stages
   const pipelines: Pipeline[] = [
@@ -142,22 +155,49 @@ const SalesPipeline = () => {
     return getDealsByStage(stageId).reduce((sum, deal) => sum + (deal.value || 0), 0);
   };
 
+  const getOpenDealsCount = (pipelineId: string) => {
+    return deals.filter(deal => 
+      deal.pipeline === pipelineId && 
+      !deal.stage.includes('closed')
+    ).length;
+  };
+
+  const addCustomStage = () => {
+    setCustomStages([...customStages, { name: '', color: '#3B82F6' }]);
+  };
+
+  const removeCustomStage = (index: number) => {
+    setCustomStages(customStages.filter((_, i) => i !== index));
+  };
+
+  const updateCustomStage = (index: number, field: 'name' | 'color', value: string) => {
+    setCustomStages(customStages.map((stage, i) => 
+      i === index ? { ...stage, [field]: value } : stage
+    ));
+  };
+
   const handleCreatePipeline = () => {
-    if (newPipelineName.trim()) {
+    if (newPipelineName.trim() && customStages.every(stage => stage.name.trim())) {
       const newPipeline: Pipeline = {
         id: newPipelineName.toLowerCase().replace(/\s+/g, '-'),
         name: newPipelineName.trim(),
-        stages: [
-          { id: 'lead', name: 'Lead', position: 1, color: '#3B82F6' },
-          { id: 'qualified', name: 'Qualified', position: 2, color: '#8B5CF6' },
-          { id: 'proposal', name: 'Proposal', position: 3, color: '#F59E0B' },
-          { id: 'closed-won', name: 'Closed Won', position: 4, color: '#059669' },
-          { id: 'closed-lost', name: 'Closed Lost', position: 5, color: '#DC2626' },
-        ]
+        stages: customStages.map((stage, index) => ({
+          id: stage.name.toLowerCase().replace(/\s+/g, '-'),
+          name: stage.name.trim(),
+          position: index + 1,
+          color: stage.color
+        }))
       };
       setCustomPipelines(prev => [...prev, newPipeline]);
       setActivePipeline(newPipeline.id);
       setNewPipelineName('');
+      setCustomStages([
+        { name: 'Lead', color: '#3B82F6' },
+        { name: 'Qualified', color: '#8B5CF6' },
+        { name: 'Proposal', color: '#F59E0B' },
+        { name: 'Closed Won', color: '#059669' },
+        { name: 'Closed Lost', color: '#DC2626' },
+      ]);
       setIsNewPipelineDialogOpen(false);
     }
   };
@@ -183,16 +223,24 @@ const SalesPipeline = () => {
 
       {/* Pipeline Selection Buttons */}
       <div className="flex flex-wrap gap-3 p-4 bg-gray-50 rounded-lg">
-        {allPipelines.map((pipeline) => (
-          <Button
-            key={pipeline.id}
-            variant={activePipeline === pipeline.id ? "default" : "outline"}
-            onClick={() => setActivePipeline(pipeline.id)}
-            className="min-w-0"
-          >
-            {pipeline.name}
-          </Button>
-        ))}
+        {allPipelines.map((pipeline) => {
+          const openDealsCount = getOpenDealsCount(pipeline.id);
+          return (
+            <Button
+              key={pipeline.id}
+              variant={activePipeline === pipeline.id ? "default" : "outline"}
+              onClick={() => setActivePipeline(pipeline.id)}
+              className="min-w-0 flex items-center gap-2"
+            >
+              {pipeline.name}
+              {openDealsCount > 0 && (
+                <Badge variant="secondary" className="ml-1 bg-blue-100 text-blue-800">
+                  {openDealsCount}
+                </Badge>
+              )}
+            </Button>
+          );
+        })}
         
         <Dialog open={isNewPipelineDialogOpen} onOpenChange={setIsNewPipelineDialogOpen}>
           <DialogTrigger asChild>
@@ -201,11 +249,11 @@ const SalesPipeline = () => {
               New Pipeline
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create New Pipeline</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
+            <div className="space-y-6 py-4">
               <div>
                 <Label htmlFor="pipeline-name">Pipeline Name</Label>
                 <Input
@@ -215,12 +263,62 @@ const SalesPipeline = () => {
                   placeholder="Enter pipeline name"
                 />
               </div>
+              
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <Label>Pipeline Stages</Label>
+                  <Button type="button" variant="outline" size="sm" onClick={addCustomStage}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Stage
+                  </Button>
+                </div>
+                
+                <div className="space-y-3">
+                  {customStages.map((stage, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+                      <div className="flex-1">
+                        <Input
+                          placeholder="Stage name"
+                          value={stage.name}
+                          onChange={(e) => updateCustomStage(index, 'name', e.target.value)}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={stage.color}
+                          onChange={(e) => updateCustomStage(index, 'color', e.target.value)}
+                          className="w-8 h-8 rounded border cursor-pointer"
+                        />
+                        {customStages.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeCustomStage(index)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
               <div className="flex justify-end gap-2">
                 <Button 
                   variant="outline" 
                   onClick={() => {
                     setIsNewPipelineDialogOpen(false);
                     setNewPipelineName('');
+                    setCustomStages([
+                      { name: 'Lead', color: '#3B82F6' },
+                      { name: 'Qualified', color: '#8B5CF6' },
+                      { name: 'Proposal', color: '#F59E0B' },
+                      { name: 'Closed Won', color: '#059669' },
+                      { name: 'Closed Lost', color: '#DC2626' },
+                    ]);
                   }}
                 >
                   Cancel
