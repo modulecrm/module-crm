@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -138,6 +137,18 @@ const Templates = () => {
     { value: 'newsletters', label: 'Newsletters' },
   ];
 
+  const handleDuplicate = (template: any) => {
+    const duplicatedTemplate = {
+      ...template,
+      id: `${template.id}_copy_${Date.now()}`, // Generate unique ID
+      name: `${template.name} (Copy)`,
+      isDefault: false // Duplicated templates are never default
+    };
+    
+    console.log('Duplicating template:', duplicatedTemplate);
+    setEditingTemplate(duplicatedTemplate);
+  };
+
   const TranslationSummaryCard = () => {
     const untranslatedCount = getTotalUntranslatedCount();
     
@@ -223,7 +234,11 @@ const Templates = () => {
               <Edit className="h-4 w-4 mr-1" />
               Edit
             </Button>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => handleDuplicate(template)}
+            >
               <Copy className="h-4 w-4 mr-1" />
               Duplicate
             </Button>
