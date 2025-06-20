@@ -27,7 +27,7 @@ const ModuleRenderer: React.FC<ModuleRendererProps> = ({
   const renderModule = () => {
     switch (activeModule) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard enabledModules={enabledModules} />;
       case 'crm':
         return <CRMModule />;
       case 'invoice':
@@ -39,18 +39,16 @@ const ModuleRenderer: React.FC<ModuleRendererProps> = ({
       case 'settings':
         return (
           <SettingsModule 
-            activeTab={activeSettingsTab}
-            setActiveTab={setActiveSettingsTab}
             enabledModules={enabledModules}
             onToggleModule={onToggleModule}
           />
         );
       case 'user':
-        return <UserPage />;
+        return <UserPage enabledModules={enabledModules} />;
       case 'feature-requests':
         return <FeatureRequestsModule />;
       default:
-        return <Dashboard />;
+        return <Dashboard enabledModules={enabledModules} />;
     }
   };
 
