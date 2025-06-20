@@ -30,7 +30,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeModule, onModuleChange, enabled
   ];
 
   const handleModuleClick = (moduleId: string) => {
-    console.log('Sidebar: Switching to module:', moduleId);
+    console.log('Sidebar: User clicked on module:', moduleId);
+    if (moduleId === 'profile') {
+      console.log('Sidebar: This should show PROFILE SETTINGS, not Dashboard');
+    }
     onModuleChange(moduleId);
   };
 

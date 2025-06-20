@@ -24,21 +24,26 @@ const ModuleRenderer = ({
   setActiveSettingsTab, 
   onToggleModule 
 }: ModuleRendererProps) => {
-  console.log('ModuleRenderer: Rendering module:', activeModule);
+  console.log('ModuleRenderer: Current active module is:', activeModule);
   
   switch (activeModule) {
     case 'dashboard':
+      console.log('ModuleRenderer: Rendering Dashboard module');
       return <Dashboard enabledModules={enabledModules} />;
     case 'crm':
+      console.log('ModuleRenderer: Rendering CRM module');
       return <CRMModule />;
     case 'booking':
+      console.log('ModuleRenderer: Rendering Booking module');
       return <BookingModule />;
     case 'subscription':
+      console.log('ModuleRenderer: Rendering Subscription module');
       return <SubscriptionModule />;
     case 'invoice':
+      console.log('ModuleRenderer: Rendering Invoice module');
       return <InvoiceModule />;
     case 'profile':
-      console.log('ModuleRenderer: Rendering ProfileSettings for profile module');
+      console.log('ModuleRenderer: Rendering ProfileSettings for PROFILE module (NOT Dashboard)');
       return <ProfileSettings enabledModules={enabledModules} />;
     case 'tasks':
       return (
@@ -85,6 +90,7 @@ const ModuleRenderer = ({
         />
       );
     case 'settings':
+      console.log('ModuleRenderer: Rendering Settings module');
       return (
         <SettingsPage
           activeSettingsTab={activeSettingsTab}
@@ -94,7 +100,7 @@ const ModuleRenderer = ({
         />
       );
     default:
-      console.log('ModuleRenderer: Defaulting to Dashboard for module:', activeModule);
+      console.warn('ModuleRenderer: Unknown module:', activeModule, '- this should NOT happen for profile module');
       return <Dashboard enabledModules={enabledModules} />;
   }
 };
