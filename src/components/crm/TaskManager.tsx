@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import CreateTaskDialog from './CreateTaskDialog';
 import { 
   Plus, 
   Clock, 
@@ -29,6 +29,7 @@ const TaskManager = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -130,6 +131,10 @@ const TaskManager = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const handleTaskCreated = () => {
+    fetchTasks(); // Refresh the tasks list
+  };
+
   if (loading) {
     return <div className="p-8">Loading tasks...</div>;
   }
@@ -138,7 +143,10 @@ const TaskManager = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Task Manager</h2>
-        <Button className="flex items-center gap-2">
+        <Button 
+          className="flex items-center gap-2"
+          onClick={() => setShowCreateDialog(true)}
+        >
           <Plus className="h-4 w-4" />
           Add Task
         </Button>
@@ -261,6 +269,12 @@ const TaskManager = () => {
           <p className="text-gray-600">Try adjusting your filters or add a new task</p>
         </div>
       )}
+
+      <CreateTaskDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onTaskCreated={handleTaskCreated}
+      />
     </div>
   );
 };
