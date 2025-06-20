@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save, Globe, Wand2, Eye } from 'lucide-react';
+import { ArrowLeft, Save, Globe, Wand2, Eye, Code, Type } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface TemplateEditorProps {
   template: {
@@ -21,6 +23,7 @@ interface TemplateEditorProps {
 const TemplateEditor = ({ template, onBack }: TemplateEditorProps) => {
   const { availableLanguages } = useLanguage();
   const [activeLanguage, setActiveLanguage] = useState('en');
+  const [editorMode, setEditorMode] = useState<'rich' | 'html'>('rich');
   const [templateContent, setTemplateContent] = useState({
     en: {
       subject: `Default subject for ${template.name}`,
@@ -98,6 +101,24 @@ const TemplateEditor = ({ template, onBack }: TemplateEditorProps) => {
   };
 
   const currentContent = templateContent[activeLanguage] || { subject: '', content: '' };
+
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      ['link', 'image'],
+      ['clean']
+    ],
+  };
+
+  const quillFormats = [
+    'header', 'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet', 'color', 'background', 'align',
+    'link', 'image'
+  ];
 
   return (
     <div className="space-y-6">
@@ -191,16 +212,50 @@ const TemplateEditor = ({ template, onBack }: TemplateEditorProps) => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Content (HTML)
-            </label>
-            <textarea
-              value={currentContent.content}
-              onChange={(e) => handleContentChange('content', e.target.value)}
-              rows={20}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
-              placeholder="Enter email content (HTML supported)..."
-            />
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Email Content
+              </label>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={editorMode === 'rich' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setEditorMode('rich')}
+                >
+                  <Type className="h-4 w-4 mr-1" />
+                  Rich Text
+                </Button>
+                <Button
+                  variant={editorMode === 'html' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setEditorMode('html')}
+                >
+                  <Code className="h-4 w-4 mr-1" />
+                  HTML
+                </Button>
+              </div>
+            </div>
+            
+            {editorMode === 'rich' ? (
+              <div className="border border-gray-300 rounded-md">
+                <ReactQuill
+                  theme="snow"
+                  value={currentContent.content}
+                  onChange={(value) => handleContentChange('content', value)}
+                  modules={quillModules}
+                  formats={quillFormats}
+                  style={{ minHeight: '300px' }}
+                />
+              </div>
+            ) : (
+              <textarea
+                value={currentContent.content}
+                onChange={(e) => handleContentChange('content', e.target.value)}
+                rows={20}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                placeholder="Enter email content (HTML supported)..."
+              />
+            )}
           </div>
 
           <div className="bg-blue-50 p-4 rounded-lg">
