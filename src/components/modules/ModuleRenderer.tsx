@@ -43,8 +43,7 @@ const ModuleRenderer = ({
       console.log('🔸 ModuleRenderer: Rendering Invoice module');
       return <InvoiceModule />;
     case 'profile':
-      console.log('🔸 ModuleRenderer: ✅ RENDERING PROFILE SETTINGS - NOT DASHBOARD');
-      console.log('🔸 ModuleRenderer: About to render ProfileSettings component');
+      console.log('🔸 ModuleRenderer: ✅ RENDERING USERS/PROFILE SETTINGS - Direct ProfileSettings component');
       return <ProfileSettings enabledModules={enabledModules} />;
     case 'tasks':
       return (
@@ -101,7 +100,7 @@ const ModuleRenderer = ({
         />
       );
     default:
-      console.warn('🔸 ModuleRenderer: ❌ UNKNOWN MODULE:', activeModule, '- this should NOT happen for profile module');
+      console.warn('🔸 ModuleRenderer: ❌ UNKNOWN MODULE:', activeModule, '- falling back to Dashboard');
       return <Dashboard enabledModules={enabledModules} />;
   }
 };
