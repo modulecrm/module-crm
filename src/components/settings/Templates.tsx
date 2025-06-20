@@ -1,16 +1,29 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mail, File, Plus, Edit, Eye, Copy } from 'lucide-react';
+import { Mail, File, Plus, Edit, Eye, Copy, Globe, AlertCircle } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 import TemplateEditor from './TemplateEditor';
 
 const Templates = () => {
+  const { availableLanguages } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('emails');
   const [selectedModule, setSelectedModule] = useState('crm');
   const [editingTemplate, setEditingTemplate] = useState(null);
+  const [showUntranslatedOnly, setShowUntranslatedOnly] = useState(false);
+
+  // Mock template content data - in a real app, this would come from a backend
+  const templateTranslations = {
+    '1': { en: true, da: true, de: false, es: true },
+    '2': { en: true, da: false, de: false, es: false },
+    '3': { en: true, da: true, de: true, es: true },
+    '4': { en: true, da: false, de: true, es: false },
+    '5': { en: true, da: true, de: false, es: true },
+  };
 
   const templateCategories = [
     { id: 'emails', name: 'Emails', icon: Mail },
@@ -85,6 +98,36 @@ const Templates = () => {
     }
   };
 
+  const getTranslationStatus = (templateId: string) => {
+    const translations = templateTranslations[templateId] || {};
+    const translatedLanguages = availableLanguages.filter(lang => translations[lang.code]);
+    const untranslatedLanguages = availableLanguages.filter(lang => !translations[lang.code]);
+    
+    return {
+      translatedLanguages,
+      untranslatedLanguages,
+      isFullyTranslated: untranslatedLanguages.length === 0
+    };
+  };
+
+  const getTotalUntranslatedCount = () => {
+    const templates = getTemplatesByCategory(activeCategory);
+    return templates.reduce((count, template) => {
+      const status = getTranslationStatus(template.id);
+      return count + (status.isFullyTranslated ? 0 : 1);
+    }, 0);
+  };
+
+  const getFilteredTemplates = () => {
+    const templates = getTemplatesByCategory(activeCategory);
+    if (!showUntranslatedOnly) return templates;
+    
+    return templates.filter(template => {
+      const status = getTranslationStatus(template.id);
+      return !status.isFullyTranslated;
+    });
+  };
+
   const moduleOptions = [
     { value: 'crm', label: 'CRM' },
     { value: 'invoice', label: 'Invoice' },
@@ -95,40 +138,100 @@ const Templates = () => {
     { value: 'newsletters', label: 'Newsletters' },
   ];
 
-  const TemplateCard = ({ template }: { template: any }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <h3 className="font-semibold text-lg">{template.name}</h3>
-            <p className="text-sm text-gray-600">{template.description}</p>
+  const TranslationSummaryCard = () => {
+    const untranslatedCount = getTotalUntranslatedCount();
+    
+    return (
+      <Card 
+        className={`cursor-pointer transition-all hover:shadow-md ${showUntranslatedOnly ? 'ring-2 ring-orange-500 bg-orange-50' : 'hover:border-orange-300'}`}
+        onClick={() => setShowUntranslatedOnly(!showUntranslatedOnly)}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <AlertCircle className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Translation Status</h3>
+                <p className="text-sm text-gray-600">
+                  {untranslatedCount} template{untranslatedCount !== 1 ? 's' : ''} need{untranslatedCount === 1 ? 's' : ''} translation
+                </p>
+              </div>
+            </div>
+            <Badge 
+              variant={untranslatedCount > 0 ? "destructive" : "default"}
+              className={untranslatedCount > 0 ? "bg-orange-100 text-orange-700" : "bg-green-100 text-green-700"}
+            >
+              {untranslatedCount > 0 ? `${untranslatedCount} pending` : 'Complete'}
+            </Badge>
           </div>
-          {template.isDefault && (
-            <Badge className="bg-green-100 text-green-700">Default</Badge>
-          )}
-        </div>
-        
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Eye className="h-4 w-4 mr-1" />
-            Preview
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setEditingTemplate(template)}
-          >
-            <Edit className="h-4 w-4 mr-1" />
-            Edit
-          </Button>
-          <Button variant="outline" size="sm">
-            <Copy className="h-4 w-4 mr-1" />
-            Duplicate
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
+          <div className="mt-3 text-xs text-gray-500">
+            {showUntranslatedOnly ? 'Showing untranslated templates only' : 'Click to filter untranslated templates'}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const TemplateCard = ({ template }: { template: any }) => {
+    const { translatedLanguages, untranslatedLanguages, isFullyTranslated } = getTranslationStatus(template.id);
+    
+    return (
+      <Card className="hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <h3 className="font-semibold text-lg">{template.name}</h3>
+              <p className="text-sm text-gray-600">{template.description}</p>
+            </div>
+            {template.isDefault && (
+              <Badge className="bg-green-100 text-green-700">Default</Badge>
+            )}
+          </div>
+          
+          {/* Translation Status */}
+          <div className="mb-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Globe className="h-4 w-4 text-gray-500" />
+              <span className="text-sm font-medium text-gray-700">Translation Status</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {translatedLanguages.map(lang => (
+                <Badge key={lang.code} className="bg-green-100 text-green-700 text-xs">
+                  {lang.name}
+                </Badge>
+              ))}
+              {untranslatedLanguages.map(lang => (
+                <Badge key={lang.code} variant="destructive" className="bg-red-100 text-red-700 text-xs">
+                  {lang.name}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <Eye className="h-4 w-4 mr-1" />
+              Preview
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setEditingTemplate(template)}
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+            <Button variant="outline" size="sm">
+              <Copy className="h-4 w-4 mr-1" />
+              Duplicate
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   if (editingTemplate) {
     return (
@@ -167,7 +270,7 @@ const Templates = () => {
 
         <TabsContent value="emails" className="mt-6">
           <div className="mb-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 mb-4">
               <label className="text-sm font-medium text-gray-700">Select Module:</label>
               <Select value={selectedModule} onValueChange={setSelectedModule}>
                 <SelectTrigger className="w-48">
@@ -181,14 +284,34 @@ const Templates = () => {
                   ))}
                 </SelectContent>
               </Select>
+              {showUntranslatedOnly && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowUntranslatedOnly(false)}
+                >
+                  Show All Templates
+                </Button>
+              )}
             </div>
+            
+            {/* Translation Summary Card */}
+            <TranslationSummaryCard />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {getTemplatesByCategory('emails').map((template) => (
+            {getFilteredTemplates().map((template) => (
               <TemplateCard key={template.id} template={template} />
             ))}
           </div>
+
+          {getFilteredTemplates().length === 0 && showUntranslatedOnly && (
+            <div className="text-center py-8 text-gray-500">
+              <Globe className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>All templates are fully translated!</p>
+              <p className="text-sm">Great job on keeping your translations up to date.</p>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="contracts" className="mt-6">
