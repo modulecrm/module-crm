@@ -44,6 +44,7 @@ const TaskEdit = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [task, setTask] = useState<Task | null>(null);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dueDate, setDueDate] = useState<Date | undefined>();
@@ -51,8 +52,29 @@ const TaskEdit = () => {
   useEffect(() => {
     if (taskId) {
       fetchTask();
+      fetchCustomers();
     }
   }, [taskId]);
+
+  const fetchCustomers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('customers')
+        .select('id, name, email, phone, company, status, industry, address')
+        .eq('status', 'active')
+        .order('name');
+
+      if (error) throw error;
+      setCustomers(data || []);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load customers.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const fetchTask = async () => {
     try {
@@ -116,6 +138,7 @@ const TaskEdit = () => {
           priority: task.priority,
           status: task.status,
           due_date: dueDate?.toISOString(),
+          customer_id: task.customer_id,
         })
         .eq('id', task.id);
 
@@ -158,7 +181,7 @@ const TaskEdit = () => {
         </div>
       </div>
     );
-  }
+  };
 
   if (!task) {
     return (
@@ -172,7 +195,7 @@ const TaskEdit = () => {
         </div>
       </div>
     );
-  }
+  };
 
   // Prepare customer data with proper address structure for TaskCustomerInfo
   const customerForInfo = task.customers ? {
@@ -226,6 +249,28 @@ const TaskEdit = () => {
                     placeholder="Enter task description"
                     rows={4}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Customer
+                  </label>
+                  <Select
+                    value={task.customer_id || ''}
+                    onValueChange={(value) => setTask({ ...task, customer_id: value || undefined })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a customer (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">No customer</SelectItem>
+                      {customers.map((customer) => (
+                        <SelectItem key={customer.id} value={customer.id}>
+                          {customer.name} {customer.company && `(${customer.company})`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
