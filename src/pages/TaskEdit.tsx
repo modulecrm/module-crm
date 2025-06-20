@@ -256,14 +256,14 @@ const TaskEdit = () => {
                     Customer
                   </label>
                   <Select
-                    value={task.customer_id || ''}
-                    onValueChange={(value) => setTask({ ...task, customer_id: value || undefined })}
+                    value={task.customer_id || 'none'}
+                    onValueChange={(value) => setTask({ ...task, customer_id: value === 'none' ? undefined : value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a customer (optional)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No customer</SelectItem>
+                      <SelectItem value="none">No customer</SelectItem>
                       {customers.map((customer) => (
                         <SelectItem key={customer.id} value={customer.id}>
                           {customer.name} {customer.company && `(${customer.company})`}
