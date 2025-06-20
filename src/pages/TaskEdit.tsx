@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, ArrowLeft } from 'lucide-react';
+import { CalendarIcon, ArrowLeft, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import TaskNotes from '@/components/crm/task-manager/TaskNotes';
@@ -22,7 +22,19 @@ interface Customer {
   company: string;
   status: string;
   industry: string;
-  address?: any; // Using any to handle Json type from database
+  address?: any;
+}
+
+interface Subscription {
+  id: string;
+  status: string;
+  current_period_start: string;
+  current_period_end: string;
+  plan_id: string;
+  subscription_plans: {
+    name: string;
+    price: number;
+  };
 }
 
 interface Task {
@@ -44,6 +56,9 @@ const TaskEdit = () => {
   const { toast } = useToast();
   const [task, setTask] = useState<Task | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [customerSubscription, setCustomerSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dueDate, setDueDate] = useState<Date | undefined>();
@@ -54,6 +69,25 @@ const TaskEdit = () => {
       fetchCustomers();
     }
   }, [taskId]);
+
+  useEffect(() => {
+    // Filter customers based on search
+    const filtered = customers.filter(customer =>
+      customer.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
+      customer.company?.toLowerCase().includes(customerSearch.toLowerCase()) ||
+      customer.email?.toLowerCase().includes(customerSearch.toLowerCase())
+    );
+    setFilteredCustomers(filtered);
+  }, [customers, customerSearch]);
+
+  useEffect(() => {
+    // Fetch subscription when customer changes
+    if (task?.customer_id) {
+      fetchCustomerSubscription(task.customer_id);
+    } else {
+      setCustomerSubscription(null);
+    }
+  }, [task?.customer_id]);
 
   const fetchCustomers = async () => {
     try {
@@ -72,6 +106,36 @@ const TaskEdit = () => {
         description: "Failed to load customers.",
         variant: "destructive"
       });
+    }
+  };
+
+  const fetchCustomerSubscription = async (customerId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select(`
+          id,
+          status,
+          current_period_start,
+          current_period_end,
+          plan_id,
+          subscription_plans (
+            name,
+            price
+          )
+        `)
+        .eq('user_id', customerId)
+        .eq('status', 'active')
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+      
+      setCustomerSubscription(data || null);
+    } catch (error) {
+      console.error('Error fetching customer subscription:', error);
+      setCustomerSubscription(null);
     }
   };
 
@@ -259,22 +323,33 @@ const TaskEdit = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Customer
                   </label>
-                  <Select
-                    value={task.customer_id || 'none'}
-                    onValueChange={(value) => setTask({ ...task, customer_id: value === 'none' ? undefined : value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a customer (optional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No customer</SelectItem>
-                      {customers.map((customer) => (
-                        <SelectItem key={customer.id} value={customer.id}>
-                          {customer.name} {customer.company && `(${customer.company})`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        placeholder="Search customers..."
+                        value={customerSearch}
+                        onChange={(e) => setCustomerSearch(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    <Select
+                      value={task.customer_id || 'none'}
+                      onValueChange={(value) => setTask({ ...task, customer_id: value === 'none' ? undefined : value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a customer (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No customer</SelectItem>
+                        {filteredCustomers.map((customer) => (
+                          <SelectItem key={customer.id} value={customer.id}>
+                            {customer.name} {customer.company && `(${customer.company})`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -378,6 +453,7 @@ const TaskEdit = () => {
               <TaskCustomerInfo 
                 customer={customerForInfo} 
                 taskTitle={task.title}
+                subscription={customerSubscription}
               />
             )}
           </div>
