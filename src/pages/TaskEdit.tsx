@@ -12,6 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import TaskNotes from '@/components/crm/task-manager/TaskNotes';
+import TaskCustomerInfo from '@/components/crm/task-manager/TaskCustomerInfo';
 
 interface Task {
   id: string;
@@ -21,7 +23,20 @@ interface Task {
   status: string;
   due_date: string;
   created_at: string;
-  customer_name?: string;
+  customer_id?: string;
+  customers?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    company: string;
+    status: string;
+    industry: string;
+    address?: {
+      city?: string;
+      country?: string;
+    };
+  };
   deal_title?: string;
 }
 
@@ -46,7 +61,16 @@ const TaskEdit = () => {
         .from('tasks')
         .select(`
           *,
-          customers (name),
+          customers (
+            id,
+            name,
+            email,
+            phone,
+            company,
+            status,
+            industry,
+            address
+          ),
           deals (title)
         `)
         .eq('id', taskId)
@@ -56,7 +80,6 @@ const TaskEdit = () => {
 
       const taskData = {
         ...data,
-        customer_name: data.customers?.name,
         deal_title: data.deals?.title
       };
 
@@ -112,10 +135,14 @@ const TaskEdit = () => {
     }
   };
 
+  const handleBackToTasks = () => {
+    navigate('/crm');
+  };
+
   if (loading) {
     return (
       <div className="p-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
             <div className="space-y-4">
@@ -132,11 +159,11 @@ const TaskEdit = () => {
   if (!task) {
     return (
       <div className="p-8">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Task Not Found</h1>
-          <Button onClick={() => navigate('/crm')}>
+          <Button onClick={handleBackToTasks}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to CRM
+            Back to Tasks
           </Button>
         </div>
       </div>
@@ -145,11 +172,11 @@ const TaskEdit = () => {
 
   return (
     <div className="p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Button 
             variant="outline" 
-            onClick={() => navigate('/crm')}
+            onClick={handleBackToTasks}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Tasks
@@ -157,108 +184,101 @@ const TaskEdit = () => {
           <h1 className="text-2xl font-bold text-gray-900">Edit Task</h1>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Task Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Title
-              </label>
-              <Input
-                value={task.title}
-                onChange={(e) => setTask({ ...task, title: e.target.value })}
-                placeholder="Enter task title"
-              />
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main task details - Left column (2/3) */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Task Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Title
+                  </label>
+                  <Input
+                    value={task.title}
+                    onChange={(e) => setTask({ ...task, title: e.target.value })}
+                    placeholder="Enter task title"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
-              <Textarea
-                value={task.description || ''}
-                onChange={(e) => setTask({ ...task, description: e.target.value })}
-                placeholder="Enter task description"
-                rows={4}
-              />
-            </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <Textarea
+                    value={task.description || ''}
+                    onChange={(e) => setTask({ ...task, description: e.target.value })}
+                    placeholder="Enter task description"
+                    rows={4}
+                  />
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Priority
-                </label>
-                <Select
-                  value={task.priority}
-                  onValueChange={(value) => setTask({ ...task, priority: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Status
-                </label>
-                <Select
-                  value={task.status}
-                  onValueChange={(value) => setTask({ ...task, status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Due Date
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dueDate ? format(dueDate, "PPP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={dueDate}
-                      onSelect={setDueDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-
-            {(task.customer_name || task.deal_title) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {task.customer_name && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Customer
+                      Priority
                     </label>
-                    <Input value={task.customer_name} readOnly className="bg-gray-50" />
+                    <Select
+                      value={task.priority}
+                      onValueChange={(value) => setTask({ ...task, priority: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="urgent">Urgent</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Status
+                    </label>
+                    <Select
+                      value={task.status}
+                      onValueChange={(value) => setTask({ ...task, status: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Due Date
+                    </label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {dueDate ? format(dueDate, "PPP") : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={dueDate}
+                          onSelect={setDueDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+
                 {task.deal_title && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -267,25 +287,39 @@ const TaskEdit = () => {
                     <Input value={task.deal_title} readOnly className="bg-gray-50" />
                   </div>
                 )}
-              </div>
-            )}
 
-            <div className="flex justify-end gap-4 pt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/crm')}
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSave}
-                disabled={saving}
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                <div className="flex justify-end gap-4 pt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleBackToTasks}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleSave}
+                    disabled={saving}
+                  >
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Task Notes */}
+            <TaskNotes taskId={task.id} />
+          </div>
+
+          {/* Right sidebar (1/3) */}
+          <div className="space-y-6">
+            {/* Customer Information */}
+            {task.customers && (
+              <TaskCustomerInfo 
+                customer={task.customers} 
+                taskTitle={task.title}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
