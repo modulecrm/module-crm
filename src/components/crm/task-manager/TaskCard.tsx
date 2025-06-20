@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +34,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onUpdate, 
   onStatusChange 
 }) => {
+  const navigate = useNavigate();
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent': return 'bg-red-100 text-red-800';
@@ -62,9 +64,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
     return new Date(dateString).toLocaleDateString();
   };
 
+  const handleCardClick = () => {
+    navigate(`/task/${task.id}`);
+  };
+
   return (
     <TaskHoverCard task={task}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer">
+      <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleCardClick}>
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
             <Checkbox

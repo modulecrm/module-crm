@@ -1,13 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
 import Dashboard from '@/components/Dashboard';
 import CRMModule from '@/components/CRMModule';
 import InvoiceModule from '@/components/InvoiceModule';
 import BookingModule from '@/components/BookingModule';
 import SubscriptionModule from '@/components/SubscriptionModule';
-import { useToast } from "@/hooks/use-toast"
 import SettingsModule from './components/SettingsModule';
+import TaskEdit from './pages/TaskEdit';
+import { useToast } from "@/hooks/use-toast"
 
 function App() {
   const [activeModule, setActiveModule] = useState('dashboard');
@@ -54,16 +56,23 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar
-        activeModule={activeModule}
-        onModuleChange={handleModuleChange}
-        enabledModules={enabledModules}
-      />
-      <main className="flex-1 p-4">
-        {renderActiveModule()}
-      </main>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/task/:taskId" element={<TaskEdit />} />
+        <Route path="*" element={
+          <div className="flex h-screen bg-gray-50">
+            <Sidebar
+              activeModule={activeModule}
+              onModuleChange={handleModuleChange}
+              enabledModules={enabledModules}
+            />
+            <main className="flex-1 p-4">
+              {renderActiveModule()}
+            </main>
+          </div>
+        } />
+      </Routes>
+    </Router>
   );
 }
 
