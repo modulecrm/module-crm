@@ -26,12 +26,12 @@ const ModuleCard = ({ module, isEnabled, onToggle }: ModuleCardProps) => {
       className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200 relative"
     >
       {module.premium && (
-        <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+        <div className="absolute top-4 left-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
           PREMIUM
         </div>
       )}
       {module.required && (
-        <div className="absolute top-4 right-4 bg-gradient-to-r from-red-400 to-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+        <div className="absolute top-4 left-4 bg-gradient-to-r from-red-400 to-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
           REQUIRED
         </div>
       )}
