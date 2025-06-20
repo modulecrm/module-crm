@@ -18,7 +18,8 @@ import {
   CheckCircle,
   Calendar as CalendarIcon,
   MoreHorizontal,
-  Edit3
+  Edit3,
+  PlayCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -208,6 +209,7 @@ const TaskManager = () => {
   const filteredTasks = tasks.filter(task => {
     if (filter === 'all') return true;
     if (filter === 'pending') return task.status === 'pending';
+    if (filter === 'in_progress') return task.status === 'in_progress';
     if (filter === 'completed') return task.status === 'completed';
     if (filter === 'overdue') return isOverdue(task.due_date) && task.status !== 'completed';
     return task.priority === filter;
@@ -270,9 +272,9 @@ const TaskManager = () => {
         </div>
       </div>
 
-      {/* Filter Bar */}
+      {/* Filter Bar - Updated to include in_progress */}
       <div className="flex gap-2 overflow-x-auto pb-2">
-        {['all', 'pending', 'completed', 'overdue', 'urgent', 'high', 'medium', 'low'].map((filterOption) => (
+        {['all', 'pending', 'in_progress', 'completed', 'overdue', 'urgent', 'high', 'medium', 'low'].map((filterOption) => (
           <button
             key={filterOption}
             onClick={() => setFilter(filterOption)}
@@ -282,12 +284,12 @@ const TaskManager = () => {
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
+            {filterOption === 'in_progress' ? 'In Progress' : filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Bulk Actions */}
+      {/* Bulk Actions section remains the same */}
       {selectedTasks.length > 0 && (
         <Card className="bg-blue-50 border-blue-200">
           <CardContent className="p-4">
@@ -331,8 +333,8 @@ const TaskManager = () => {
         </Card>
       )}
 
-      {/* Task Stats - Now clickable */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Task Stats - Updated to include In Progress card */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card 
           className={`cursor-pointer transition-all hover:shadow-md ${filter === 'all' ? 'ring-2 ring-blue-500' : ''}`}
           onClick={() => handleStatsCardClick('all')}
@@ -356,6 +358,20 @@ const TaskManager = () => {
             </div>
             <p className="text-2xl font-bold text-yellow-600">
               {tasks.filter(t => t.status === 'pending').length}
+            </p>
+          </CardContent>
+        </Card>
+        <Card 
+          className={`cursor-pointer transition-all hover:shadow-md ${filter === 'in_progress' ? 'ring-2 ring-blue-500' : ''}`}
+          onClick={() => handleStatsCardClick('in_progress')}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">In Progress</span>
+              <PlayCircle className="h-4 w-4 text-blue-500" />
+            </div>
+            <p className="text-2xl font-bold text-blue-600">
+              {tasks.filter(t => t.status === 'in_progress').length}
             </p>
           </CardContent>
         </Card>
@@ -389,7 +405,7 @@ const TaskManager = () => {
         </Card>
       </div>
 
-      {/* Select All Checkbox */}
+      {/* Select All Checkbox section remains the same */}
       {filteredTasks.length > 0 && (
         <div className="flex items-center gap-2">
           <Checkbox
@@ -400,7 +416,7 @@ const TaskManager = () => {
         </div>
       )}
 
-      {/* Tasks List */}
+      {/* Tasks List section remains the same */}
       <div className="space-y-3">
         {filteredTasks.map((task) => (
           <Card key={task.id} className="hover:shadow-md transition-shadow">
@@ -462,6 +478,7 @@ const TaskManager = () => {
         ))}
       </div>
 
+      {/* Empty state section remains the same */}
       {filteredTasks.length === 0 && (
         <div className="text-center py-12">
           <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -470,6 +487,7 @@ const TaskManager = () => {
         </div>
       )}
 
+      {/* Create Task Dialog remains the same */}
       <CreateTaskDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
@@ -479,7 +497,7 @@ const TaskManager = () => {
   );
 };
 
-// Quick Edit Component for individual tasks
+// TaskQuickEdit component remains exactly the same
 const TaskQuickEdit = ({ task, onUpdate, onStatusChange }: { 
   task: Task; 
   onUpdate: (updates: Partial<Task>) => void;
