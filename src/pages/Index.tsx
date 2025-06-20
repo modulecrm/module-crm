@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import Sidebar from '../components/Sidebar';
@@ -72,6 +73,8 @@ const Index = () => {
   };
 
   const renderActiveModule = () => {
+    console.log('App: Rendering module:', activeModule);
+    
     switch (activeModule) {
       case 'dashboard':
         return <Dashboard enabledModules={enabledModules} />;
@@ -84,6 +87,7 @@ const Index = () => {
       case 'invoice':
         return <InvoiceModule />;
       case 'profile':
+        console.log('App: Rendering ProfileSettings for profile module');
         return <ProfileSettings enabledModules={enabledModules} />;
       case 'tasks':
         return (
@@ -205,6 +209,7 @@ const Index = () => {
           </div>
         );
       default:
+        console.log('App: Defaulting to Dashboard for module:', activeModule);
         return <Dashboard enabledModules={enabledModules} />;
     }
   };
@@ -214,7 +219,10 @@ const Index = () => {
       <div className="min-h-screen bg-gray-50 flex w-full">
         <Sidebar
           activeModule={activeModule}
-          onModuleChange={setActiveModule}
+          onModuleChange={(module) => {
+            console.log('App: Active module changed to:', module);
+            setActiveModule(module);
+          }}
           enabledModules={enabledModules}
         />
         <div className="flex-1 overflow-auto w-full">
