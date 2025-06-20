@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Plus, Search, Globe, Save, Wand2, Trash2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -13,6 +14,7 @@ const LanguageSettings = () => {
   const [showAddLanguage, setShowAddLanguage] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [activeInterface, setActiveInterface] = useState<'user' | 'client'>('user');
 
   const categories = ['All', ...Array.from(new Set(translations.map(t => t.category)))];
 
@@ -89,6 +91,35 @@ const LanguageSettings = () => {
           <Save className="h-4 w-4" />
           Save Changes
         </Button>
+      </div>
+
+      {/* Interface Selection */}
+      <div className="mb-6 bg-white p-6 rounded-lg border border-gray-200">
+        <h3 className="text-lg font-semibold mb-4">Translation Interface</h3>
+        <div className="flex gap-4">
+          <Button
+            onClick={() => setActiveInterface('user')}
+            variant={activeInterface === 'user' ? 'default' : 'outline'}
+            className="flex items-center gap-2"
+          >
+            <Globe className="h-4 w-4" />
+            User Interface
+          </Button>
+          <Button
+            onClick={() => setActiveInterface('client')}
+            variant={activeInterface === 'client' ? 'default' : 'outline'}
+            className="flex items-center gap-2"
+          >
+            <Globe className="h-4 w-4" />
+            Client Interface
+          </Button>
+        </div>
+        <p className="text-sm text-gray-600 mt-2">
+          {activeInterface === 'user' 
+            ? 'Translate the CRM system interface used by administrators and staff'
+            : 'Translate the client app interface used by customers'
+          }
+        </p>
       </div>
 
       {/* Language Selection with Auto-translate */}
