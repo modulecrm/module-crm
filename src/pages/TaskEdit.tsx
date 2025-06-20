@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -197,12 +196,17 @@ const TaskEdit = () => {
     );
   };
 
-  // Prepare customer data with proper address structure for TaskCustomerInfo
-  const customerForInfo = task.customers ? {
-    ...task.customers,
+  // Get the currently selected customer from the customers list
+  const selectedCustomer = task.customer_id 
+    ? customers.find(customer => customer.id === task.customer_id)
+    : null;
+
+  // Prepare customer data for TaskCustomerInfo component
+  const customerForInfo = selectedCustomer ? {
+    ...selectedCustomer,
     address: {
-      city: task.customers.address?.city || '',
-      country: task.customers.address?.country || ''
+      city: selectedCustomer.address?.city || '',
+      country: selectedCustomer.address?.country || ''
     }
   } : undefined;
 
