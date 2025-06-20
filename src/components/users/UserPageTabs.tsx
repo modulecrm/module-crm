@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, FileText, CreditCard, Shield } from 'lucide-react';
-import CustomerOrganizations from './CustomerOrganizations';
+import { Users, Building, CreditCard, Shield } from 'lucide-react';
+import TeamProfiles from './TeamProfiles';
 import InvoiceInformation from './InvoiceInformation';
-import CustomerBilling from './CustomerBilling';
-import CustomerAccessLevels from './CustomerAccessLevels';
+import CRMSubscription from './CRMSubscription';
+import TeamAccessLevels from './TeamAccessLevels';
 
 interface UserPageTabsProps {
   activeTab: string;
@@ -18,25 +18,25 @@ const UserPageTabs = ({ activeTab, onTabChange, enabledModules }: UserPageTabsPr
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="profiles" className="flex items-center gap-2">
-          <Building2 className="h-4 w-4" />
-          Customer Organizations
+          <Users className="h-4 w-4" />
+          Team Members
         </TabsTrigger>
         <TabsTrigger value="invoice-info" className="flex items-center gap-2">
-          <FileText className="h-4 w-4" />
-          My Invoice Information
+          <Building className="h-4 w-4" />
+          Company Information
         </TabsTrigger>
         <TabsTrigger value="invoice-payment" className="flex items-center gap-2">
           <CreditCard className="h-4 w-4" />
-          Customer Billing
+          CRM Subscription
         </TabsTrigger>
         <TabsTrigger value="access-levels" className="flex items-center gap-2">
           <Shield className="h-4 w-4" />
-          Customer Access Levels
+          Access Levels
         </TabsTrigger>
       </TabsList>
 
       <TabsContent value="profiles" className="mt-6">
-        <CustomerOrganizations />
+        <TeamProfiles />
       </TabsContent>
 
       <TabsContent value="invoice-info" className="mt-6">
@@ -44,11 +44,11 @@ const UserPageTabs = ({ activeTab, onTabChange, enabledModules }: UserPageTabsPr
       </TabsContent>
 
       <TabsContent value="invoice-payment" className="mt-6">
-        <CustomerBilling enabledModules={enabledModules} />
+        <CRMSubscription enabledModules={enabledModules} />
       </TabsContent>
 
       <TabsContent value="access-levels" className="mt-6">
-        <CustomerAccessLevels />
+        <TeamAccessLevels />
       </TabsContent>
     </Tabs>
   );
