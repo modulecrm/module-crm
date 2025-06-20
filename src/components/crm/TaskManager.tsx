@@ -48,11 +48,38 @@ const TaskManager = () => {
 
       if (error) throw error;
 
-      setTasks(data?.map(task => ({
+      const tasksWithCustomSort = data?.map(task => ({
         ...task,
         customer_name: task.customers?.name,
         deal_title: task.deals?.title
-      })) || []);
+      })) || [];
+
+      // Sort by priority first (urgent, high, medium, low), then by due date
+      const sortedTasks = tasksWithCustomSort.sort((a, b) => {
+        // Define priority order
+        const priorityOrder = { 'urgent': 0, 'high': 1, 'medium': 2, 'low': 3 };
+        
+        // First sort by priority
+        const priorityA = priorityOrder[a.priority as keyof typeof priorityOrder] ?? 4;
+        const priorityB = priorityOrder[b.priority as keyof typeof priorityOrder] ?? 4;
+        
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+        
+        // If same priority, sort by due date (earliest first)
+        if (a.due_date && b.due_date) {
+          return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+        }
+        
+        // Tasks with due dates come before those without
+        if (a.due_date && !b.due_date) return -1;
+        if (!a.due_date && b.due_date) return 1;
+        
+        return 0;
+      });
+
+      setTasks(sortedTasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
     } finally {
