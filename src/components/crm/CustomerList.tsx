@@ -93,7 +93,7 @@ const CustomerList: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-full bg-gray-50">
+    <div className="w-full h-full">
       <CustomerHeader
         hasCustomers={customers.length > 0}
         onCreateSampleCustomers={createSampleCustomers}
@@ -112,14 +112,14 @@ const CustomerList: React.FC = () => {
       />
 
       {/* Customer Count */}
-      <div className="bg-gray-50 px-4 sm:px-6 lg:px-8 py-2">
+      <div className="px-4 sm:px-6 lg:px-8 py-2 bg-gray-50">
         <p className="text-sm text-gray-600">
           {filteredCustomers.length} customer{filteredCustomers.length !== 1 ? 's' : ''} found
         </p>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 px-4 sm:px-6 lg:px-8 py-4">
+      <div className="px-4 sm:px-6 lg:px-8 py-4">
         {customers.length === 0 ? (
           <EmptyState
             onCreateSampleCustomers={createSampleCustomers}
