@@ -17,8 +17,8 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
 
   return (
     <div className="w-full">
-      <div className="px-4 md:px-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="px-4 md:px-8 py-2 border-b border-gray-200">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="templates" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -37,24 +37,24 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
               Integrations
             </TabsTrigger>
           </TabsList>
+        </div>
 
-          <TabsContent value="templates" className="mt-6">
-            <Templates />
-          </TabsContent>
+        <TabsContent value="templates" className="px-4 md:px-8 py-6">
+          <Templates />
+        </TabsContent>
 
-          <TabsContent value="modules" className="mt-6">
-            <ModuleSettings enabledModules={enabledModules} onToggleModule={onToggleModule} />
-          </TabsContent>
+        <TabsContent value="modules" className="px-4 md:px-8 py-6">
+          <ModuleSettings enabledModules={enabledModules} onToggleModule={onToggleModule} />
+        </TabsContent>
 
-          <TabsContent value="language" className="mt-6">
-            <LanguageSettings />
-          </TabsContent>
+        <TabsContent value="language" className="px-4 md:px-8 py-6">
+          <LanguageSettings />
+        </TabsContent>
 
-          <TabsContent value="integrations" className="mt-6">
-            <IntegrationsSettings />
-          </TabsContent>
-        </Tabs>
-      </div>
+        <TabsContent value="integrations" className="px-4 md:px-8 py-6">
+          <IntegrationsSettings />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

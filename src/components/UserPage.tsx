@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import UserPageHeader from './users/UserPageHeader';
 import UserPageTabs from './users/UserPageTabs';
 
 interface UserPageProps {
@@ -14,13 +13,11 @@ const UserPage = ({ enabledModules }: UserPageProps) => {
 
   return (
     <div className="w-full" data-testid="profile-settings-page">
-      <div className="p-4 md:p-8">
-        <UserPageTabs 
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          enabledModules={enabledModules}
-        />
-      </div>
+      <UserPageTabs 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        enabledModules={enabledModules}
+      />
     </div>
   );
 };
