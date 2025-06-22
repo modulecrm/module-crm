@@ -53,11 +53,13 @@ const AppLayout = ({
         />
         
         <div className={`flex-1 overflow-auto w-full transition-all duration-300 ${showSubNavigation ? 'ml-64' : 'ml-0'}`}>
-          {/* Global Module Search - Compact header */}
-          <div className="bg-white border-b border-gray-200 px-4 py-2">
-            <ModuleSearch onModuleSelect={onModuleSelect} />
+          {/* Global Module Search - Compact header with no padding */}
+          <div className="bg-white border-b border-gray-200">
+            <div className="px-4 py-2">
+              <ModuleSearch onModuleSelect={onModuleSelect} />
+            </div>
           </div>
-          {/* Content area without additional spacing */}
+          {/* Content area with no padding */}
           <div className="w-full">
             {renderModule(activeSubTab)}
           </div>
