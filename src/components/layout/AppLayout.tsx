@@ -45,23 +45,27 @@ const AppLayout = ({
           enabledModules={enabledModules}
         />
         
-        <SubNavigation
-          activeModule={activeModule}
-          activeSubTab={activeSubTab}
-          onSubTabChange={handleSubTabChange}
-          isVisible={showSubNavigation}
-        />
-        
-        <div className={`flex-1 overflow-auto w-full transition-all duration-300 ${showSubNavigation ? 'ml-64' : 'ml-0'}`}>
-          {/* Global Module Search - Compact header with no padding */}
-          <div className="bg-white border-b border-gray-200">
-            <div className="px-4 py-2">
-              <ModuleSearch onModuleSelect={onModuleSelect} />
+        <div className="flex-1 flex h-screen">
+          {showSubNavigation && (
+            <SubNavigation
+              activeModule={activeModule}
+              activeSubTab={activeSubTab}
+              onSubTabChange={handleSubTabChange}
+              isVisible={showSubNavigation}
+            />
+          )}
+          
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Global Module Search - Compact header */}
+            <div className="bg-white border-b border-gray-200 flex-shrink-0">
+              <div className="px-4 py-2">
+                <ModuleSearch onModuleSelect={onModuleSelect} />
+              </div>
             </div>
-          </div>
-          {/* Content area with no padding */}
-          <div className="w-full">
-            {renderModule(activeSubTab)}
+            {/* Content area */}
+            <div className="flex-1 overflow-auto">
+              {renderModule(activeSubTab)}
+            </div>
           </div>
         </div>
       </div>
