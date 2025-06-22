@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Sidebar from '@/components/Sidebar';
+import AppLayout from '@/components/layout/AppLayout';
 import Dashboard from '@/components/Dashboard';
 import CRMModule from '@/components/CRMModule';
 import InvoiceModule from '@/components/InvoiceModule';
@@ -36,6 +36,10 @@ function App() {
     });
   };
 
+  const handleModuleSelect = (moduleId: string) => {
+    setActiveModule(moduleId);
+  };
+
   const renderActiveModule = () => {
     console.log('App: Rendering module:', activeModule);
     
@@ -66,16 +70,14 @@ function App() {
       <Routes>
         <Route path="/task/:taskId" element={<TaskEdit />} />
         <Route path="*" element={
-          <div className="flex h-screen bg-gray-50">
-            <Sidebar
-              activeModule={activeModule}
-              onModuleChange={handleModuleChange}
-              enabledModules={enabledModules}
-            />
-            <main className="flex-1 p-4">
-              {renderActiveModule()}
-            </main>
-          </div>
+          <AppLayout
+            activeModule={activeModule}
+            onModuleChange={handleModuleChange}
+            enabledModules={enabledModules}
+            onModuleSelect={handleModuleSelect}
+          >
+            {renderActiveModule()}
+          </AppLayout>
         } />
       </Routes>
     </Router>
