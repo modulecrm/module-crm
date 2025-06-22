@@ -44,7 +44,7 @@ const CRMModule = ({ activeSubTab }: CRMModuleProps) => {
 
   return (
     <div className="w-full">
-      <div className="p-4 md:p-8 mb-8">
+      <div className="p-4 md:p-8">
         <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
         <p className="text-gray-600 mt-2">Comprehensive customer relationship management</p>
       </div>
