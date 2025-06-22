@@ -23,15 +23,16 @@ const Index = () => {
       onModuleChange={handleModuleChange}
       enabledModules={enabledModules}
       onModuleSelect={handleSearchSelect}
-    >
-      <ModuleRenderer
-        activeModule={activeModule}
-        enabledModules={enabledModules}
-        activeSettingsTab={activeSettingsTab}
-        setActiveSettingsTab={setActiveSettingsTab}
-        onToggleModule={handleToggleModule}
-      />
-    </AppLayout>
+      renderModule={(activeSubTab?: string) => (
+        <ModuleRenderer
+          activeModule={activeModule}
+          enabledModules={enabledModules}
+          activeSettingsTab={activeSettingsTab}
+          setActiveSettingsTab={setActiveSettingsTab}
+          onToggleModule={handleToggleModule}
+        />
+      )}
+    />
   );
 };
 
