@@ -43,11 +43,8 @@ const CRMModule = ({ activeSubTab }: CRMModuleProps) => {
   };
 
   return (
-    <div className="w-full">
-      {/* Content based on sub-navigation selection */}
-      <div className="w-full">
-        {renderActiveContent()}
-      </div>
+    <div className="w-full h-full">
+      {renderActiveContent()}
     </div>
   );
 };
