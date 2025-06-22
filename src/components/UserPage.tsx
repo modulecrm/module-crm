@@ -15,7 +15,6 @@ const UserPage = ({ enabledModules }: UserPageProps) => {
   return (
     <div className="w-full" data-testid="profile-settings-page">
       <div className="p-4 md:p-8">
-        <UserPageHeader />
         <UserPageTabs 
           activeTab={activeTab}
           onTabChange={setActiveTab}

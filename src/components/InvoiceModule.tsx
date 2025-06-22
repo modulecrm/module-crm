@@ -42,11 +42,6 @@ const InvoiceModule = ({ activeSubTab }: InvoiceModuleProps) => {
 
   return (
     <div className="w-full">
-      <div className="p-4 md:p-8">
-        <h1 className="text-3xl font-bold text-gray-900">Invoice Management</h1>
-        <p className="text-gray-600 mt-2">Comprehensive invoicing with CRM integration and AI-powered automation</p>
-      </div>
-
       {/* Content based on sub-navigation selection */}
       <div className="w-full">
         {renderActiveContent()}

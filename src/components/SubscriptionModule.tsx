@@ -22,11 +22,6 @@ const SubscriptionModule = () => {
 
   return (
     <div className="w-full">
-      <div className="p-4 md:p-8">
-        <h1 className="text-3xl font-bold text-gray-900">Subscription Management</h1>
-        <p className="text-gray-600 mt-2">Comprehensive subscription and billing management system</p>
-      </div>
-
       {/* Tab Navigation */}
       <div className="px-4 md:px-8 mb-8">
         <div className="border-b border-gray-200">

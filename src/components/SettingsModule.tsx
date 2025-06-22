@@ -17,11 +17,6 @@ const SettingsModule = ({ enabledModules, onToggleModule }: SettingsModuleProps)
 
   return (
     <div className="w-full">
-      <div className="p-4 md:p-8">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-2">Manage your application settings and preferences</p>
-      </div>
-
       <div className="px-4 md:px-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4">
