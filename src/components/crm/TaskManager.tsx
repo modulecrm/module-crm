@@ -231,8 +231,8 @@ const TaskManager = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4 md:p-6">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Task Manager</h2>
         <div className="flex items-center gap-4">
           <Select value={viewMode} onValueChange={setViewMode}>

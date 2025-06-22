@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
@@ -111,8 +110,8 @@ const ActivityTimeline = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4 md:p-6">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Activity Timeline</h2>
         <Button className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
@@ -121,7 +120,7 @@ const ActivityTimeline = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
         {['all', 'pending', 'completed', 'call', 'email', 'meeting', 'task'].map((filterOption) => (
           <button
             key={filterOption}
