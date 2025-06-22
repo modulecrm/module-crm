@@ -38,16 +38,16 @@ function App() {
     setActiveModule(moduleId);
   };
 
-  const renderActiveModule = () => {
+  const renderActiveModule = (activeSubTab?: string) => {
     console.log('App: Rendering module:', activeModule);
     
     switch (activeModule) {
       case 'dashboard':
         return <Dashboard enabledModules={enabledModules} />;
       case 'crm':
-        return <CRMModule />;
+        return <CRMModule activeSubTab={activeSubTab} />;
       case 'invoice':
-        return <InvoiceModule />;
+        return <InvoiceModule activeSubTab={activeSubTab} />;
       case 'booking':
         return <BookingModule />;
       case 'subscription':
@@ -74,7 +74,7 @@ function App() {
             enabledModules={enabledModules}
             onModuleSelect={handleModuleSelect}
           >
-            {renderActiveModule()}
+            {renderActiveModule}
           </AppLayout>
         } />
       </Routes>

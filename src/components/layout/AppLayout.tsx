@@ -30,7 +30,6 @@ const AppLayout = ({
 
   const handleSubTabChange = (subTab: string) => {
     setActiveSubTab(subTab);
-    // You can add logic here to navigate to specific sub-sections
     console.log('Sub-tab changed to:', subTab);
   };
 
@@ -53,13 +52,13 @@ const AppLayout = ({
           isVisible={showSubNavigation}
         />
         
-        <div className="flex-1 overflow-auto w-full">
+        <div className={`flex-1 overflow-auto w-full transition-all duration-300 ${showSubNavigation ? 'ml-0' : 'ml-0'}`}>
           {/* Global Module Search */}
           <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-4">
             <ModuleSearch onModuleSelect={onModuleSelect} />
           </div>
           <div className="w-full">
-            {children}
+            {React.cloneElement(children as React.ReactElement, { activeSubTab })}
           </div>
         </div>
       </div>

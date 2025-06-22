@@ -55,17 +55,16 @@ const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header */}
+      {/* Header - Always show M logo */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          {isHovered ? (
-            <>
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <span className="text-white font-bold text-sm">M</span>
+          </div>
+          {isHovered && (
+            <div className="ml-3 flex-1 flex items-center justify-between">
               <h1 className="text-xl font-bold text-gray-900">Module CRM</h1>
               <UserMenu />
-            </>
-          ) : (
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
             </div>
           )}
         </div>
