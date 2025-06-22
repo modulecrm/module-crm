@@ -114,7 +114,7 @@ const SubNavigation: React.FC<SubNavigationProps> = ({
 
   return (
     <div className="w-48 bg-white border-r border-gray-200 flex flex-col h-full">
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 h-20 flex items-center">
         <h3 className="text-sm font-medium text-gray-700 capitalize">
           {activeModule} Menu
         </h3>
