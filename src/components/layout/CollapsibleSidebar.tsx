@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -26,6 +26,7 @@ const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
   enabledModules 
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [showText, setShowText] = useState(false);
 
   const modules = [
     { id: 'dashboard', name: 'Dashboard', icon: BarChart3 },
@@ -41,6 +42,27 @@ const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
     { id: 'feature-requests', name: 'Feature Requests', icon: MessageSquare },
   ];
 
+  // Handle text visibility with delay
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
+    if (isHovered) {
+      // Delay showing text until after the width animation (300ms) completes
+      timeoutId = setTimeout(() => {
+        setShowText(true);
+      }, 250);
+    } else {
+      // Hide text immediately when not hovered
+      setShowText(false);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isHovered]);
+
   const handleModuleClick = (moduleId: string) => {
     console.log('🔹 CollapsibleSidebar: User clicked on module:', moduleId);
     onModuleChange(moduleId);
@@ -55,18 +77,34 @@ const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header - Always show M logo */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
+      {/* Header - Fixed height to prevent jumping */}
+      <div className="p-4 border-b border-gray-200 h-20 flex items-center">
+        <div className="flex items-center w-full">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
             <span className="text-white font-bold text-sm">M</span>
           </div>
-          {isHovered && (
-            <div className="ml-3 flex-1 flex items-center justify-between">
-              <h1 className="text-xl font-bold text-gray-900">Module CRM</h1>
+          
+          {/* Text with opacity transition and fixed height container */}
+          <div className="ml-3 flex-1 flex items-center justify-between overflow-hidden">
+            <div 
+              className={cn(
+                "transition-opacity duration-200 ease-in-out whitespace-nowrap",
+                showText ? "opacity-100" : "opacity-0"
+              )}
+              style={{ minHeight: '28px' }} // Prevent height collapse
+            >
+              <h1 className="text-xl font-bold text-gray-900 leading-7">
+                Module<br />CRM
+              </h1>
+            </div>
+            
+            <div className={cn(
+              "transition-opacity duration-200 ease-in-out",
+              showText ? "opacity-100" : "opacity-0"
+            )}>
               <UserMenu />
             </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -89,7 +127,14 @@ const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
                 title={!isHovered ? module.name : undefined}
               >
                 <Icon className={cn("h-4 w-4", isHovered && "mr-2")} />
-                {isHovered && <span>{module.name}</span>}
+                
+                {/* Text with opacity transition */}
+                <span className={cn(
+                  "transition-opacity duration-200 ease-in-out whitespace-nowrap",
+                  showText ? "opacity-100" : "opacity-0"
+                )}>
+                  {showText && module.name}
+                </span>
               </Button>
             );
           })}
@@ -99,9 +144,13 @@ const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
 
         {/* Settings */}
         <div className="space-y-1">
-          {isHovered && (
-            <p className="text-xs font-medium text-gray-500 px-2 mb-2">SETTINGS</p>
-          )}
+          {/* Settings label with opacity transition */}
+          <p className={cn(
+            "text-xs font-medium text-gray-500 px-2 mb-2 transition-opacity duration-200 ease-in-out",
+            showText ? "opacity-100" : "opacity-0"
+          )}>
+            {showText && "SETTINGS"}
+          </p>
           
           {settingsModules.map((module) => {
             const Icon = module.icon;
@@ -119,7 +168,14 @@ const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
                 title={!isHovered ? module.name : undefined}
               >
                 <Icon className={cn("h-4 w-4", isHovered && "mr-2")} />
-                {isHovered && <span>{module.name}</span>}
+                
+                {/* Text with opacity transition */}
+                <span className={cn(
+                  "transition-opacity duration-200 ease-in-out whitespace-nowrap",
+                  showText ? "opacity-100" : "opacity-0"
+                )}>
+                  {showText && module.name}
+                </span>
               </Button>
             );
           })}
