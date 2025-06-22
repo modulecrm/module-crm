@@ -11,12 +11,10 @@ import SettingsModule from './components/SettingsModule';
 import UserPage from './components/UserPage';
 import FeatureRequestsModule from './components/FeatureRequestsModule';
 import TaskEdit from './pages/TaskEdit';
-import { useToast } from "@/hooks/use-toast"
 
 function App() {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [enabledModules, setEnabledModules] = useState(['dashboard', 'crm', 'invoice', 'booking', 'subscription']);
-  const { toast } = useToast()
 
   useEffect(() => {
     console.log('App: Active module changed to:', activeModule);
