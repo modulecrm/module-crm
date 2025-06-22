@@ -10,7 +10,7 @@ interface AppLayoutProps {
   onModuleChange: (module: string) => void;
   enabledModules: string[];
   onModuleSelect: (moduleId: string) => void;
-  children: React.ReactNode;
+  renderModule: (activeSubTab?: string) => React.ReactNode;
 }
 
 const AppLayout = ({ 
@@ -18,7 +18,7 @@ const AppLayout = ({
   onModuleChange, 
   enabledModules, 
   onModuleSelect, 
-  children 
+  renderModule
 }: AppLayoutProps) => {
   const [activeSubTab, setActiveSubTab] = useState<string>('');
 
@@ -52,13 +52,13 @@ const AppLayout = ({
           isVisible={showSubNavigation}
         />
         
-        <div className={`flex-1 overflow-auto w-full transition-all duration-300 ${showSubNavigation ? 'ml-0' : 'ml-0'}`}>
+        <div className={`flex-1 overflow-auto w-full transition-all duration-300 ${showSubNavigation ? 'ml-64' : 'ml-0'}`}>
           {/* Global Module Search */}
           <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-4">
             <ModuleSearch onModuleSelect={onModuleSelect} />
           </div>
           <div className="w-full">
-            {React.cloneElement(children as React.ReactElement, { activeSubTab })}
+            {renderModule(activeSubTab)}
           </div>
         </div>
       </div>

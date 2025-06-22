@@ -38,31 +38,6 @@ function App() {
     setActiveModule(moduleId);
   };
 
-  const renderActiveModule = (activeSubTab?: string) => {
-    console.log('App: Rendering module:', activeModule);
-    
-    switch (activeModule) {
-      case 'dashboard':
-        return <Dashboard enabledModules={enabledModules} />;
-      case 'crm':
-        return <CRMModule activeSubTab={activeSubTab} />;
-      case 'invoice':
-        return <InvoiceModule activeSubTab={activeSubTab} />;
-      case 'booking':
-        return <BookingModule />;
-      case 'subscription':
-        return <SubscriptionModule />;
-      case 'settings':
-        return <SettingsModule enabledModules={enabledModules} onToggleModule={handleToggleModule} />;
-      case 'user':
-        return <UserPage enabledModules={enabledModules} />;
-      case 'feature-requests':
-        return <FeatureRequestsModule />;
-      default:
-        return <Dashboard enabledModules={enabledModules} />;
-    }
-  };
-
   return (
     <Router>
       <Routes>
@@ -73,9 +48,32 @@ function App() {
             onModuleChange={handleModuleChange}
             enabledModules={enabledModules}
             onModuleSelect={handleModuleSelect}
-          >
-            {renderActiveModule}
-          </AppLayout>
+            // Pass the render function and necessary props
+            renderModule={(activeSubTab?: string) => {
+              console.log('App: Rendering module:', activeModule);
+              
+              switch (activeModule) {
+                case 'dashboard':
+                  return <Dashboard enabledModules={enabledModules} />;
+                case 'crm':
+                  return <CRMModule activeSubTab={activeSubTab} />;
+                case 'invoice':
+                  return <InvoiceModule activeSubTab={activeSubTab} />;
+                case 'booking':
+                  return <BookingModule />;
+                case 'subscription':
+                  return <SubscriptionModule />;
+                case 'settings':
+                  return <SettingsModule enabledModules={enabledModules} onToggleModule={handleToggleModule} />;
+                case 'user':
+                  return <UserPage enabledModules={enabledModules} />;
+                case 'feature-requests':
+                  return <FeatureRequestsModule />;
+                default:
+                  return <Dashboard enabledModules={enabledModules} />;
+              }
+            }}
+          />
         } />
       </Routes>
     </Router>
