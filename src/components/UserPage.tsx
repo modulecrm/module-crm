@@ -13,13 +13,15 @@ const UserPage = ({ enabledModules }: UserPageProps) => {
   const [activeTab, setActiveTab] = useState('profiles');
 
   return (
-    <div className="p-8" data-testid="profile-settings-page">
-      <UserPageHeader />
-      <UserPageTabs 
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        enabledModules={enabledModules}
-      />
+    <div className="w-full" data-testid="profile-settings-page">
+      <div className="p-4 md:p-8">
+        <UserPageHeader />
+        <UserPageTabs 
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          enabledModules={enabledModules}
+        />
+      </div>
     </div>
   );
 };

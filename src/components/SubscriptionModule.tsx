@@ -21,14 +21,14 @@ const SubscriptionModule = () => {
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || SubscriptionPlans;
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
+    <div className="w-full">
+      <div className="p-4 md:p-8 mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Subscription Management</h1>
         <p className="text-gray-600 mt-2">Comprehensive subscription and billing management system</p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="mb-8">
+      <div className="px-4 md:px-8 mb-8">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8">
             {tabs.map((tab) => {
@@ -55,8 +55,10 @@ const SubscriptionModule = () => {
       </div>
 
       {/* Active Tab Content */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <ActiveComponent />
+      <div className="px-4 md:px-8">
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <ActiveComponent />
+        </div>
       </div>
     </div>
   );
